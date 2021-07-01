@@ -1,13 +1,46 @@
 package cli
 
-import "github.com/c-bata/go-prompt"
+import (
+	"github.com/c-bata/go-prompt"
+	"strings"
+)
 
-func Completer(t prompt.Document) []prompt.Suggest {
-	s := []prompt.Suggest{
-		{Text: "exit", Description: "Quit the application"},
-		{Text: "init", Description: "Init MM2 Dependencies, Download/Setup"},
-		{Text: "help <command>", Description: "Show the help for a specific command"},
-		{Text: "help", Description: "Show the global help"},
+var commands = []prompt.Suggest{
+	{Text: "exit", Description: "Quit the application"},
+	{Text: "init", Description: "Init MM2 Dependencies, Download/Setup"},
+	{Text: "help", Description: "Show the global help"},
+}
+
+var subCommandsHelp = []prompt.Suggest{
+	{Text: "init", Description: "Shows help of the init command"},
+}
+
+type Completer struct {
+}
+
+func NewCompleter() (*Completer, error) {
+	return &Completer{}, nil
+}
+
+func (c *Completer) argumentsCompleter(args []string) []prompt.Suggest {
+	if len(args) <= 1 {
+		return prompt.FilterHasPrefix(commands, args[0], true)
 	}
-	return prompt.FilterHasPrefix(s, t.GetWordBeforeCursor(), true)
+	first := args[0]
+	switch first {
+	case "help":
+		second := args[1]
+		if len(args) == 2 {
+			return prompt.FilterHasPrefix(subCommandsHelp, second, true)
+		}
+	}
+	return []prompt.Suggest{}
+}
+
+func (c *Completer) Complete(d prompt.Document) []prompt.Suggest {
+	if d.TextBeforeCursor() == "" {
+		return []prompt.Suggest{}
+	}
+	args := strings.Split(d.TextBeforeCursor(), " ")
+	return c.argumentsCompleter(args)
 }

@@ -6,9 +6,10 @@ import (
 )
 
 func main() {
+	completer, _ := cli.NewCompleter()
 	p := prompt.New(
 		cli.Executor,
-		cli.Completer,
+		completer.Complete,
 	)
 	p.Run()
 }
