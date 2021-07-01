@@ -1,7 +1,14 @@
 package main
 
-import "fmt"
+import (
+	prompt "github.com/c-bata/go-prompt"
+	cli "mm2_client/cli"
+)
 
 func main() {
-	fmt.Println("Hello World")
+	p := prompt.New(
+		cli.Executor,
+		cli.Completer,
+	)
+	p.Run()
 }
