@@ -3,8 +3,9 @@ package cli
 import (
 	"fmt"
 	"github.com/kyokomi/emoji/v2"
+	"mm2_client/config"
 	"mm2_client/helpers"
-	mm2_http "mm2_client/http"
+	mm2http "mm2_client/http"
 	"os"
 )
 
@@ -34,7 +35,7 @@ func processCoinsFile() {
 }
 
 func downloadLastMM2(targetPath string, zipTarget string, targetDir string) {
-	_, downloadURL, err := mm2_http.GetUrlLastMM2()
+	_, downloadURL, err := mm2http.GetUrlLastMM2()
 	if err != nil {
 		_, _ = emoji.Printf("Error when Getting the Last URL Infos: %v", err)
 		os.Exit(1)
@@ -69,7 +70,26 @@ func processMM2Release() {
 }
 
 func processMM2Json() {
-
+	targetDir := helpers.GetWorkingDir() + "/mm2"
+	targetPath := targetDir + "/MM2.json"
+	if !helpers.FileExists(targetPath) {
+		helpers.PrintCheck("Checking if MM2.json is present and configured", false)
+		freshCfg := config.NewMM2Config().ToJson()
+		f, err := os.Create(targetPath)
+		if err != nil {
+			fmt.Printf("Err: %v", err)
+			os.Exit(1)
+		}
+		defer f.Close()
+		_, err = f.WriteString(freshCfg)
+		if err != nil {
+			fmt.Printf("Err: %v", err)
+			os.Exit(1)
+		}
+		helpers.PrintCheck("Successfully generated a MM2.json template configuration", true)
+	} else {
+		helpers.PrintCheck("Checking if MM2.json is present and configured", true)
+	}
 }
 
 func InitMM2() {
