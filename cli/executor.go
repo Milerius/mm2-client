@@ -12,6 +12,12 @@ func Executor(fullCommand string) {
 	switch command[0] {
 	case "init":
 		InitMM2()
+	case "help":
+		if len(command) == 1 {
+			ShowGlobalHelp()
+		} else if len(command) > 1 {
+			ShowCommandHelp(command[0])
+		}
 	case "exit":
 		fmt.Println("Bye")
 		os.Exit(0)
