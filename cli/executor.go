@@ -16,7 +16,7 @@ func Executor(fullCommand string) {
 		if len(command) == 1 {
 			ShowGlobalHelp()
 		} else if len(command) > 1 {
-			ShowCommandHelp(command[0])
+			ShowCommandHelp(command[1])
 		}
 	case "exit":
 		fmt.Println("Bye")
