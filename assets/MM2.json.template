@@ -1,0 +1,8 @@
+{
+  "dbdir": "your_userhome/atomicdex_cli/mm2/DB",
+  "gui": "AtomicDEX Client CLI",
+  "netid": 7777,
+  "passphrase": "your_userseed",
+  "rpc_password": "your_userpassword",
+  "userhome": "your_userhome"
+}
