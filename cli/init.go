@@ -12,7 +12,7 @@ const targetCoinsUrl = "https://raw.githubusercontent.com/KomodoPlatform/coins/m
 
 func downloadCoinsFile(filePath string) {
 	_, _ = emoji.Printf("Downloading coins file %s :arrows_counterclockwise:\n", targetCoinsUrl)
-	err := helpers.DownloadFile(filePath, targetCoinsUrl)
+	err := helpers.DownloadFile(filePath, targetCoinsUrl, true)
 	if err != nil {
 		_, _ = emoji.Printf("Error when Downloading %s: %v", targetCoinsUrl, err)
 		os.Exit(1)
@@ -40,7 +40,7 @@ func downloadLastMM2(targetPath string, zipTarget string, targetDir string) {
 		os.Exit(1)
 	}
 	fmt.Printf("Download url is: %s\n", downloadURL)
-	err = helpers.DownloadFile(zipTarget, downloadURL)
+	err = helpers.DownloadFile(zipTarget, downloadURL, false)
 	if err != nil {
 		_, _ = emoji.Printf("Error when Downloading %s: %v", downloadURL, err)
 		os.Exit(1)
