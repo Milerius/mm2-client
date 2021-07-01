@@ -3,6 +3,8 @@ package config
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"mm2_client/helpers"
 	"os"
 )
 
@@ -32,4 +34,13 @@ func (cfg *MM2Config) ToJson() string {
 		return ""
 	}
 	return string(b)
+}
+
+func (cfg *MM2Config) WriteToFile() {
+	targetDir := helpers.GetWorkingDir() + "/mm2"
+	targetPath := targetDir + "/MM2.json"
+	if helpers.FileExists(targetPath) {
+		_ = os.Remove(targetPath)
+	}
+	_ = ioutil.WriteFile(targetPath, []byte(cfg.ToJson()), 0644)
 }

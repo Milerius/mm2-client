@@ -3,8 +3,13 @@ package cli
 import (
 	"fmt"
 	"mm2_client/config"
+	"mm2_client/helpers"
 )
 import "github.com/manifoldco/promptui"
+
+func validateRpcPassword(input string) error {
+	return nil
+}
 
 func ConfigurePassPhrase(cfg *config.MM2Config) {
 	prompt := promptui.Select{
@@ -16,6 +21,23 @@ func ConfigurePassPhrase(cfg *config.MM2Config) {
 	fmt.Printf("You choose %q\n", result)
 }
 
+func chooseRpcPassword(cfg *config.MM2Config) {
+	promptChoosePassword := promptui.Prompt{
+		Label:    "Please enter a rpc password",
+		Validate: validateRpcPassword,
+	}
+	resultChoose, err := promptChoosePassword.Run()
+
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+		chooseRpcPassword(cfg)
+	}
+
+	cfg.RPCPassword = resultChoose
+	cfg.WriteToFile()
+	fmt.Printf("Successfully overwrite mm2 cfg with rpc password: %q\n", resultChoose)
+}
+
 func ConfigureRpcPassword(cfg *config.MM2Config) {
 	prompt := promptui.Select{
 		Label: "RpcPassword Configuration",
@@ -24,4 +46,13 @@ func ConfigureRpcPassword(cfg *config.MM2Config) {
 	_, result, _ := prompt.Run()
 
 	fmt.Printf("You choose %q\n", result)
+
+	if result == "Choose a rpc password" {
+		chooseRpcPassword(cfg)
+	} else if result == "Generate a random rpc password" {
+		password, _ := helpers.GenerateRandomString(32)
+		cfg.RPCPassword = password
+		cfg.WriteToFile()
+		fmt.Printf("Successfully overwrite mm2 cfg with rpc password: %q\n", password)
+	}
 }
