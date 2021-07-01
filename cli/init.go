@@ -2,13 +2,19 @@ package cli
 
 import (
 	"github.com/kyokomi/emoji/v2"
-	helpers "mm2_client/helpers"
+	"mm2_client/helpers"
+	"os"
 )
 
 const targetCoinsUrl = "https://raw.githubusercontent.com/KomodoPlatform/coins/master/coins"
 
-func downloadCoinsFile() {
-	_, _ = emoji.Println("Downloading coins file :arrows_counterclockwise:")
+func downloadCoinsFile(filePath string) {
+	_, _ = emoji.Printf("Downloading coins file %s :arrows_counterclockwise:\n", targetCoinsUrl)
+	err := helpers.DownloadFile(filePath, targetCoinsUrl)
+	if err != nil {
+		_, _ = emoji.Printf("Error when Downloading %s: %v", targetCoinsUrl, err)
+		os.Exit(1)
+	}
 }
 
 func processCoinsFile() {
@@ -19,7 +25,7 @@ func processCoinsFile() {
 	targetPath := targetDir + "/coins.json"
 	if !helpers.FileExists(targetPath) {
 		helpers.PrintCheck("Checking if coins file is present:", false)
-		downloadCoinsFile()
+		downloadCoinsFile(targetPath)
 	} else {
 		helpers.PrintCheck("Checking if coins file is present:", true)
 	}
