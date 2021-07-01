@@ -68,7 +68,12 @@ func processMM2Release() {
 	}
 }
 
+func processMM2Json() {
+
+}
+
 func InitMM2() {
 	processCoinsFile()
 	processMM2Release()
+	processMM2Json()
 }
