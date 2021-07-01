@@ -31,6 +31,11 @@ func processCoinsFile() {
 	}
 }
 
+func processMM2Release() {
+
+}
+
 func InitMM2() {
 	processCoinsFile()
+	processMM2Release()
 }
