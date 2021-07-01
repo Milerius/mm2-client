@@ -3,10 +3,13 @@ package cli
 import (
 	"fmt"
 	"os"
+	"strings"
 )
 
-func Executor(t string) {
-	switch t {
+func Executor(fullCommand string) {
+	fullCommand = strings.TrimSpace(fullCommand)
+	command := strings.Split(fullCommand, " ")
+	switch command[0] {
 	case "init":
 		InitMM2()
 	case "exit":
