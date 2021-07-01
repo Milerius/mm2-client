@@ -1,6 +1,15 @@
 package http
 
-import "time"
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"github.com/kyokomi/emoji/v2"
+	"net/http"
+	"runtime"
+	"strings"
+	"time"
+)
 
 const targetUrl = "https://api.github.com/repos/KomodoPlatform/atomicDEX-API/releases/latest"
 
@@ -75,4 +84,46 @@ type GithubLatestRelease struct {
 	TarballURL string `json:"tarball_url"`
 	ZipballURL string `json:"zipball_url"`
 	Body       string `json:"body"`
+}
+
+func fetchLastRelease() (*GithubLatestRelease, error) {
+	resp, err := http.Get(targetUrl)
+	if err != nil {
+		fmt.Printf("Error occured: %v\n", err)
+		return nil, err
+	}
+	defer resp.Body.Close()
+	var cResp *GithubLatestRelease = new(GithubLatestRelease)
+	if err := json.NewDecoder(resp.Body).Decode(cResp); err != nil {
+		fmt.Printf("Error occured: %v\n", err)
+		return nil, err
+	}
+	_, _ = emoji.Println("Downloaded information about the last mm2 release: :white_check_mark:")
+	return cResp, nil
+}
+
+func retrieveReleaseInfos(latestRelease *GithubLatestRelease, target string) (string, string, error) {
+	for _, v := range latestRelease.Assets {
+		if strings.Contains(v.BrowserDownloadURL, target) {
+			return latestRelease.TargetCommitish, v.BrowserDownloadURL, nil
+		}
+	}
+	return "", "", errors.New("download url not found")
+}
+
+// (hash, url, err)
+func GetUrlLastMM2() (string, string, error) {
+	release, err := fetchLastRelease()
+	if err != nil {
+		return "", "", err
+	}
+	switch runtime.GOOS {
+	case "linux":
+		return retrieveReleaseInfos(release, "Linux-Release.zip")
+	case "darwin":
+		return retrieveReleaseInfos(release, "Darwin-Release.zip")
+	default:
+		fmt.Println("Os not supported")
+		return "", "", errors.New("os not supported")
+	}
 }
