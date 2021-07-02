@@ -10,7 +10,7 @@ const initHelp = `The init command allow you to bootstrap mm2 by downloading all
 
 const initUsage = `init`
 
-const exitHelp = `Quit the mm2-client CLI, doesn't shutdown mm2'`
+const exitHelp = `Quit the mm2-client CLI, doesn't shutdown mm2`
 const exitUsage = `exit`
 
 func ShowGlobalHelp() {
@@ -33,8 +33,8 @@ func ShowCommandHelp(command string) {
 	case "init":
 		fmt.Println(initHelp)
 		fmt.Printf("usage: %s\n", initUsage)
-	case "help":
-		fmt.Printf(exitHelp)
+	case "exit":
+		fmt.Println(exitHelp)
 		fmt.Printf("usage: %s\n", exitUsage)
 	default:
 		fmt.Printf("Command %s not found\n", command)

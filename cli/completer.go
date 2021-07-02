@@ -13,7 +13,7 @@ var commands = []prompt.Suggest{
 
 var subCommandsHelp = []prompt.Suggest{
 	{Text: "init", Description: "Shows help of the init command"},
-	{Text: "help", Description: "Shows help of the help command"},
+	{Text: "exit", Description: "Shows help of the help command"},
 }
 
 type Completer struct {
