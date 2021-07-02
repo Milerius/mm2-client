@@ -32,6 +32,11 @@ func ShowCommandHelp(command string) {
 	switch command {
 	case "init":
 		fmt.Println(initHelp)
-		fmt.Printf("usage %s\n", initUsage)
+		fmt.Printf("usage: %s\n", initUsage)
+	case "help":
+		fmt.Printf(exitHelp)
+		fmt.Printf("usage: %s\n", exitUsage)
+	default:
+		fmt.Printf("Command %s not found\n", command)
 	}
 }
