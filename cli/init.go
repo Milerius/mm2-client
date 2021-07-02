@@ -102,15 +102,9 @@ func processMM2Json() {
 		helpers.PrintCheck("Successfully generated a MM2.json template configuration", true)
 		checkMM2Configuration(mm2CFG)
 	} else {
-		helpers.PrintCheck("Checking if MM2.json is present and configured", true)
+		checkMM2Configuration(config.NewMM2ConfigFromFile(targetPath))
+		//helpers.PrintCheck("Checking if MM2.json is present and configured", true)
 	}
-}
-
-func InitMM2() {
-	processCoinsFile()
-	processMM2Release()
-	processMM2Json()
-	processVersionConfiguration()
 }
 
 func processVersionConfiguration() {
@@ -125,4 +119,11 @@ func processVersionConfiguration() {
 	} else {
 		helpers.PrintCheck("Checking if desktop coins json is present", true)
 	}
+}
+
+func InitMM2() {
+	processCoinsFile()
+	processMM2Release()
+	processMM2Json()
+	processVersionConfiguration()
 }

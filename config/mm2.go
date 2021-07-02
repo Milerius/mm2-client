@@ -17,6 +17,13 @@ type MM2Config struct {
 	Userhome    string `json:"userhome"`
 }
 
+func NewMM2ConfigFromFile(targetPath string) *MM2Config {
+	cfg := &MM2Config{}
+	file, _ := ioutil.ReadFile(targetPath)
+	_ = json.Unmarshal([]byte(file), cfg)
+	return cfg
+}
+
 func NewMM2Config() *MM2Config {
 	return &MM2Config{
 		Dbdir:       os.Getenv("HOME") + "/atomicdex_cli/mm2/db",
