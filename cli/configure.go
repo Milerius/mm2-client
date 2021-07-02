@@ -5,12 +5,24 @@ import (
 	"github.com/Delta456/box-cli-maker"
 	"github.com/kyokomi/emoji/v2"
 	"github.com/manifoldco/promptui"
+	"github.com/tyler-smith/go-bip39"
 	"mm2_client/config"
 	"mm2_client/helpers"
 )
 
 func validateRpcPassword(input string) error {
 	return nil
+}
+
+func generateSeed(cfg *config.MM2Config) {
+	entropy, _ := bip39.NewEntropy(256)
+	mnemonic, err := bip39.NewMnemonic(entropy)
+
+	if err == nil {
+		cfg.Passphrase = mnemonic
+		cfg.WriteToFile()
+		fmt.Printf("MM2.json updated with generated seed: %q\n", mnemonic)
+	}
 }
 
 func restoreSeed(cfg *config.MM2Config) {
@@ -46,7 +58,7 @@ func ConfigurePassPhrase(cfg *config.MM2Config) {
 	_, result, _ := prompt.Run()
 
 	if result == "Generate a Seed" {
-		fmt.Printf("You choose %q\n", result)
+		generateSeed(cfg)
 	} else if result == "Restore a Seed" {
 		restoreSeed(cfg)
 	}
