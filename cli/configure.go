@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"github.com/Delta456/box-cli-maker"
 	"github.com/kyokomi/emoji/v2"
 	"mm2_client/config"
 	"mm2_client/helpers"
@@ -39,7 +40,9 @@ func chooseRpcPassword(cfg *config.MM2Config, hint string) {
 	}
 
 	if passErr := helpers.CheckPasswordLever(resultChoose); passErr != nil {
-		emoji.Printf("%s\n", passErr.Error())
+		Box := box.New(box.Config{Px: 2, Py: 2, ContentAlign: "Left", Type: "Round", Color: "Green"})
+		toPrint := emoji.Sprintf("%s\n", passErr.Error())
+		Box.Println("Password Policy", toPrint)
 		chooseRpcPassword(cfg, resultChoose)
 		thatsFine = false
 	}
