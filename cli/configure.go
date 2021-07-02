@@ -4,13 +4,38 @@ import (
 	"fmt"
 	"github.com/Delta456/box-cli-maker"
 	"github.com/kyokomi/emoji/v2"
+	"github.com/manifoldco/promptui"
 	"mm2_client/config"
 	"mm2_client/helpers"
 )
-import "github.com/manifoldco/promptui"
 
 func validateRpcPassword(input string) error {
 	return nil
+}
+
+func restoreSeed(cfg *config.MM2Config) {
+	promptRestoreSeed := promptui.Prompt{
+		Label: "Please enter your seed",
+	}
+	resultSeed, err := promptRestoreSeed.Run()
+	thatsFine := true
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+		restoreSeed(cfg)
+		thatsFine = false
+	}
+
+	if len(resultSeed) == 0 {
+		fmt.Println("You're custom seed cannot be empty, please try again")
+		restoreSeed(cfg)
+		thatsFine = false
+	}
+
+	if thatsFine {
+		cfg.Passphrase = resultSeed
+		cfg.WriteToFile()
+		fmt.Printf("Successfully overwrite mm2 cfg with passphrase: %q\n", resultSeed)
+	}
 }
 
 func ConfigurePassPhrase(cfg *config.MM2Config) {
@@ -20,7 +45,11 @@ func ConfigurePassPhrase(cfg *config.MM2Config) {
 	}
 	_, result, _ := prompt.Run()
 
-	fmt.Printf("You choose %q\n", result)
+	if result == "Generate a Seed" {
+		fmt.Printf("You choose %q\n", result)
+	} else if result == "Restore a Seed" {
+		restoreSeed(cfg)
+	}
 }
 
 func chooseRpcPassword(cfg *config.MM2Config, hint string) {
