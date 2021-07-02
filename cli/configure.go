@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"github.com/kyokomi/emoji/v2"
 	"mm2_client/config"
 	"mm2_client/helpers"
 )
@@ -28,8 +29,12 @@ func chooseRpcPassword(cfg *config.MM2Config) {
 	}
 	resultChoose, err := promptChoosePassword.Run()
 
-	if err != nil {
-		fmt.Printf("Prompt failed %v\n", err)
+	if err != nil || resultChoose == "" {
+		if err != nil {
+			fmt.Printf("Prompt failed %v\n", err)
+		} else {
+			emoji.Println("Password cannot be empty, please try again :x:")
+		}
 		chooseRpcPassword(cfg)
 	}
 
