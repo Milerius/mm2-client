@@ -22,25 +22,33 @@ func ConfigurePassPhrase(cfg *config.MM2Config) {
 	fmt.Printf("You choose %q\n", result)
 }
 
-func chooseRpcPassword(cfg *config.MM2Config) {
+func chooseRpcPassword(cfg *config.MM2Config, hint string) {
 	promptChoosePassword := promptui.Prompt{
 		Label:    "Please enter a rpc password",
 		Validate: validateRpcPassword,
+		Default:  hint,
 	}
+
 	resultChoose, err := promptChoosePassword.Run()
 
-	if err != nil || resultChoose == "" {
-		if err != nil {
-			fmt.Printf("Prompt failed %v\n", err)
-		} else {
-			emoji.Println("Password cannot be empty, please try again :x:")
-		}
-		chooseRpcPassword(cfg)
+	thatsFine := true
+	if err != nil {
+		fmt.Printf("Prompt failed %v\n", err)
+		chooseRpcPassword(cfg, "")
+		thatsFine = false
 	}
 
-	cfg.RPCPassword = resultChoose
-	cfg.WriteToFile()
-	fmt.Printf("Successfully overwrite mm2 cfg with rpc password: %q\n", resultChoose)
+	if passErr := helpers.CheckPasswordLever(resultChoose); passErr != nil {
+		emoji.Printf("%s\n", passErr.Error())
+		chooseRpcPassword(cfg, resultChoose)
+		thatsFine = false
+	}
+
+	if thatsFine {
+		cfg.RPCPassword = resultChoose
+		cfg.WriteToFile()
+		fmt.Printf("Successfully overwrite mm2 cfg with rpc password: %q\n", resultChoose)
+	}
 }
 
 func ConfigureRpcPassword(cfg *config.MM2Config) {
@@ -53,7 +61,7 @@ func ConfigureRpcPassword(cfg *config.MM2Config) {
 	fmt.Printf("You choose %q\n", result)
 
 	if result == "Choose a rpc password" {
-		chooseRpcPassword(cfg)
+		chooseRpcPassword(cfg, "")
 	} else if result == "Generate a random rpc password" {
 		password, _ := helpers.GenerateRandomString(32)
 		cfg.RPCPassword = password
