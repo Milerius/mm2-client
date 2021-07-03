@@ -11,11 +11,6 @@ import (
 
 const targetCoinsUrl = "https://raw.githubusercontent.com/KomodoPlatform/coins/master/coins"
 
-var gMM2Dir = helpers.GetWorkingDir() + "/mm2"
-var gMM2BinPath = gMM2Dir + "/mm2"
-var gMM2ConfPath = gMM2Dir + "/MM2.json"
-var gMM2CoinsPath = gMM2Dir + "/coins.json"
-
 func downloadCoinsFile(filePath string) {
 	_, _ = emoji.Printf("Downloading coins file %s :arrows_counterclockwise:\n", targetCoinsUrl)
 	err := helpers.DownloadFile(filePath, targetCoinsUrl, true)
