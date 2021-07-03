@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"mm2_client/http"
 	"os"
 	"strings"
 )
@@ -38,6 +39,8 @@ func Executor(fullCommand string) {
 		} else {
 			DisableCoins(command[1:])
 		}
+	case "disable_enabled_coins":
+		DisableCoins(http.GetEnabledCoins().ToSlice())
 	case "get_enabled_coins":
 		if len(command) > 1 {
 			ShowCommandHelp("get_enabled_coins")

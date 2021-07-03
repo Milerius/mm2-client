@@ -16,6 +16,14 @@ type GetEnabledCoinsAnswer struct {
 	} `json:"result"`
 }
 
+func (receiver *GetEnabledCoinsAnswer) ToSlice() []string {
+	var out []string
+	for _, cur := range receiver.Result {
+		out = append(out, cur.Ticker)
+	}
+	return out
+}
+
 func (receiver *GetEnabledCoinsAnswer) ToTable() {
 	var data [][]string
 

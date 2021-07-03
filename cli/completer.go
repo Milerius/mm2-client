@@ -14,6 +14,7 @@ var commands = []prompt.Suggest{
 	{Text: "enable", Description: "Enable the specified coin(s) in MM2"},
 	{Text: "get_enabled_coins", Description: "List the enabled coins"},
 	{Text: "disable_coin", Description: "Disable the specified coin(s)"},
+	{Text: "disable_enabled_coins", Description: "Disable the enabled coin(s)"},
 }
 
 var subCommandsHelp = []prompt.Suggest{
@@ -24,6 +25,7 @@ var subCommandsHelp = []prompt.Suggest{
 	{Text: "enable", Description: "Shows help of the enable command"},
 	{Text: "get_enabled_coins", Description: "Shows help of the get_enabled_coins command"},
 	{Text: "disable_coin", Description: "Shows help of the disable_coin command"},
+	{Text: "disable_enabled_coins", Description: "Shows help of the disable_enabled_coins command"},
 }
 
 var subCommandsEnable = []prompt.Suggest{

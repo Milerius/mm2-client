@@ -7,20 +7,22 @@ import (
 )
 
 const (
-	initHelp             = `The init command allow you to bootstrap mm2 by downloading all the requirements`
-	initUsage            = `init`
-	startHelp            = `The start command allow you to start MM2 into a detached process`
-	startUsage           = `start`
-	stopHelp             = `The stop command allow you to stop MM2`
-	stopUsage            = `stop`
-	exitHelp             = `Quit the mm2-client CLI, doesn't shutdown mm2`
-	exitUsage            = `exit`
-	enableHelp           = `Enable the specified coin(s) within MM2`
-	enableUsage          = `enable <coin_1> <coin_2> ...`
-	disableCoinHelp      = `Disable the specified coin(s) within MM2`
-	disableCoinUsage     = `disable_coin <coin_1> <coin_2> ...`
-	getEnabledCoinsHelp  = `List the enabled coins`
-	getEnabledCoinsUsage = `get_enabled_coins`
+	initHelp                = `The init command allow you to bootstrap mm2 by downloading all the requirements`
+	initUsage               = `init`
+	startHelp               = `The start command allow you to start MM2 into a detached process`
+	startUsage              = `start`
+	stopHelp                = `The stop command allow you to stop MM2`
+	stopUsage               = `stop`
+	exitHelp                = `Quit the mm2-client CLI, doesn't shutdown mm2`
+	exitUsage               = `exit`
+	enableHelp              = `Enable the specified coin(s) within MM2`
+	enableUsage             = `enable <coin_1> <coin_2> ...`
+	disableCoinHelp         = `Disable the specified coin(s) within MM2`
+	disableCoinUsage        = `disable_coin <coin_1> <coin_2> ...`
+	disableEnabledCoinHelp  = `Disable the enabled coin(s) from MM2`
+	disableEnabledCoinUsage = `disable_enabled_coins`
+	getEnabledCoinsHelp     = `List the enabled coins`
+	getEnabledCoinsUsage    = `get_enabled_coins`
 )
 
 func ShowGlobalHelp() {
@@ -31,6 +33,7 @@ func ShowGlobalHelp() {
 		{"stop", "", stopHelp, stopUsage},
 		{"enable", "<coin_1> <coin_2> ...", enableHelp, enableUsage},
 		{"disable_coin", "<coin_1> <coin_2> ...", disableCoinHelp, disableCoinUsage},
+		{"disable_enabled_coin", "", disableEnabledCoinHelp, disableEnabledCoinUsage},
 		{"get_enabled_coins", "", getEnabledCoinsHelp, getEnabledCoinsUsage},
 	}
 
@@ -63,6 +66,9 @@ func ShowCommandHelp(command string) {
 	case "disable_coin":
 		fmt.Println(disableCoinHelp)
 		fmt.Printf("usage: %s\n", disableCoinUsage)
+	case "disable_enabled_coin":
+		fmt.Println(disableEnabledCoinHelp)
+		fmt.Printf("usage: %s\n", disableEnabledCoinUsage)
 	case "get_enabled_coins":
 		fmt.Println(getEnabledCoinsHelp)
 		fmt.Printf("usage: %s\n", getEnabledCoinsUsage)
