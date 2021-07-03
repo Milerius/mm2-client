@@ -48,7 +48,7 @@ func Executor(fullCommand string) {
 			GetEnabledCoins()
 		}
 	case "exit":
-		fmt.Println("Bye")
+		fmt.Println("Quitting the application - trying to shutdown MM2")
 		StopMM2()
 		os.Exit(0)
 	}
