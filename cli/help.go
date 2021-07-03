@@ -15,8 +15,8 @@ const (
 	stopUsage   = `stop`
 	exitHelp    = `Quit the mm2-client CLI, doesn't shutdown mm2`
 	exitUsage   = `exit`
-	enableHelp  = `Enable the specified coin within MM2`
-	enableUsage = `enable <coin>`
+	enableHelp  = `Enable the specified coin(s) within MM2`
+	enableUsage = `enable <coin_1> <coin_2> ...`
 )
 
 func ShowGlobalHelp() {
@@ -25,7 +25,7 @@ func ShowGlobalHelp() {
 		{"exit", "", exitHelp, exitUsage},
 		{"start", "", startHelp, startUsage},
 		{"stop", "", stopHelp, stopUsage},
-		{"enable", "<coin>", enableHelp, enableUsage},
+		{"enable", "<coin_1> <coin_2> ...", enableHelp, enableUsage},
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
