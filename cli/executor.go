@@ -22,6 +22,12 @@ func Executor(fullCommand string) {
 		StartMM2()
 	case "stop":
 		StopMM2()
+	case "enable":
+		if len(command) != 2 {
+			ShowCommandHelp(command[0])
+		} else {
+			Enable(command[1])
+		}
 	case "exit":
 		fmt.Println("Bye")
 		os.Exit(0)

@@ -11,12 +11,14 @@ var commands = []prompt.Suggest{
 	{Text: "help", Description: "Show the global help"},
 	{Text: "start", Description: "Start MM2 into a detached process"},
 	{Text: "stop", Description: "Stop MM2"},
+	{Text: "enable", Description: "Enable the specified coin in MM2"},
 }
 
 var subCommandsHelp = []prompt.Suggest{
 	{Text: "init", Description: "Shows help of the init command"},
 	{Text: "exit", Description: "Shows help of the help command"},
 	{Text: "stop", Description: "Shows help of the stop command"},
+	{Text: "enable", Description: "Shows help of the enable command"},
 }
 
 type Completer struct {

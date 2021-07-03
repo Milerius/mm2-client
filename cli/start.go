@@ -5,6 +5,7 @@ import (
 	"mm2_client/config"
 	"mm2_client/constants"
 	"mm2_client/helpers"
+	"mm2_client/http"
 	"os"
 	"os/exec"
 )
@@ -28,6 +29,7 @@ func StartMM2() {
 			if err != nil {
 				fmt.Printf("cmd.Release failed: %v\n", err)
 			} else {
+				config.ParseDesktopRegistry(http.GetLastDesktopVersion())
 				helpers.PrintCheck("MM2 successfully started", true)
 			}
 		}
