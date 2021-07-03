@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"encoding/json"
 	"fmt"
 	"mm2_client/config"
 	"mm2_client/http"
@@ -22,13 +23,30 @@ func Enable(coin string) {
 }
 
 func EnableMultipleCoins(coins []string) {
-	var outCoins []string
+	var outBatch []interface{}
 	for _, v := range coins {
-		if _, ok := config.GCFGRegistry[v]; ok {
-			outCoins = append(outCoins, v)
+		if val, ok := config.GCFGRegistry[v]; ok {
+			switch val.Type {
+			case "BEP-20", "ERC-20":
+				outBatch = append(outBatch, http.NewEnableRequest(val))
+			case "UTXO", "QRC-20", "Smart Chain":
+				outBatch = append(outBatch, http.NewElectrumRequest(val))
+			default:
+				fmt.Println("Not supported yet")
+			}
 		} else {
 			fmt.Printf("coin %s doesn't exist - skipping\n", v)
 		}
 	}
-	fmt.Printf("Will enable %v\n", outCoins)
+
+	resp := http.BatchRequest(outBatch)
+	if len(resp) > 0 {
+		var outResp []http.GenericEnableAnswer
+		err := json.Unmarshal([]byte(resp), &outResp)
+		if err != nil {
+			fmt.Printf("Err: %v\n", err)
+		} else {
+			http.ToTable(outResp)
+		}
+	}
 }

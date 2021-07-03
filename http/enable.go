@@ -19,7 +19,7 @@ type EnableRequest struct {
 	Userpass             string   `json:"userpass"`
 }
 
-func newEnableRequest(cfg *config.DesktopCFG) *EnableRequest {
+func NewEnableRequest(cfg *config.DesktopCFG) *EnableRequest {
 	genReq := NewGenericRequest("enable")
 	req := &EnableRequest{Userpass: genReq.Userpass, Method: genReq.Method}
 	//cfg := config.GCFGRegistry[coin]
@@ -30,7 +30,7 @@ func newEnableRequest(cfg *config.DesktopCFG) *EnableRequest {
 	return req
 }
 
-func (req *EnableRequest) toJson() string {
+func (req *EnableRequest) ToJson() string {
 	b, err := json.Marshal(req)
 	if err != nil {
 		fmt.Println(err)
@@ -41,7 +41,7 @@ func (req *EnableRequest) toJson() string {
 
 func Enable(coin string) bool {
 	if val, ok := config.GCFGRegistry[coin]; ok {
-		req := newEnableRequest(val).toJson()
+		req := NewEnableRequest(val).ToJson()
 		resp, err := http.Post(GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
 		if err != nil {
 			fmt.Printf("Err: %v\n", err)

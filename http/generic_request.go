@@ -43,6 +43,24 @@ func (answer *GenericEnableAnswer) ToTable() {
 	table.Render()
 }
 
+func ToTable(answers []GenericEnableAnswer) {
+	var data [][]string
+
+	for _, answer := range answers {
+		cur := []string{answer.Coin, answer.Address, answer.Balance, strconv.Itoa(answer.RequiredConfirmations),
+			strconv.FormatBool(answer.RequiresNotarization), answer.UnspendableBalance, answer.Result}
+		data = append(data, cur)
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetAutoWrapText(false)
+	table.SetHeader([]string{"Coin", "Address", "Balance", "Confirmations", "Notarization", "Unspendable", "Status"})
+	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
+	table.SetCenterSeparator("|")
+	table.AppendBulk(data) // Add Bulk Data
+	table.Render()
+}
+
 func NewGenericRequest(method string) *MM2GenericRequest {
 	if gRuntimeUserpass == "" {
 		gRuntimeUserpass = config.NewMM2ConfigFromFile(constants.GMM2ConfPath).RPCPassword

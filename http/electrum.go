@@ -23,7 +23,7 @@ type ElectrumRequest struct {
 	FallbackSwapContract string `json:"fallback_swap_contract,omitempty"`
 }
 
-func newElectrumRequest(cfg *config.DesktopCFG) *ElectrumRequest {
+func NewElectrumRequest(cfg *config.DesktopCFG) *ElectrumRequest {
 	genReq := NewGenericRequest("electrum")
 	req := &ElectrumRequest{Userpass: genReq.Userpass, Method: genReq.Method}
 	req.Coin = cfg.Coin
@@ -37,7 +37,7 @@ func newElectrumRequest(cfg *config.DesktopCFG) *ElectrumRequest {
 	return req
 }
 
-func (req *ElectrumRequest) toJson() string {
+func (req *ElectrumRequest) ToJson() string {
 	b, err := json.Marshal(req)
 	if err != nil {
 		fmt.Println(err)
@@ -48,7 +48,7 @@ func (req *ElectrumRequest) toJson() string {
 
 func Electrum(coin string) bool {
 	if val, ok := config.GCFGRegistry[coin]; ok {
-		req := newElectrumRequest(val).toJson()
+		req := NewElectrumRequest(val).ToJson()
 		resp, err := http.Post(GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
 		if err != nil {
 			fmt.Printf("Err: %v\n", err)
