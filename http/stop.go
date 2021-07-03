@@ -26,6 +26,7 @@ func Stop() bool {
 			fmt.Printf("Err: %v\n", err)
 			return false
 		}
+		gRuntimeUserpass = ""
 		return answer.Result == "success"
 	}
 	return true
