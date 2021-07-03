@@ -2,9 +2,11 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"mm2_client/constants"
 	"mm2_client/helpers"
+	"os"
 	"strconv"
 )
 
@@ -77,5 +79,16 @@ func (cfg *DesktopCFG) RetrieveContracts() (string, string) {
 		}
 	default:
 		return "", ""
+	}
+}
+
+func Update(version string) {
+	var desktopCoinsPath = constants.GMM2Dir + "/" + version + "-coins.json"
+	e := os.Remove(desktopCoinsPath)
+	if e != nil {
+		fmt.Printf("Err: %v", e)
+	} else {
+		file, _ := json.MarshalIndent(GCFGRegistry, "", " ")
+		_ = ioutil.WriteFile(desktopCoinsPath, file, 0644)
 	}
 }

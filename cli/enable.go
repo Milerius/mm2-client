@@ -17,6 +17,11 @@ func Enable(coin string) {
 		default:
 			fmt.Println("Not supported yet")
 		}
+		if !val.Active {
+			val.Active = true
+			config.GCFGRegistry[coin] = val
+			go config.Update(http.GetLastDesktopVersion())
+		}
 	} else {
 		fmt.Printf("Cannot enable %s, did you start MM2 with the command <start> ?\n", coin)
 	}
@@ -24,19 +29,34 @@ func Enable(coin string) {
 
 func EnableMultipleCoins(coins []string) {
 	var outBatch []interface{}
+	requireUpdate := false
 	for _, v := range coins {
 		if val, ok := config.GCFGRegistry[v]; ok {
 			switch val.Type {
 			case "BEP-20", "ERC-20":
 				outBatch = append(outBatch, http.NewEnableRequest(val))
+				if !val.Active {
+					val.Active = true
+					config.GCFGRegistry[v] = val
+					requireUpdate = true
+				}
 			case "UTXO", "QRC-20", "Smart Chain":
 				outBatch = append(outBatch, http.NewElectrumRequest(val))
+				if !val.Active {
+					val.Active = true
+					config.GCFGRegistry[v] = val
+					requireUpdate = true
+				}
 			default:
 				fmt.Println("Not supported yet")
 			}
 		} else {
 			fmt.Printf("coin %s doesn't exist - skipping\n", v)
 		}
+	}
+
+	if requireUpdate {
+		go config.Update(http.GetLastDesktopVersion())
 	}
 
 	resp := http.BatchRequest(outBatch)

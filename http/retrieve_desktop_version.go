@@ -3,7 +3,6 @@ package http
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/kyokomi/emoji/v2"
 	"net/http"
 )
 
@@ -27,7 +26,7 @@ func fetchLastVersion() (*VcpkgAnswer, error) {
 		fmt.Printf("Error occured: %v\n", err)
 		return nil, err
 	}
-	_, _ = emoji.Println("Downloaded information about the last vcpkg desktop version: :white_check_mark:")
+	//_, _ = emoji.Println("Downloaded information about the last vcpkg desktop version: :white_check_mark:")
 	return cResp, nil
 }
 
