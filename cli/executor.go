@@ -30,6 +30,7 @@ func Executor(fullCommand string) {
 		}
 	case "exit":
 		fmt.Println("Bye")
+		StopMM2()
 		os.Exit(0)
 	}
 	return

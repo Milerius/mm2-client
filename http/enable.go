@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/olekukonko/tablewriter"
+	"io/ioutil"
 	"mm2_client/config"
 	"net/http"
 	"os"
@@ -83,6 +84,9 @@ func Enable(coin string) bool {
 			}
 			answer.toTable()
 			return answer.Result == "success"
+		} else {
+			bodyBytes, _ := ioutil.ReadAll(resp.Body)
+			fmt.Printf("Err: %s\n", bodyBytes)
 		}
 	} else {
 		fmt.Printf("coin: %s doesn't exist or is not present in the desktop configuration\n", coin)
