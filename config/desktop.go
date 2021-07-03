@@ -38,11 +38,11 @@ const (
 	BnbSwapContractAddress                = "0xeDc5b89Fe1f0382F9E4316069971D90a0951DB31"
 	ErcFallbackSwapContractAddress        = "0x8500AFc0bc5214728082163326C2FF0C73f4a871"
 	ErcTestnetFallbackSwapContractAddress = "0x7Bc1bBDD6A0a722fC9bffC49c921B685ECB84b94"
+	QrcTestnetSwapContractAddress         = "0xba8b71f3544b93e2f681f996da519a98ace0107a"
+	QrcSwapContractAddress                = "0x2f754733acd6d753731c00fee32cb484551cc15d"
 	BnbFallbackSwapContractAddress        = BnbSwapContractAddress
 	BnbTestnetFallbackSwapContractAddress = BnbTestnetSwapContractAddress
-	QrcTestnetSwapContractAddress         = "0xba8b71f3544b93e2f681f996da519a98ace0107a"
 	QrcTestnetFallbackSwapContractAddress = QrcTestnetSwapContractAddress
-	QrcSwapContractAddress                = "0x2f754733acd6d753731c00fee32cb484551cc15d"
 	QrcFallbackSwapContractAddress        = QrcSwapContractAddress
 )
 
@@ -68,6 +68,12 @@ func (cfg *DesktopCFG) RetrieveContracts() (string, string) {
 			return ErcTestnetSwapContractAddress, ErcTestnetFallbackSwapContractAddress
 		} else {
 			return ErcSwapContractAddress, ErcFallbackSwapContractAddress
+		}
+	case "QRC-20":
+		if cfg.IsTestNet {
+			return QrcTestnetSwapContractAddress, QrcTestnetFallbackSwapContractAddress
+		} else {
+			return QrcSwapContractAddress, QrcFallbackSwapContractAddress
 		}
 	default:
 		return "", ""

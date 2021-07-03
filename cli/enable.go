@@ -11,6 +11,8 @@ func Enable(coin string) {
 		switch val.Type {
 		case "BEP-20", "ERC-20":
 			http.Enable(coin)
+		case "UTXO", "QRC-20", "Smart Chain":
+			http.Electrum(coin)
 		default:
 			fmt.Println("Not supported yet")
 		}
