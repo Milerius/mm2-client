@@ -4,12 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/olekukonko/tablewriter"
 	"io/ioutil"
 	"mm2_client/config"
 	"net/http"
-	"os"
-	"strconv"
 )
 
 type EnableRequest struct {
@@ -20,16 +17,6 @@ type EnableRequest struct {
 	TxHistory            bool     `json:"tx_history"`
 	Urls                 []string `json:"urls"`
 	Userpass             string   `json:"userpass"`
-}
-
-type EnableAnswer struct {
-	Coin                  string `json:"coin"`
-	Address               string `json:"address"`
-	Balance               string `json:"balance"`
-	RequiredConfirmations int    `json:"required_confirmations"`
-	RequiresNotarization  bool   `json:"requires_notarization"`
-	UnspendableBalance    string `json:"unspendable_balance"`
-	Result                string `json:"result"`
 }
 
 func newEnableRequest(cfg *config.DesktopCFG) *EnableRequest {
@@ -52,20 +39,6 @@ func (req *EnableRequest) toJson() string {
 	return string(b)
 }
 
-func (answer *EnableAnswer) toTable() {
-	data := [][]string{
-		{answer.Coin, answer.Address, answer.Balance, strconv.Itoa(answer.RequiredConfirmations), strconv.FormatBool(answer.RequiresNotarization), answer.UnspendableBalance, answer.Result},
-	}
-
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetAutoWrapText(false)
-	table.SetHeader([]string{"Coin", "Address", "Balance", "Confirmations", "Notarization", "Unspendable", "Status"})
-	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
-	table.SetCenterSeparator("|")
-	table.AppendBulk(data) // Add Bulk Data
-	table.Render()
-}
-
 func Enable(coin string) bool {
 	if val, ok := config.GCFGRegistry[coin]; ok {
 		req := newEnableRequest(val).toJson()
@@ -76,13 +49,13 @@ func Enable(coin string) bool {
 		}
 		if resp.StatusCode == http.StatusOK {
 			defer resp.Body.Close()
-			var answer = &EnableAnswer{}
+			var answer = &GenericEnableAnswer{}
 			decodeErr := json.NewDecoder(resp.Body).Decode(answer)
 			if decodeErr != nil {
 				fmt.Printf("Err: %v\n", err)
 				return false
 			}
-			answer.toTable()
+			answer.ToTable()
 			return answer.Result == "success"
 		} else {
 			bodyBytes, _ := ioutil.ReadAll(resp.Body)
