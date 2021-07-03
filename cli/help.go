@@ -7,16 +7,18 @@ import (
 )
 
 const (
-	initHelp    = `The init command allow you to bootstrap mm2 by downloading all the requirements`
-	initUsage   = `init`
-	startHelp   = `The start command allow you to start MM2 into a detached process`
-	startUsage  = `start`
-	stopHelp    = `The stop command allow you to stop MM2`
-	stopUsage   = `stop`
-	exitHelp    = `Quit the mm2-client CLI, doesn't shutdown mm2`
-	exitUsage   = `exit`
-	enableHelp  = `Enable the specified coin(s) within MM2`
-	enableUsage = `enable <coin_1> <coin_2> ...`
+	initHelp             = `The init command allow you to bootstrap mm2 by downloading all the requirements`
+	initUsage            = `init`
+	startHelp            = `The start command allow you to start MM2 into a detached process`
+	startUsage           = `start`
+	stopHelp             = `The stop command allow you to stop MM2`
+	stopUsage            = `stop`
+	exitHelp             = `Quit the mm2-client CLI, doesn't shutdown mm2`
+	exitUsage            = `exit`
+	enableHelp           = `Enable the specified coin(s) within MM2`
+	enableUsage          = `enable <coin_1> <coin_2> ...`
+	getEnabledCoinsHelp  = `List the enabled coins`
+	getEnabledCoinsUsage = `get_enabled_coins`
 )
 
 func ShowGlobalHelp() {
@@ -26,6 +28,7 @@ func ShowGlobalHelp() {
 		{"start", "", startHelp, startUsage},
 		{"stop", "", stopHelp, stopUsage},
 		{"enable", "<coin_1> <coin_2> ...", enableHelp, enableUsage},
+		{"get_enabled_coins", "", getEnabledCoinsHelp, getEnabledCoinsUsage},
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
@@ -54,6 +57,9 @@ func ShowCommandHelp(command string) {
 	case "enable":
 		fmt.Println(enableHelp)
 		fmt.Printf("usage: %s\n", enableUsage)
+	case "get_enabled_coins":
+		fmt.Println(getEnabledCoinsHelp)
+		fmt.Printf("usage: %s\n", getEnabledCoinsUsage)
 	default:
 		fmt.Printf("Command %s not found\n", command)
 	}

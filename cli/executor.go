@@ -30,6 +30,12 @@ func Executor(fullCommand string) {
 		} else {
 			EnableMultipleCoins(command[1:])
 		}
+	case "get_enabled_coins":
+		if len(command) > 1 {
+			ShowCommandHelp("get_enabled_coins")
+		} else {
+			GetEnabledCoins()
+		}
 	case "exit":
 		fmt.Println("Bye")
 		StopMM2()

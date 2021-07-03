@@ -12,13 +12,16 @@ var commands = []prompt.Suggest{
 	{Text: "start", Description: "Start MM2 into a detached process"},
 	{Text: "stop", Description: "Stop MM2"},
 	{Text: "enable", Description: "Enable the specified coin in MM2"},
+	{Text: "get_enabled_coins", Description: "List the enabled coins"},
 }
 
 var subCommandsHelp = []prompt.Suggest{
-	{Text: "init", Description: "Shows help of the init command"},
 	{Text: "exit", Description: "Shows help of the help command"},
+	{Text: "init", Description: "Shows help of the init command"},
+	{Text: "start", Description: "Shows help of the start command"},
 	{Text: "stop", Description: "Shows help of the stop command"},
 	{Text: "enable", Description: "Shows help of the enable command"},
+	{Text: "get_enabled_coins", Description: "Shows help of the get_enabled_coins command"},
 }
 
 var subCommandsEnable = []prompt.Suggest{
@@ -272,10 +275,6 @@ var subCommandsEnable = []prompt.Suggest{
 	{Text: "PAXG-ERC20", Description: "Enable PAXG-ERC20"},
 	{Text: "MGW", Description: "Enable MGW"},
 }
-
-/*var subCommandsEnable = []prompt.Suggest{
-	{},
-}*/
 
 type Completer struct {
 }
