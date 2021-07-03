@@ -18,6 +18,8 @@ func Executor(fullCommand string) {
 		} else if len(command) > 1 {
 			ShowCommandHelp(command[1])
 		}
+	case "start":
+		StartMM2()
 	case "exit":
 		fmt.Println("Bye")
 		os.Exit(0)

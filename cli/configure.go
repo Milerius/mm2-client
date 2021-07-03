@@ -113,3 +113,15 @@ func ConfigureRpcPassword(cfg *config.MM2Config) {
 		fmt.Printf("Successfully overwrite mm2 cfg with rpc password: %q\n", password)
 	}
 }
+
+func CheckMM2Configuration(cfg *config.MM2Config) {
+	if cfg.Passphrase == config.NewMM2Config().Passphrase {
+		helpers.PrintCheck("Checking if passphrase is configured:", false)
+		ConfigurePassPhrase(cfg)
+	}
+
+	if cfg.RPCPassword == config.NewMM2Config().RPCPassword {
+		helpers.PrintCheck("Checking if rpc password is configured:", false)
+		ConfigureRpcPassword(cfg)
+	}
+}

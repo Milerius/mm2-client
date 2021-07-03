@@ -11,6 +11,11 @@ import (
 
 const targetCoinsUrl = "https://raw.githubusercontent.com/KomodoPlatform/coins/master/coins"
 
+var gMM2Dir = helpers.GetWorkingDir() + "/mm2"
+var gMM2BinPath = gMM2Dir + "/mm2"
+var gMM2ConfPath = gMM2Dir + "/MM2.json"
+var gMM2CoinsPath = gMM2Dir + "/coins.json"
+
 func downloadCoinsFile(filePath string) {
 	_, _ = emoji.Printf("Downloading coins file %s :arrows_counterclockwise:\n", targetCoinsUrl)
 	err := helpers.DownloadFile(filePath, targetCoinsUrl, true)
@@ -69,18 +74,6 @@ func processMM2Release() {
 	}
 }
 
-func checkMM2Configuration(cfg *config.MM2Config) {
-	if cfg.Passphrase == config.NewMM2Config().Passphrase {
-		helpers.PrintCheck("Checking if passphrase is configured:", false)
-		ConfigurePassPhrase(cfg)
-	}
-
-	if cfg.RPCPassword == config.NewMM2Config().RPCPassword {
-		helpers.PrintCheck("Checking if rpc password is configured:", false)
-		ConfigureRpcPassword(cfg)
-	}
-}
-
 func processMM2Json() {
 	targetDir := helpers.GetWorkingDir() + "/mm2"
 	targetPath := targetDir + "/MM2.json"
@@ -100,10 +93,9 @@ func processMM2Json() {
 			os.Exit(1)
 		}
 		helpers.PrintCheck("Successfully generated a MM2.json template configuration", true)
-		checkMM2Configuration(mm2CFG)
+		CheckMM2Configuration(mm2CFG)
 	} else {
-		checkMM2Configuration(config.NewMM2ConfigFromFile(targetPath))
-		//helpers.PrintCheck("Checking if MM2.json is present and configured", true)
+		CheckMM2Configuration(config.NewMM2ConfigFromFile(targetPath))
 	}
 }
 

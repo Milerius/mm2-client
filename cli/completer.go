@@ -9,6 +9,7 @@ var commands = []prompt.Suggest{
 	{Text: "exit", Description: "Quit the application"},
 	{Text: "init", Description: "Init MM2 Dependencies, Download/Setup"},
 	{Text: "help", Description: "Show the global help"},
+	{Text: "start", Description: "Start MM2 into a detached process"},
 }
 
 var subCommandsHelp = []prompt.Suggest{
