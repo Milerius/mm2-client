@@ -30,6 +30,14 @@ func Executor(fullCommand string) {
 		} else {
 			EnableMultipleCoins(command[1:])
 		}
+	case "disable_coin":
+		if len(command) == 1 {
+			ShowCommandHelp(command[0])
+		} else if len(command) == 2 {
+			DisableCoin(command[1])
+		} else {
+			DisableCoins(command[1:])
+		}
 	case "get_enabled_coins":
 		if len(command) > 1 {
 			ShowCommandHelp("get_enabled_coins")
