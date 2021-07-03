@@ -296,9 +296,9 @@ func (c *Completer) argumentsCompleter(args []string) []prompt.Suggest {
 			return prompt.FilterHasPrefix(subCommandsHelp, second, true)
 		}
 	case "enable":
-		second := args[1]
-		if len(args) == 2 {
-			return prompt.FilterHasPrefix(subCommandsEnable, second, true)
+		cur := args[len(args)-1]
+		if len(args) >= 2 {
+			return prompt.FilterHasPrefix(subCommandsEnable, cur, true)
 		}
 	}
 	return []prompt.Suggest{}

@@ -23,10 +23,12 @@ func Executor(fullCommand string) {
 	case "stop":
 		StopMM2()
 	case "enable":
-		if len(command) != 2 {
+		if len(command) == 1 {
 			ShowCommandHelp(command[0])
-		} else {
+		} else if len(command) == 2 {
 			Enable(command[1])
+		} else {
+			EnableMultipleCoins(command[1:])
 		}
 	case "exit":
 		fmt.Println("Bye")

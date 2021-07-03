@@ -21,6 +21,14 @@ func Enable(coin string) {
 	}
 }
 
-/*func EnableMultipleCoins(coins string[]) {
-
-}*/
+func EnableMultipleCoins(coins []string) {
+	var outCoins []string
+	for _, v := range coins {
+		if _, ok := config.GCFGRegistry[v]; ok {
+			outCoins = append(outCoins, v)
+		} else {
+			fmt.Printf("coin %s doesn't exist - skipping\n", v)
+		}
+	}
+	fmt.Printf("Will enable %v\n", outCoins)
+}
