@@ -28,7 +28,7 @@ func StartMM2() {
 			if err != nil {
 				fmt.Printf("cmd.Release failed: %v\n", err)
 			} else {
-				helpers.PrintCheck("MM2 Successfully started", true)
+				helpers.PrintCheck("MM2 successfully started", true)
 			}
 		}
 	}

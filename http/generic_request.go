@@ -14,6 +14,8 @@ type MM2GenericRequest struct {
 
 var gRuntimeUserpass = ""
 
+const GMM2Endpoint = "http://127.0.0.1:7783"
+
 func NewGenericRequest(method string) *MM2GenericRequest {
 	if gRuntimeUserpass == "" {
 		gRuntimeUserpass = config.NewMM2ConfigFromFile(constants.GMM2ConfPath).RPCPassword

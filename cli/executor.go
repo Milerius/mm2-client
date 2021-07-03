@@ -20,6 +20,8 @@ func Executor(fullCommand string) {
 		}
 	case "start":
 		StartMM2()
+	case "stop":
+		StopMM2()
 	case "exit":
 		fmt.Println("Bye")
 		os.Exit(0)

@@ -2,26 +2,31 @@ package http
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
 )
 
+type StopAnswer struct {
+	Result string `json:"result"`
+}
+
 func Stop() bool {
 	req := NewGenericRequest("stop").ToJson()
-	resp, err := http.Post("http://127.0.0.1:7783", "application/json", bytes.NewBuffer([]byte(req)))
+	resp, err := http.Post(GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
 	if err != nil {
 		fmt.Printf("Err: %v\n", err)
 		return false
 	}
 	if resp.StatusCode == http.StatusOK {
-		bodyBytes, bodyErr := ioutil.ReadAll(resp.Body)
-		if bodyErr != nil {
-			fmt.Printf("Err: %v\n", bodyErr)
+		defer resp.Body.Close()
+		var answer = &StopAnswer{}
+		decodeErr := json.NewDecoder(resp.Body).Decode(answer)
+		if decodeErr != nil {
+			fmt.Printf("Err: %v\n", err)
+			return false
 		}
-		bodyString := string(bodyBytes)
-		fmt.Println(bodyString)
-		return true
+		return answer.Result == "success"
 	}
 	return true
 }
