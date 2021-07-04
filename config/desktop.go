@@ -8,6 +8,7 @@ import (
 	"mm2_client/helpers"
 	"os"
 	"strconv"
+	"strings"
 )
 
 type DesktopCFG struct {
@@ -20,16 +21,17 @@ type DesktopCFG struct {
 		Protocol                string `json:"protocol"`
 		DisableCertVerification bool   `json:"disable_cert_verification"`
 	} `json:"electrum,omitempty"`
-	Nodes              []string `json:"nodes,omitempty"`
-	ExplorerURL        []string `json:"explorer_url"`
-	ExplorerTxURL      string   `json:"explorer_tx_url,omitempty"`
-	ExplorerAddressURL string   `json:"explorer_address_url,omitempty"`
-	Type               string   `json:"type"`
-	Active             bool     `json:"active"`
-	CurrentlyEnabled   bool     `json:"currently_enabled"`
-	IsClaimable        bool     `json:"is_claimable,omitempty"`
-	WalletOnly         bool     `json:"wallet_only,omitempty"`
-	IsTestNet          bool     `json:"is_testnet,omitempty"`
+	Nodes                 []string `json:"nodes,omitempty"`
+	ExplorerURL           []string `json:"explorer_url"`
+	ExplorerTxURL         string   `json:"explorer_tx_url,omitempty"`
+	ExplorerAddressURL    string   `json:"explorer_address_url,omitempty"`
+	Type                  string   `json:"type"`
+	Active                bool     `json:"active"`
+	CurrentlyEnabled      bool     `json:"currently_enabled"`
+	IsClaimable           bool     `json:"is_claimable,omitempty"`
+	WalletOnly            bool     `json:"wallet_only,omitempty"`
+	IsTestNet             bool     `json:"is_testnet,omitempty"`
+	BinanceAvailablePairs []string `json:"binance_available_pairs,omitempty"`
 }
 
 const (
@@ -101,4 +103,22 @@ func RetrieveActiveCoins() []string {
 		}
 	}
 	return out
+}
+
+func contains(coin string, s []string, searchterm string) string {
+	for _, cur := range s {
+		if strings.Contains(cur, searchterm) {
+			return helpers.RetrieveMainTicker(coin) + cur
+		}
+	}
+	return "notfound"
+}
+
+func RetrieveUSDSymbolIfSupported(coin string) string {
+	if val, ok := GCFGRegistry[coin]; ok {
+		if len(val.BinanceAvailablePairs) > 0 {
+			return contains(coin, val.BinanceAvailablePairs, "USD")
+		}
+	}
+	return ""
 }

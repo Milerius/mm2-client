@@ -6,6 +6,7 @@ import (
 	"mm2_client/constants"
 	"mm2_client/helpers"
 	"mm2_client/http"
+	"mm2_client/services"
 	"os"
 	"os/exec"
 )
@@ -30,6 +31,7 @@ func StartMM2() {
 				fmt.Printf("cmd.Release failed: %v\n", err)
 			} else {
 				config.ParseDesktopRegistry(http.GetLastDesktopVersion())
+				go services.StartBinanceWebsocketService()
 				helpers.PrintCheck("MM2 successfully started", true)
 			}
 		}

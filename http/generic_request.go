@@ -6,6 +6,8 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"mm2_client/config"
 	"mm2_client/constants"
+	"mm2_client/helpers"
+	"mm2_client/services"
 	"os"
 	"strconv"
 )
@@ -30,13 +32,21 @@ type GenericEnableAnswer struct {
 }
 
 func (answer *GenericEnableAnswer) ToTable() {
+	symbol := config.RetrieveUSDSymbolIfSupported(answer.Coin)
+	val := "0"
+	if len(symbol) > 0 {
+		if v, ok := services.BinancePriceRegistry.Load(symbol); ok {
+			val = helpers.BigFloatMultiply(answer.Balance, v.(string), 8)
+		}
+	}
+
 	data := [][]string{
-		{answer.Coin, answer.Address, answer.Balance, strconv.Itoa(answer.RequiredConfirmations), strconv.FormatBool(answer.RequiresNotarization), answer.UnspendableBalance, answer.Result},
+		{answer.Coin, answer.Address, answer.Balance, val, strconv.Itoa(answer.RequiredConfirmations), strconv.FormatBool(answer.RequiresNotarization), answer.UnspendableBalance, answer.Result},
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetAutoWrapText(false)
-	table.SetHeader([]string{"Coin", "Address", "Balance", "Confirmations", "Notarization", "Unspendable", "Status"})
+	table.SetHeader([]string{"Coin", "Address", "Balance", "Balance (USD)", "Confirmations", "Notarization", "Unspendable", "Status"})
 	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	table.SetCenterSeparator("|")
 	table.AppendBulk(data) // Add Bulk Data
@@ -47,14 +57,23 @@ func ToTable(answers []GenericEnableAnswer) {
 	var data [][]string
 
 	for _, answer := range answers {
-		cur := []string{answer.Coin, answer.Address, answer.Balance, strconv.Itoa(answer.RequiredConfirmations),
+		symbol := config.RetrieveUSDSymbolIfSupported(answer.Coin)
+		val := "0"
+		if len(symbol) > 0 {
+			if v, ok := services.BinancePriceRegistry.Load(symbol); ok {
+				val = helpers.BigFloatMultiply(answer.Balance, v.(string), 8)
+			}
+		}
+
+		//helpers.BigFloatMultiply(answer.Balance, answers)
+		cur := []string{answer.Coin, answer.Address, answer.Balance, val, strconv.Itoa(answer.RequiredConfirmations),
 			strconv.FormatBool(answer.RequiresNotarization), answer.UnspendableBalance, answer.Result}
 		data = append(data, cur)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetAutoWrapText(false)
-	table.SetHeader([]string{"Coin", "Address", "Balance", "Confirmations", "Notarization", "Unspendable", "Status"})
+	table.SetHeader([]string{"Coin", "Address", "Balance", "Balance (USD)", "Confirmations", "Notarization", "Unspendable", "Status"})
 	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	table.SetCenterSeparator("|")
 	table.AppendBulk(data) // Add Bulk Data
