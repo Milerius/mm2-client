@@ -27,6 +27,7 @@ func DisableCoins(coins []string) {
 			fmt.Printf("coin %s doesn't exist - skipping\n", v)
 		}
 	}
+
 	if len(outBatch) > 0 {
 		resp := http.BatchRequest(outBatch)
 		if len(resp) > 0 {

@@ -1,9 +1,15 @@
 package cli
 
-import "fmt"
+import (
+	"fmt"
+	"mm2_client/http"
+)
 
 func MyBalance(coin string) {
-	fmt.Println(coin)
+	resp := http.MyBalance(coin)
+	if resp != nil {
+		resp.ToTable()
+	}
 }
 
 func MyBalanceMultipleCoins(coins []string) {
