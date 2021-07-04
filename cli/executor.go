@@ -34,6 +34,8 @@ func Executor(fullCommand string) {
 		}
 	case "enable_active_coins":
 		EnableMultipleCoins(config.RetrieveActiveCoins())
+	case "enable_all_coins":
+		EnableMultipleCoins(config.RetrieveAllCoins())
 	case "disable_coin":
 		if len(command) == 1 {
 			ShowCommandHelp(command[0])

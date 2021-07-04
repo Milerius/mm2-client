@@ -10,6 +10,7 @@ import (
 
 func BatchRequest(batch []interface{}) string {
 	p, err := json.Marshal(batch)
+	//fmt.Println(string(p))
 	if err == nil {
 		resp, reqErr := http.Post(GMM2Endpoint, "application/json", bytes.NewBuffer(p))
 		if reqErr != nil {

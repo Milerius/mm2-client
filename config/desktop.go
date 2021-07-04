@@ -102,3 +102,11 @@ func RetrieveActiveCoins() []string {
 	}
 	return out
 }
+
+func RetrieveAllCoins() []string {
+	var out []string
+	for _, value := range GCFGRegistry {
+		out = append(out, value.Coin)
+	}
+	return out
+}

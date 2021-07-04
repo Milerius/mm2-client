@@ -32,37 +32,41 @@ type GenericEnableAnswer struct {
 }
 
 func (answer *GenericEnableAnswer) ToTable() {
-	val := services.RetrieveUSDValIfSupported(answer.Coin)
-	if val != "0" {
-		val = helpers.BigFloatMultiply(answer.Balance, val, 8)
-	}
+	if answer.Coin != "" {
+		val := services.RetrieveUSDValIfSupported(answer.Coin)
+		if val != "0" {
+			val = helpers.BigFloatMultiply(answer.Balance, val, 8)
+		}
 
-	data := [][]string{
-		{answer.Coin, answer.Address, answer.Balance, val, strconv.Itoa(answer.RequiredConfirmations), strconv.FormatBool(answer.RequiresNotarization), answer.UnspendableBalance, answer.Result},
-	}
+		data := [][]string{
+			{answer.Coin, answer.Address, answer.Balance, val, strconv.Itoa(answer.RequiredConfirmations), strconv.FormatBool(answer.RequiresNotarization), answer.UnspendableBalance, answer.Result},
+		}
 
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetAutoWrapText(false)
-	table.SetHeader([]string{"Coin", "Address", "Balance", "Balance (USD)", "Confirmations", "Notarization", "Unspendable", "Status"})
-	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
-	table.SetCenterSeparator("|")
-	table.AppendBulk(data) // Add Bulk Data
-	table.Render()
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetAutoWrapText(false)
+		table.SetHeader([]string{"Coin", "Address", "Balance", "Balance (USD)", "Confirmations", "Notarization", "Unspendable", "Status"})
+		table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
+		table.SetCenterSeparator("|")
+		table.AppendBulk(data) // Add Bulk Data
+		table.Render()
+	}
 }
 
 func ToTable(answers []GenericEnableAnswer) {
 	var data [][]string
 
 	for _, answer := range answers {
-		val := services.RetrieveUSDValIfSupported(answer.Coin)
-		if val != "0" {
-			val = helpers.BigFloatMultiply(answer.Balance, val, 8)
-		}
+		if answer.Coin != "" {
+			val := services.RetrieveUSDValIfSupported(answer.Coin)
+			if val != "0" {
+				val = helpers.BigFloatMultiply(answer.Balance, val, 8)
+			}
 
-		//helpers.BigFloatMultiply(answer.Balance, answers)
-		cur := []string{answer.Coin, answer.Address, answer.Balance, val, strconv.Itoa(answer.RequiredConfirmations),
-			strconv.FormatBool(answer.RequiresNotarization), answer.UnspendableBalance, answer.Result}
-		data = append(data, cur)
+			//helpers.BigFloatMultiply(answer.Balance, answers)
+			cur := []string{answer.Coin, answer.Address, answer.Balance, val, strconv.Itoa(answer.RequiredConfirmations),
+				strconv.FormatBool(answer.RequiresNotarization), answer.UnspendableBalance, answer.Result}
+			data = append(data, cur)
+		}
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)

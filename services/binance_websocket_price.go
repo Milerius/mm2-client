@@ -5,7 +5,9 @@ import (
 	"github.com/adshao/go-binance/v2"
 	"mm2_client/config"
 	"mm2_client/helpers"
+	"strings"
 	"sync"
+	"time"
 )
 
 const BinanceWebsocketEndpoint = "wss://stream.binance.com:9443"
@@ -69,11 +71,17 @@ func startWebsocketForSymbol(cur string) {
 		BinancePriceRegistry.Store(event.Symbol, event.LastPrice)
 	}
 	errHandler := func(err error) {
-		fmt.Println(err)
+		if strings.Contains(err.Error(), "websocket: close 1006 (abnormal closure)") {
+			go startWebsocketForSymbol(cur)
+		}
 	}
-	//fmt.Printf("Starting websocket service for symbol: %s\n", cur)
+	fmt.Printf("Starting websocket service for symbol: %s\n", cur)
 	_, _, err := binance.WsMarketStatServe(cur, wsMarketHandler, errHandler)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("err for %s: %v\n", cur, err)
+		time.Sleep(1 * time.Second)
+		if strings.Contains(err.Error(), "EOF") {
+			go startWebsocketForSymbol(cur)
+		}
 	}
 }

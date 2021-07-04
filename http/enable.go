@@ -24,7 +24,7 @@ func NewEnableRequest(cfg *config.DesktopCFG) *EnableRequest {
 	req := &EnableRequest{Userpass: genReq.Userpass, Method: genReq.Method}
 	//cfg := config.GCFGRegistry[coin]
 	req.Coin = cfg.Coin
-	req.TxHistory = true
+	req.TxHistory = false
 	req.Urls = cfg.Nodes
 	req.SwapContractAddress, req.FallbackSwapContract = cfg.RetrieveContracts()
 	return req
@@ -33,7 +33,7 @@ func NewEnableRequest(cfg *config.DesktopCFG) *EnableRequest {
 func (req *EnableRequest) ToJson() string {
 	b, err := json.Marshal(req)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Printf("func (req *EnableRequest) ToJson() Err: %v\n", err)
 		return ""
 	}
 	return string(b)
