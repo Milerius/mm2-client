@@ -75,10 +75,10 @@ func startWebsocketForSymbol(cur string) {
 			go startWebsocketForSymbol(cur)
 		}
 	}
-	fmt.Printf("Starting websocket service for symbol: %s\n", cur)
+	//fmt.Printf("Starting websocket service for symbol: %s\n", cur)
 	_, _, err := binance.WsMarketStatServe(cur, wsMarketHandler, errHandler)
 	if err != nil {
-		fmt.Printf("err for %s: %v\n", cur, err)
+		//fmt.Printf("err for %s: %v\n", cur, err)
 		time.Sleep(1 * time.Second)
 		if strings.Contains(err.Error(), "EOF") {
 			go startWebsocketForSymbol(cur)
