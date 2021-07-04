@@ -64,6 +64,12 @@ func Executor(fullCommand string) {
 		} else {
 			GetEnabledCoins()
 		}
+	case "withdraw":
+		if len(command) < 4 {
+			ShowCommandHelp("withdraw")
+		} else {
+			Withdraw(command[1], command[2], command[3], command[4:])
+		}
 	case "exit":
 		fmt.Println("Quitting the application - trying to shutdown MM2")
 		StopMM2()
