@@ -8,3 +8,7 @@ func RetrieveMainTicker(ticker string) string {
 	}
 	return ticker
 }
+
+func IsAStableCoin(ticker string) bool {
+	return ticker == "USD" || ticker == "USDC" || ticker == "BUSD" || ticker == "DAI" || ticker == "USDT"
+}

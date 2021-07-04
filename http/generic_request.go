@@ -32,12 +32,9 @@ type GenericEnableAnswer struct {
 }
 
 func (answer *GenericEnableAnswer) ToTable() {
-	symbol := config.RetrieveUSDSymbolIfSupported(answer.Coin)
-	val := "0"
-	if len(symbol) > 0 {
-		if v, ok := services.BinancePriceRegistry.Load(symbol); ok {
-			val = helpers.BigFloatMultiply(answer.Balance, v.(string), 8)
-		}
+	val := services.RetrieveUSDValIfSupported(answer.Coin)
+	if val != "0" {
+		val = helpers.BigFloatMultiply(answer.Balance, val, 8)
 	}
 
 	data := [][]string{
@@ -57,12 +54,9 @@ func ToTable(answers []GenericEnableAnswer) {
 	var data [][]string
 
 	for _, answer := range answers {
-		symbol := config.RetrieveUSDSymbolIfSupported(answer.Coin)
-		val := "0"
-		if len(symbol) > 0 {
-			if v, ok := services.BinancePriceRegistry.Load(symbol); ok {
-				val = helpers.BigFloatMultiply(answer.Balance, v.(string), 8)
-			}
+		val := services.RetrieveUSDValIfSupported(answer.Coin)
+		if val != "0" {
+			val = helpers.BigFloatMultiply(answer.Balance, val, 8)
 		}
 
 		//helpers.BigFloatMultiply(answer.Balance, answers)
