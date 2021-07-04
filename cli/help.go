@@ -27,6 +27,8 @@ const (
 	disableEnabledCoinUsage = `disable_enabled_coins`
 	getEnabledCoinsHelp     = `List the enabled coins`
 	getEnabledCoinsUsage    = `get_enabled_coins`
+	myBalanceHelp           = `Show the balance of the specified coin(s)`
+	myBalanceUsage          = `my_balance <coin_1> <coin_2> ...`
 )
 
 func ShowGlobalHelp() {
@@ -41,6 +43,7 @@ func ShowGlobalHelp() {
 		{"disable_coin", "<coin_1> <coin_2> ...", disableCoinHelp, disableCoinUsage},
 		{"disable_enabled_coin", "", disableEnabledCoinHelp, disableEnabledCoinUsage},
 		{"get_enabled_coins", "", getEnabledCoinsHelp, getEnabledCoinsUsage},
+		{"my_balance", "<coin_1> <coin_2> ...", myBalanceHelp, myBalanceUsage},
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
@@ -84,6 +87,9 @@ func ShowCommandHelp(command string) {
 	case "get_enabled_coins":
 		fmt.Println(getEnabledCoinsHelp)
 		fmt.Printf("usage: %s\n", getEnabledCoinsUsage)
+	case "my_balance":
+		fmt.Println(myBalanceHelp)
+		fmt.Printf("usage: %s\n", myBalanceUsage)
 	default:
 		fmt.Printf("Command %s not found\n", command)
 	}

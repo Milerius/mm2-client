@@ -44,6 +44,14 @@ func Executor(fullCommand string) {
 		} else {
 			DisableCoins(command[1:])
 		}
+	case "my_balance":
+		if len(command) == 1 {
+			ShowCommandHelp(command[0])
+		} else if len(command) == 2 {
+			MyBalance(command[1])
+		} else {
+			MyBalanceMultipleCoins(command[1:])
+		}
 	case "disable_enabled_coins":
 		DisableCoins(http.GetEnabledCoins().ToSlice())
 	case "get_enabled_coins":

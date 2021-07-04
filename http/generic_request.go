@@ -62,7 +62,6 @@ func ToTable(answers []GenericEnableAnswer) {
 				val = helpers.BigFloatMultiply(answer.Balance, val, 8)
 			}
 
-			//helpers.BigFloatMultiply(answer.Balance, answers)
 			cur := []string{answer.Coin, answer.Address, answer.Balance, val, strconv.Itoa(answer.RequiredConfirmations),
 				strconv.FormatBool(answer.RequiresNotarization), answer.UnspendableBalance, answer.Result}
 			data = append(data, cur)

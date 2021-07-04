@@ -17,6 +17,7 @@ var commands = []prompt.Suggest{
 	{Text: "get_enabled_coins", Description: "List the enabled coins"},
 	{Text: "disable_coin", Description: "Disable the specified coin(s)"},
 	{Text: "disable_enabled_coins", Description: "Disable the enabled coin(s)"},
+	{Text: "my_balance", Description: "Show the balance of the specified coin(s)"},
 }
 
 var subCommandsHelp = []prompt.Suggest{
@@ -30,6 +31,7 @@ var subCommandsHelp = []prompt.Suggest{
 	{Text: "get_enabled_coins", Description: "Shows help of the get_enabled_coins command"},
 	{Text: "disable_coin", Description: "Shows help of the disable_coin command"},
 	{Text: "disable_enabled_coins", Description: "Shows help of the disable_enabled_coins command"},
+	{Text: "my_balance", Description: "Show the help of the my_balance command"},
 }
 
 var subCommandsEnable = []prompt.Suggest{
@@ -302,7 +304,7 @@ func (c *Completer) argumentsCompleter(args []string) []prompt.Suggest {
 		if len(args) == 2 {
 			return prompt.FilterHasPrefix(subCommandsHelp, second, true)
 		}
-	case "enable", "disable_coin":
+	case "enable", "disable_coin", "my_balance":
 		cur := args[len(args)-1]
 		if len(args) >= 2 {
 			return prompt.FilterHasPrefix(subCommandsEnable, cur, true)
