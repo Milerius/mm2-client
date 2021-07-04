@@ -11,6 +11,8 @@ import (
 	"mm2_client/services"
 	"net/http"
 	"os"
+	"sort"
+	"strconv"
 )
 
 type MyBalanceRequest struct {
@@ -77,6 +79,16 @@ func ToTableMyBalanceAnswers(answers []MyBalanceAnswer) {
 			data = append(data, cur)
 		}
 	}
+
+	sort.Slice(data[:], func(i int, j int) bool {
+		fiatIndex := 3
+		if left, err := strconv.ParseFloat(data[i][fiatIndex], 64); err == nil {
+			if right, rightErr := strconv.ParseFloat(data[j][fiatIndex], 64); rightErr == nil {
+				return left > right
+			}
+		}
+		return false
+	})
 
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetAutoWrapText(false)
