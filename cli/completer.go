@@ -2,6 +2,7 @@ package cli
 
 import (
 	"github.com/c-bata/go-prompt"
+	"mm2_client/config"
 	"strings"
 )
 
@@ -20,6 +21,7 @@ var commands = []prompt.Suggest{
 	{Text: "my_balance", Description: "Show the balance of the specified coin(s)"},
 	{Text: "balance_all", Description: "Show the balance of all the active coin(s)"},
 	{Text: "kmd_rewards_info", Description: "Show the Komodo rewards information"},
+	{Text: "withdraw", Description: "Prepare a transaction to send an asset to another address"},
 }
 
 var subCommandsHelp = []prompt.Suggest{
@@ -36,6 +38,7 @@ var subCommandsHelp = []prompt.Suggest{
 	{Text: "my_balance", Description: "Show the help of the my_balance command"},
 	{Text: "balance_all", Description: "Show the help of the balance_all command"},
 	{Text: "kmd_rewards_info", Description: "Show the help of the kmd_rewards_info"},
+	{Text: "withdraw", Description: "Show the help of the withdraw command"},
 }
 
 var subCommandsEnable = []prompt.Suggest{
@@ -312,6 +315,69 @@ func (c *Completer) argumentsCompleter(args []string) []prompt.Suggest {
 		cur := args[len(args)-1]
 		if len(args) >= 2 {
 			return prompt.FilterHasPrefix(subCommandsEnable, cur, true)
+		}
+	case "withdraw":
+		cur := args[len(args)-1]
+		if len(args) == 2 {
+			return prompt.FilterHasPrefix(subCommandsEnable, cur, true)
+		}
+		if len(args) == 3 {
+			var subCommandsWithdrawFirst = []prompt.Suggest{
+				{Text: "1", Description: "Use withdraw with a manual amount"},
+				{Text: "max", Description: "Use withdraw with max balance"},
+			}
+			return prompt.FilterContains(subCommandsWithdrawFirst, cur, true)
+		}
+		if len(args) == 4 {
+			var subCommandsWithdrawSecond = []prompt.Suggest{
+				{Text: "<address>", Description: "Address where you want to send " + args[1]},
+			}
+			return prompt.FilterContains(subCommandsWithdrawSecond, cur, true)
+		}
+		if len(args) == 5 {
+			var out []prompt.Suggest
+			if len(config.GCFGRegistry) > 0 {
+				if val, ok := config.GCFGRegistry[args[1]]; ok {
+					switch val.Type {
+					case "BEP-20", "ERC-20":
+						out = append(out, prompt.Suggest{Text: "eth_gas", Description: "(optional) if you want to specify eth_gas (also work for BEP-20)"})
+					case "QRC-20":
+						out = append(out, prompt.Suggest{Text: "qrc_gas", Description: "(optional) if you want to specify qrc_gas"})
+					case "UTXO", "Smart Chain":
+						out = append(out, prompt.Suggest{Text: "utxo_fixed", Description: "(optional) if you want to specify utxo amount"})
+						out = append(out, prompt.Suggest{Text: "utxo_per_kbyte", Description: "(optional) if you want to specify utxo per kbyte"})
+					}
+				}
+			}
+			return prompt.FilterContains(out, cur, true)
+		}
+		if len(args) == 6 {
+			var out []prompt.Suggest
+			if len(config.GCFGRegistry) > 0 {
+				if val, ok := config.GCFGRegistry[args[1]]; ok {
+					switch val.Type {
+					case "BEP-20", "ERC-20", "QRC-20":
+						out = append(out, prompt.Suggest{Text: "<gas_price>", Description: "specify gas_price for " + args[4]})
+					case "UTXO", "Smart Chain":
+						out = append(out, prompt.Suggest{Text: "<amount>", Description: "specify the utxo amount for " + args[4]})
+					}
+				}
+			}
+			return prompt.FilterContains(out, cur, true)
+		}
+		if len(args) == 7 {
+			var out []prompt.Suggest
+			if len(config.GCFGRegistry) > 0 {
+				if val, ok := config.GCFGRegistry[args[1]]; ok {
+					switch val.Type {
+					case "BEP-20", "ERC-20":
+						out = append(out, prompt.Suggest{Text: "<gas>", Description: "specify gas " + args[4]})
+					case "QRC-20":
+						out = append(out, prompt.Suggest{Text: "<gas_limit>", Description: "specify the gas limit for " + args[4]})
+					}
+				}
+			}
+			return prompt.FilterContains(out, cur, true)
 		}
 	}
 	return []prompt.Suggest{}

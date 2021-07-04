@@ -33,6 +33,14 @@ const (
 	balanceAllUsage         = `balance_all`
 	kmdRewardsInfoHelp      = `Show the Komodo rewards information`
 	kmdRewardsInfoUsage     = `kmd_rewards_info`
+	withdrawHelp            = `Prepare a transaction to send`
+	withdrawUsage           = `withdraw <coin> amount|max <address> fees...
+eg: withdraw KMD 1 RWaZ8yDea2j5peA6J5ftC1huPywxK66X2s
+eg: withdraw KMD max RWaZ8yDea2j5peA6J5ftC1huPywxK66X2s
+eg: withdraw KMD 1 RWaZ8yDea2j5peA6J5ftC1huPywxK66X2s utxo_fixed 0.1
+eg: withdraw KMD 1 RWaZ8yDea2j5peA6J5ftC1huPywxK66X2s utxo_per_kbyte 1
+eg: withdraw ETH 1 0x6beb7d81b03a785a79d5d9d31a896934eaac7cc0 eth_gas 3.5 55000
+eg: withdraw QC 1 qHmJ3KA6ZAjR9wGjpFASn4gtUSeFAqdZgs qrc_gas 40 250000`
 )
 
 func ShowGlobalHelp() {
@@ -50,6 +58,7 @@ func ShowGlobalHelp() {
 		{"my_balance", "<coin_1> <coin_2> ...", myBalanceHelp, myBalanceUsage},
 		{"balance_all", "", balanceAllHelp, balanceAllUsage},
 		{"kmd_rewards_info", "", kmdRewardsInfoHelp, kmdRewardsInfoUsage},
+		{"withdraw", "", withdrawHelp, withdrawUsage},
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
@@ -102,6 +111,9 @@ func ShowCommandHelp(command string) {
 	case "kmd_rewards_info":
 		fmt.Println(kmdRewardsInfoHelp)
 		fmt.Printf("usage: %s\n", kmdRewardsInfoUsage)
+	case "withdraw":
+		fmt.Println(withdrawHelp)
+		fmt.Printf("usage: %s\n", withdrawUsage)
 	default:
 		fmt.Printf("Command %s not found\n", command)
 	}
