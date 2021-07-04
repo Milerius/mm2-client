@@ -2,6 +2,7 @@ package cli
 
 import (
 	"fmt"
+	"mm2_client/config"
 	"mm2_client/http"
 	"os"
 	"strings"
@@ -31,6 +32,8 @@ func Executor(fullCommand string) {
 		} else {
 			EnableMultipleCoins(command[1:])
 		}
+	case "enable_active_coins":
+		EnableMultipleCoins(config.RetrieveActiveCoins())
 	case "disable_coin":
 		if len(command) == 1 {
 			ShowCommandHelp(command[0])

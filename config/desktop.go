@@ -92,3 +92,13 @@ func Update(version string) {
 		_ = ioutil.WriteFile(desktopCoinsPath, file, 0644)
 	}
 }
+
+func RetrieveActiveCoins() []string {
+	var out []string
+	for _, value := range GCFGRegistry {
+		if value.Active {
+			out = append(out, value.Coin)
+		}
+	}
+	return out
+}

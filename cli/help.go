@@ -17,6 +17,8 @@ const (
 	exitUsage               = `exit`
 	enableHelp              = `Enable the specified coin(s) within MM2`
 	enableUsage             = `enable <coin_1> <coin_2> ...`
+	enableActiveCoinsHelp   = `Enable the active coins from the cfg within MM2`
+	enableActiveCoinsUsage  = `enable_active_coins`
 	disableCoinHelp         = `Disable the specified coin(s) within MM2`
 	disableCoinUsage        = `disable_coin <coin_1> <coin_2> ...`
 	disableEnabledCoinHelp  = `Disable the enabled coin(s) from MM2`
@@ -32,6 +34,7 @@ func ShowGlobalHelp() {
 		{"start", "", startHelp, startUsage},
 		{"stop", "", stopHelp, stopUsage},
 		{"enable", "<coin_1> <coin_2> ...", enableHelp, enableUsage},
+		{"enable_active_coins", "", enableActiveCoinsHelp, enableActiveCoinsUsage},
 		{"disable_coin", "<coin_1> <coin_2> ...", disableCoinHelp, disableCoinUsage},
 		{"disable_enabled_coin", "", disableEnabledCoinHelp, disableEnabledCoinUsage},
 		{"get_enabled_coins", "", getEnabledCoinsHelp, getEnabledCoinsUsage},
@@ -63,6 +66,9 @@ func ShowCommandHelp(command string) {
 	case "enable":
 		fmt.Println(enableHelp)
 		fmt.Printf("usage: %s\n", enableUsage)
+	case "enable_active_coins":
+		fmt.Println(enableActiveCoinsHelp)
+		fmt.Printf("usage: %s\n", enableActiveCoinsUsage)
 	case "disable_coin":
 		fmt.Println(disableCoinHelp)
 		fmt.Printf("usage: %s\n", disableCoinUsage)
