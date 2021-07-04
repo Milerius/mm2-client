@@ -63,6 +63,30 @@ func (answer *MyBalanceAnswer) ToTable() {
 	}
 }
 
+func ToTableMyBalanceAnswers(answers []MyBalanceAnswer) {
+	var data [][]string
+
+	for _, answer := range answers {
+		if answer.Coin != "" {
+			val := services.RetrieveUSDValIfSupported(answer.Coin)
+			if val != "0" {
+				val = helpers.BigFloatMultiply(answer.Balance, val, 8)
+			}
+
+			cur := []string{answer.Coin, answer.Address, answer.Balance, val, answer.UnspendableBalance}
+			data = append(data, cur)
+		}
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetAutoWrapText(false)
+	table.SetHeader([]string{"Coin", "Address", "Balance", "Balance (USD)", "Unspendable"})
+	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
+	table.SetCenterSeparator("|")
+	table.AppendBulk(data) // Add Bulk Data
+	table.Render()
+}
+
 func MyBalance(coin string) *MyBalanceAnswer {
 	if val, ok := config.GCFGRegistry[coin]; ok {
 		req := NewMyBalanceCoinRequest(val).ToJson()

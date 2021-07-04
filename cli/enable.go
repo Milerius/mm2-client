@@ -66,7 +66,7 @@ func EnableMultipleCoins(coins []string) {
 		if err != nil {
 			fmt.Printf("Err: %v\n", err)
 		} else {
-			http.ToTable(outResp)
+			http.ToTableGenericEnableAnswers(outResp)
 		}
 	}
 }

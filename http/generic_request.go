@@ -52,7 +52,7 @@ func (answer *GenericEnableAnswer) ToTable() {
 	}
 }
 
-func ToTable(answers []GenericEnableAnswer) {
+func ToTableGenericEnableAnswers(answers []GenericEnableAnswer) {
 	var data [][]string
 
 	for _, answer := range answers {
