@@ -34,7 +34,7 @@ const (
 	kmdRewardsInfoHelp      = `Show the Komodo rewards information`
 	kmdRewardsInfoUsage     = `kmd_rewards_info`
 	BroadcastHelp           = `Broadcast a transaction to the network`
-	BroadcastUsage          = `broadcast <tx_hex>`
+	BroadcastUsage          = `broadcast <coin> <tx_hex>`
 	withdrawHelp            = `Prepare a transaction to send`
 	withdrawUsage           = `withdraw <coin> amount|max <address> fees...
 eg: withdraw KMD 1 RWaZ8yDea2j5peA6J5ftC1huPywxK66X2s
@@ -60,7 +60,7 @@ func ShowGlobalHelp() {
 		{"my_balance", "<coin_1> <coin_2> ...", myBalanceHelp, myBalanceUsage},
 		{"balance_all", "", balanceAllHelp, balanceAllUsage},
 		{"kmd_rewards_info", "", kmdRewardsInfoHelp, kmdRewardsInfoUsage},
-		{"broadcast", "<tx_hex>", BroadcastHelp, BroadcastUsage},
+		{"broadcast", "<coin> <tx_hex>", BroadcastHelp, BroadcastUsage},
 		{"withdraw", "", withdrawHelp, withdrawUsage},
 	}
 

@@ -14,7 +14,7 @@ func PostWithdraw(answer *http.WithdrawAnswer) {
 	}
 	_, result, _ := prompt.Run()
 	if result == "Yes" {
-		Broadcast(answer.TxHex)
+		Broadcast(answer.Coin, answer.TxHex)
 	}
 }
 

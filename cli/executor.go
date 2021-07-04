@@ -72,10 +72,10 @@ func Executor(fullCommand string) {
 			Withdraw(command[1], command[2], command[3], command[4:])
 		}
 	case "broadcast":
-		if len(command) != 2 {
+		if len(command) != 3 {
 			ShowCommandHelp("broadcast")
 		} else {
-			Broadcast(command[1])
+			Broadcast(command[1], command[2])
 		}
 	case "exit":
 		fmt.Println("Quitting the application - trying to shutdown MM2")

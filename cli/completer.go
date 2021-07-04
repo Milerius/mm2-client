@@ -318,6 +318,11 @@ func (c *Completer) argumentsCompleter(args []string) []prompt.Suggest {
 		if len(args) >= 2 {
 			return prompt.FilterHasPrefix(subCommandsEnable, cur, true)
 		}
+	case "broadcast":
+		cur := args[len(args)-1]
+		if len(args) == 2 {
+			return prompt.FilterHasPrefix(subCommandsEnable, cur, true)
+		}
 	case "withdraw":
 		cur := args[len(args)-1]
 		if len(args) == 2 {
