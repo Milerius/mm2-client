@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/adshao/go-binance/v2"
 	"mm2_client/config"
+	"mm2_client/helpers"
 	"sync"
 )
 
@@ -14,13 +15,16 @@ var BinancePriceRegistry sync.Map
 //! <symbol>@ticker
 
 func StartBinanceWebsocketService() {
-	//fmt.Println("StartBinanceWebsocketService")
 	var out []string
+	keys := make(map[string]bool)
 	for _, v := range config.GCFGRegistry {
 		if len(v.BinanceAvailablePairs) > 0 {
 			for _, cur := range v.BinanceAvailablePairs {
-				//fmt.Printf("%s/%s supported processing\n", v.Coin, cur)
-				out = append(out, v.Coin+cur)
+				symbol := helpers.RetrieveMainTicker(v.Coin) + cur
+				if _, value := keys[symbol]; !value {
+					keys[symbol] = true
+					out = append(out, symbol)
+				}
 			}
 		}
 	}
@@ -38,10 +42,5 @@ func StartBinanceWebsocketService() {
 			fmt.Println(err)
 			return
 		}
-		/*go func() {
-			time.Sleep(5 * time.Second)
-			stopC <- struct{}{}
-		}()
-		<-doneC*/
 	}
 }
