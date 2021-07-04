@@ -10,8 +10,6 @@ import (
 	"time"
 )
 
-const BinanceWebsocketEndpoint = "wss://stream.binance.com:9443"
-
 var BinancePriceRegistry sync.Map
 
 //! <symbol>@ticker

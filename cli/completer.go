@@ -297,7 +297,7 @@ func NewCompleter() (*Completer, error) {
 
 func (c *Completer) argumentsCompleter(args []string) []prompt.Suggest {
 	if len(args) <= 1 {
-		return prompt.FilterHasPrefix(commands, args[0], true)
+		return prompt.FilterContains(commands, args[0], true)
 	}
 	first := args[0]
 	switch first {
