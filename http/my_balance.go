@@ -46,7 +46,7 @@ func (answer *MyBalanceAnswer) ToTable() {
 	if answer.Coin != "" {
 		val := services.RetrieveUSDValIfSupported(answer.Coin)
 		if val != "0" {
-			val = helpers.BigFloatMultiply(answer.Balance, val, 8)
+			val = helpers.BigFloatMultiply(answer.Balance, val, 2)
 		}
 
 		data := [][]string{
@@ -70,7 +70,7 @@ func ToTableMyBalanceAnswers(answers []MyBalanceAnswer) {
 		if answer.Coin != "" {
 			val := services.RetrieveUSDValIfSupported(answer.Coin)
 			if val != "0" {
-				val = helpers.BigFloatMultiply(answer.Balance, val, 8)
+				val = helpers.BigFloatMultiply(answer.Balance, val, 2)
 			}
 
 			cur := []string{answer.Coin, answer.Address, answer.Balance, val, answer.UnspendableBalance}
