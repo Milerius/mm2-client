@@ -22,6 +22,7 @@ var commands = []prompt.Suggest{
 	{Text: "balance_all", Description: "Show the balance of all the active coin(s)"},
 	{Text: "kmd_rewards_info", Description: "Show the Komodo rewards information"},
 	{Text: "withdraw", Description: "Prepare a transaction to send an asset to another address"},
+	{Text: "broadcast", Description: "Send a transaction to the network"},
 }
 
 var subCommandsHelp = []prompt.Suggest{
@@ -39,6 +40,7 @@ var subCommandsHelp = []prompt.Suggest{
 	{Text: "balance_all", Description: "Show the help of the balance_all command"},
 	{Text: "kmd_rewards_info", Description: "Show the help of the kmd_rewards_info"},
 	{Text: "withdraw", Description: "Show the help of the withdraw command"},
+	{Text: "broadcast", Description: "Show the help of the broadcast command"},
 }
 
 var subCommandsEnable = []prompt.Suggest{

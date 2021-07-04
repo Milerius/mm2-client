@@ -71,6 +71,12 @@ func Executor(fullCommand string) {
 			//fmt.Println(command)
 			Withdraw(command[1], command[2], command[3], command[4:])
 		}
+	case "broadcast":
+		if len(command) != 2 {
+			ShowCommandHelp("broadcast")
+		} else {
+			Broadcast(command[1])
+		}
 	case "exit":
 		fmt.Println("Quitting the application - trying to shutdown MM2")
 		StopMM2()

@@ -14,9 +14,7 @@ func PostWithdraw(answer *http.WithdrawAnswer) {
 	}
 	_, result, _ := prompt.Run()
 	if result == "Yes" {
-
-	} else if result == "No" {
-
+		Broadcast(answer.TxHex)
 	}
 }
 
