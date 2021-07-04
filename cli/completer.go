@@ -18,6 +18,7 @@ var commands = []prompt.Suggest{
 	{Text: "disable_coin", Description: "Disable the specified coin(s)"},
 	{Text: "disable_enabled_coins", Description: "Disable the enabled coin(s)"},
 	{Text: "my_balance", Description: "Show the balance of the specified coin(s)"},
+	{Text: "balance_all", Description: "Show the balance of all the active coin(s)"},
 }
 
 var subCommandsHelp = []prompt.Suggest{
@@ -32,6 +33,7 @@ var subCommandsHelp = []prompt.Suggest{
 	{Text: "disable_coin", Description: "Shows help of the disable_coin command"},
 	{Text: "disable_enabled_coins", Description: "Shows help of the disable_enabled_coins command"},
 	{Text: "my_balance", Description: "Show the help of the my_balance command"},
+	{Text: "balance_all", Description: "Show the help of the balance_all command"},
 }
 
 var subCommandsEnable = []prompt.Suggest{

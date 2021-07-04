@@ -52,6 +52,8 @@ func Executor(fullCommand string) {
 		} else {
 			MyBalanceMultipleCoins(command[1:])
 		}
+	case "balance_all":
+		MyBalanceMultipleCoins(config.RetrieveActiveCoins())
 	case "disable_enabled_coins":
 		DisableCoins(http.GetEnabledCoins().ToSlice())
 	case "get_enabled_coins":
