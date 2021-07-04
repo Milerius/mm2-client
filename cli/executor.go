@@ -68,6 +68,7 @@ func Executor(fullCommand string) {
 		if len(command) < 4 {
 			ShowCommandHelp("withdraw")
 		} else {
+			//fmt.Println(command)
 			Withdraw(command[1], command[2], command[3], command[4:])
 		}
 	case "exit":
