@@ -16,7 +16,11 @@ var BinancePriceRegistry sync.Map
 
 func contains(coin string, stablecoin string) (string, bool) {
 	val, ok := BinancePriceRegistry.Load(helpers.RetrieveMainTicker(coin) + stablecoin)
-	return val.(string), ok
+	valStr := "0"
+	if ok {
+		valStr = val.(string)
+	}
+	return valStr, ok
 }
 
 func RetrieveUSDValIfSupported(coin string) string {
@@ -56,17 +60,20 @@ func StartBinanceWebsocketService() {
 
 	//fmt.Printf("%v\n", out)
 	for _, cur := range out {
-		wsMarketHandler := func(event *binance.WsMarketStatEvent) {
-			//fmt.Printf("lastprice %s: %s\n", event.Symbol, event.LastPrice)
-			BinancePriceRegistry.Store(event.Symbol, event.LastPrice)
-		}
-		errHandler := func(err error) {
-			fmt.Println(err)
-		}
-		_, _, err := binance.WsMarketStatServe(cur, wsMarketHandler, errHandler)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
+		go startWebsocketForSymbol(cur)
+	}
+}
+
+func startWebsocketForSymbol(cur string) {
+	wsMarketHandler := func(event *binance.WsMarketStatEvent) {
+		BinancePriceRegistry.Store(event.Symbol, event.LastPrice)
+	}
+	errHandler := func(err error) {
+		fmt.Println(err)
+	}
+	//fmt.Printf("Starting websocket service for symbol: %s\n", cur)
+	_, _, err := binance.WsMarketStatServe(cur, wsMarketHandler, errHandler)
+	if err != nil {
+		fmt.Println(err)
 	}
 }
