@@ -68,6 +68,8 @@ func ToTableGenericEnableAnswers(answers []GenericEnableAnswer) {
 		}
 	}
 
+	helpers.SortDoubleSlice(data, 3)
+
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetAutoWrapText(false)
 	table.SetHeader([]string{"Coin", "Address", "Balance", "Balance (USD)", "Confirmations", "Notarization", "Unspendable", "Status"})
