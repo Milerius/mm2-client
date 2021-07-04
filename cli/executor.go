@@ -54,6 +54,8 @@ func Executor(fullCommand string) {
 		}
 	case "balance_all":
 		MyBalanceMultipleCoins(config.RetrieveActiveCoins())
+	case "kmd_rewards_info":
+		KmdRewardsInfo()
 	case "disable_enabled_coins":
 		DisableCoins(http.GetEnabledCoins().ToSlice())
 	case "get_enabled_coins":

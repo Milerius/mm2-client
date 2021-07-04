@@ -31,6 +31,8 @@ const (
 	myBalanceUsage          = `my_balance <coin_1> <coin_2> ...`
 	balanceAllHelp          = `Show the balance of the active coin(s)`
 	balanceAllUsage         = `balance_all`
+	kmdRewardsInfoHelp      = `Show the Komodo rewards information`
+	kmdRewardsInfoUsage     = `kmd_rewards_info`
 )
 
 func ShowGlobalHelp() {
@@ -47,6 +49,7 @@ func ShowGlobalHelp() {
 		{"get_enabled_coins", "", getEnabledCoinsHelp, getEnabledCoinsUsage},
 		{"my_balance", "<coin_1> <coin_2> ...", myBalanceHelp, myBalanceUsage},
 		{"balance_all", "", balanceAllHelp, balanceAllUsage},
+		{"kmd_rewards_info", "", kmdRewardsInfoHelp, kmdRewardsInfoUsage},
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
@@ -96,6 +99,9 @@ func ShowCommandHelp(command string) {
 	case "balance_all":
 		fmt.Println(balanceAllHelp)
 		fmt.Printf("usage: %s\n", balanceAllUsage)
+	case "kmd_rewards_info":
+		fmt.Println(kmdRewardsInfoHelp)
+		fmt.Printf("usage: %s\n", kmdRewardsInfoUsage)
 	default:
 		fmt.Printf("Command %s not found\n", command)
 	}
