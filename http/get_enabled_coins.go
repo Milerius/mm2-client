@@ -16,6 +16,16 @@ type GetEnabledCoinsAnswer struct {
 	} `json:"result"`
 }
 
+func (receiver *GetEnabledCoinsAnswer) Contains(ticker string) bool {
+	for _, v := range receiver.Result {
+		if v.Ticker == ticker {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (receiver *GetEnabledCoinsAnswer) ToSlice() []string {
 	var out []string
 	for _, cur := range receiver.Result {

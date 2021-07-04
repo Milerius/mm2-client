@@ -1,7 +1,11 @@
 package cli
 
-import "fmt"
+import (
+	"mm2_client/http"
+)
 
 func KmdRewardsInfo() {
-	fmt.Println("KmdRewardsInfo()")
+	if resp := http.KmdRewardsInfo(); resp != nil {
+		resp.ToTable()
+	}
 }
