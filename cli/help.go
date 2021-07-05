@@ -37,8 +37,16 @@ const (
 	BroadcastUsage          = `broadcast <coin> <tx_hex>`
 	SendHelp                = `withdraw + broadcast equivalent`
 	SendUsage               = `same as withdraw`
-	withdrawHelp            = `Prepare a transaction to send`
-	withdrawUsage           = `withdraw <coin> amount|max <address> fees...
+	MyTxHistoryHelp         = `Show the tx history of the given coin`
+	MyTxHistoryUsage        = `my_tx_history <coin> (limit|max) (page_number) (true|false)
+eg: my_tx_history KMD
+eg: my_tx_history KMD 50
+eg: my_tx_history KMD 50 2
+eg: my_tx_history KMD 50 1 true
+eg: my_tx_history KMD max
+eg: my_tx_history KMD max 1 true`
+	withdrawHelp  = `Prepare a transaction to send`
+	withdrawUsage = `withdraw <coin> amount|max <address> fees...
 eg: withdraw KMD 1 RWaZ8yDea2j5peA6J5ftC1huPywxK66X2s
 eg: withdraw KMD max RWaZ8yDea2j5peA6J5ftC1huPywxK66X2s
 eg: withdraw KMD 1 RWaZ8yDea2j5peA6J5ftC1huPywxK66X2s utxo_fixed 0.1
@@ -64,6 +72,7 @@ func ShowGlobalHelp() {
 		{"kmd_rewards_info", "", kmdRewardsInfoHelp, kmdRewardsInfoUsage},
 		{"broadcast", "<coin> <tx_hex>", BroadcastHelp, BroadcastUsage},
 		{"withdraw", "", withdrawHelp, withdrawUsage},
+		{"my_tx_history", "", MyTxHistoryHelp, MyTxHistoryUsage},
 		{"send", "", SendHelp, SendUsage},
 	}
 
@@ -126,6 +135,9 @@ func ShowCommandHelp(command string) {
 	case "send":
 		fmt.Println(SendHelp)
 		fmt.Printf("usage: %s\n", SendUsage)
+	case "my_tx_history":
+		fmt.Println(MyTxHistoryHelp)
+		fmt.Printf("usage: %s\n", MyTxHistoryUsage)
 	default:
 		fmt.Printf("Command %s not found\n", command)
 	}

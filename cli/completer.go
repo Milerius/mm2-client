@@ -24,6 +24,7 @@ var commands = []prompt.Suggest{
 	{Text: "withdraw", Description: "Prepare a transaction to send an asset to another address"},
 	{Text: "broadcast", Description: "Send a transaction to the network"},
 	{Text: "send", Description: "withdraw + broadcast equivalent"},
+	{Text: "my_tx_history", Description: "Show the tx history of the specified coin"},
 }
 
 var subCommandsHelp = []prompt.Suggest{
@@ -43,6 +44,7 @@ var subCommandsHelp = []prompt.Suggest{
 	{Text: "withdraw", Description: "Show the help of the withdraw command"},
 	{Text: "broadcast", Description: "Show the help of the broadcast command"},
 	{Text: "send", Description: "Show the help of the send command"},
+	{Text: "my_tx_history", Description: "Show the help of the my_tx_history command"},
 }
 
 var subCommandsEnable = []prompt.Suggest{
@@ -321,6 +323,11 @@ func (c *Completer) argumentsCompleter(args []string) []prompt.Suggest {
 			return prompt.FilterHasPrefix(subCommandsEnable, cur, true)
 		}
 	case "broadcast":
+		cur := args[len(args)-1]
+		if len(args) == 2 {
+			return prompt.FilterHasPrefix(subCommandsEnable, cur, true)
+		}
+	case "my_tx_history":
 		cur := args[len(args)-1]
 		if len(args) == 2 {
 			return prompt.FilterHasPrefix(subCommandsEnable, cur, true)
