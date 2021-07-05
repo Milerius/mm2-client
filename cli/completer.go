@@ -23,6 +23,7 @@ var commands = []prompt.Suggest{
 	{Text: "kmd_rewards_info", Description: "Show the Komodo rewards information"},
 	{Text: "withdraw", Description: "Prepare a transaction to send an asset to another address"},
 	{Text: "broadcast", Description: "Send a transaction to the network"},
+	{Text: "send", Description: "withdraw + broadcast equivalent"},
 }
 
 var subCommandsHelp = []prompt.Suggest{
@@ -41,6 +42,7 @@ var subCommandsHelp = []prompt.Suggest{
 	{Text: "kmd_rewards_info", Description: "Show the help of the kmd_rewards_info"},
 	{Text: "withdraw", Description: "Show the help of the withdraw command"},
 	{Text: "broadcast", Description: "Show the help of the broadcast command"},
+	{Text: "send", Description: "Show the help of the send command"},
 }
 
 var subCommandsEnable = []prompt.Suggest{
@@ -323,7 +325,7 @@ func (c *Completer) argumentsCompleter(args []string) []prompt.Suggest {
 		if len(args) == 2 {
 			return prompt.FilterHasPrefix(subCommandsEnable, cur, true)
 		}
-	case "withdraw":
+	case "withdraw", "send":
 		cur := args[len(args)-1]
 		if len(args) == 2 {
 			return prompt.FilterHasPrefix(subCommandsEnable, cur, true)

@@ -35,6 +35,8 @@ const (
 	kmdRewardsInfoUsage     = `kmd_rewards_info`
 	BroadcastHelp           = `Broadcast a transaction to the network`
 	BroadcastUsage          = `broadcast <coin> <tx_hex>`
+	SendHelp                = `withdraw + broadcast equivalent`
+	SendUsage               = `same as withdraw`
 	withdrawHelp            = `Prepare a transaction to send`
 	withdrawUsage           = `withdraw <coin> amount|max <address> fees...
 eg: withdraw KMD 1 RWaZ8yDea2j5peA6J5ftC1huPywxK66X2s
@@ -62,6 +64,7 @@ func ShowGlobalHelp() {
 		{"kmd_rewards_info", "", kmdRewardsInfoHelp, kmdRewardsInfoUsage},
 		{"broadcast", "<coin> <tx_hex>", BroadcastHelp, BroadcastUsage},
 		{"withdraw", "", withdrawHelp, withdrawUsage},
+		{"send", "", SendHelp, SendUsage},
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
@@ -120,6 +123,9 @@ func ShowCommandHelp(command string) {
 	case "broadcast":
 		fmt.Println(BroadcastHelp)
 		fmt.Printf("usage: %s\n", BroadcastUsage)
+	case "send":
+		fmt.Println(SendHelp)
+		fmt.Printf("usage: %s\n", SendUsage)
 	default:
 		fmt.Printf("Command %s not found\n", command)
 	}

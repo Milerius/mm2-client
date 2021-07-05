@@ -68,8 +68,17 @@ func Executor(fullCommand string) {
 		if len(command) < 4 {
 			ShowCommandHelp("withdraw")
 		} else {
-			//fmt.Println(command)
-			Withdraw(command[1], command[2], command[3], command[4:])
+			PostWithdraw(Withdraw(command[1], command[2], command[3], command[4:]))
+		}
+	case "send":
+		if len(command) < 4 {
+			ShowCommandHelp("send")
+		} else {
+			if resp := Withdraw(command[1], command[2], command[3], command[4:]); resp != nil {
+				resp.ToTable()
+				fmt.Println()
+				Broadcast(resp.Coin, resp.TxHex)
+			}
 		}
 	case "broadcast":
 		if len(command) != 3 {

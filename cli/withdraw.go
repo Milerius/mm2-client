@@ -8,17 +8,20 @@ import (
 )
 
 func PostWithdraw(answer *http.WithdrawAnswer) {
-	prompt := promptui.Select{
-		Label: "Do you want to broadcast your transaction ?",
-		Items: []string{"Yes", "No"},
-	}
-	_, result, _ := prompt.Run()
-	if result == "Yes" {
-		Broadcast(answer.Coin, answer.TxHex)
+	if answer != nil {
+		answer.ToTable()
+		prompt := promptui.Select{
+			Label: "Do you want to broadcast your transaction ?",
+			Items: []string{"Yes", "No"},
+		}
+		_, result, _ := prompt.Run()
+		if result == "Yes" {
+			Broadcast(answer.Coin, answer.TxHex)
+		}
 	}
 }
 
-func Withdraw(coin string, amount string, address string, fees []string) {
+func Withdraw(coin string, amount string, address string, fees []string) *http.WithdrawAnswer {
 	if val, ok := config.GCFGRegistry[coin]; ok {
 		var resp *http.WithdrawAnswer = nil
 		if len(fees) > 0 {
@@ -39,11 +42,9 @@ func Withdraw(coin string, amount string, address string, fees []string) {
 		} else {
 			resp = http.Withdraw(coin, amount, address, []string{}, "")
 		}
-		if resp != nil {
-			resp.ToTable()
-			PostWithdraw(resp)
-		}
+		return resp
 	} else {
 		fmt.Printf("%s is not present in the cfg - skipping\n", coin)
 	}
+	return nil
 }
