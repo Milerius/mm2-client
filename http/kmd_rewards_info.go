@@ -47,8 +47,8 @@ func (answer *KMDRewardsInfoAnswer) ToTable() bool {
 		}
 		toInsert := []string{
 			cur.Amount, accrued, val,
-			helpers.GetDateFromTimestamp(cur.AccrueStartAt),
-			helpers.GetDateFromTimestamp(cur.AccrueStopAt)}
+			helpers.GetDateFromTimestamp(cur.AccrueStartAt, true),
+			helpers.GetDateFromTimestamp(cur.AccrueStopAt, true)}
 		data = append(data, toInsert)
 	}
 

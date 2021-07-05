@@ -1,13 +1,12 @@
 package cli
 
 import (
-	"fmt"
 	"mm2_client/config"
 	"mm2_client/http"
 	"strconv"
 )
 
-func processTxHistory(coin string, args []string) *http.MyTxHistoryAnswer {
+func processTxHistory(coin string, args []string) (*http.MyTxHistoryAnswer, int, int, bool, bool, bool) {
 	if val, ok := config.GCFGRegistry[coin]; ok {
 		defaultNbTx := 50
 		defaultPage := 1
@@ -35,7 +34,8 @@ func processTxHistory(coin string, args []string) *http.MyTxHistoryAnswer {
 				toQuery = "bep_tx_history"
 			}
 			if resp := http.MyBalance(val.Coin); resp != nil {
-				return http.CustomMyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue, isMax, contract, toQuery, resp.Address)
+				return http.CustomMyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue,
+					isMax, contract, toQuery, resp.Address, "BEP20"), defaultPage, defaultNbTx, withFiatValue, isMax, true
 			}
 		case "ERC-20":
 			contract := ""
@@ -45,13 +45,13 @@ func processTxHistory(coin string, args []string) *http.MyTxHistoryAnswer {
 				toQuery = "erc_tx_history"
 			}
 			if resp := http.MyBalance(val.Coin); resp != nil {
-				return http.CustomMyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue, isMax, contract, toQuery, resp.Address)
+				return http.CustomMyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue, isMax, contract, toQuery, resp.Address, "ERC20"), defaultPage, defaultNbTx, withFiatValue, isMax, true
 			}
 		default:
-			return http.MyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue, isMax)
+			return http.MyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue, isMax), defaultPage, defaultNbTx, withFiatValue, isMax, false
 		}
 	}
-	return nil
+	return nil, 0, 0, false, false, false
 }
 
 // MyTxHistory /**
@@ -62,7 +62,7 @@ func processTxHistory(coin string, args []string) *http.MyTxHistoryAnswer {
 // eg MyTxHistory("KMD", "max") //< return all transactions
 // eg MyTxHistory("KMD", "50", 2) //< return 50 last transactions page 2
 func MyTxHistory(coin string, args []string) {
-	if resp := processTxHistory(coin, args); resp != nil {
-		fmt.Println("success")
+	if resp, page, nbTx, withFiatValue, isMax, isCustom := processTxHistory(coin, args); resp != nil {
+		resp.ToTable(page, nbTx, withFiatValue, isMax, isCustom)
 	}
 }

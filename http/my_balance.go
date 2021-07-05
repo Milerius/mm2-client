@@ -78,7 +78,7 @@ func ToTableMyBalanceAnswers(answers []MyBalanceAnswer) {
 		}
 	}
 
-	helpers.SortDoubleSlice(data, 3)
+	helpers.SortDoubleSlice(data, 3, false)
 
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetAutoWrapText(false)
