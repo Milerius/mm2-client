@@ -1,19 +1,13 @@
 package cli
 
 import (
+	"fmt"
 	"mm2_client/config"
 	"mm2_client/http"
 	"strconv"
 )
 
-// MyTxHistory /**
-// eg MyTxHistory("KMD") //< shortcut for the last 50 transactions with the fiat price of now
-// eg MyTxHistory("KMD", "50", "1") //< return 50 last transaction page 1
-// eg MyTxHistory("KMD", "50", "1", "true") //< return 50 last transaction page 1 with fiat price at the time of the tx
-// eg MyTxHistory("KMD", "50", "1", "false") //< return 50 last transaction page 1 with fiat price of now
-// eg MyTxHistory("KMD", "max") //< return all transactions
-// eg MyTxHistory("KMD", "50", 2) //< return 50 last transactions page 2
-func MyTxHistory(coin string, args []string) {
+func processTxHistory(coin string, args []string) *http.MyTxHistoryAnswer {
 	if val, ok := config.GCFGRegistry[coin]; ok {
 		defaultNbTx := 50
 		defaultPage := 1
@@ -41,7 +35,7 @@ func MyTxHistory(coin string, args []string) {
 				toQuery = "bep_tx_history"
 			}
 			if resp := http.MyBalance(val.Coin); resp != nil {
-				http.CustomMyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue, isMax, contract, toQuery, resp.Address)
+				return http.CustomMyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue, isMax, contract, toQuery, resp.Address)
 			}
 		case "ERC-20":
 			contract := ""
@@ -51,10 +45,24 @@ func MyTxHistory(coin string, args []string) {
 				toQuery = "erc_tx_history"
 			}
 			if resp := http.MyBalance(val.Coin); resp != nil {
-				http.CustomMyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue, isMax, contract, toQuery, resp.Address)
+				return http.CustomMyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue, isMax, contract, toQuery, resp.Address)
 			}
 		default:
-			http.MyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue, isMax)
+			return http.MyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue, isMax)
 		}
+	}
+	return nil
+}
+
+// MyTxHistory /**
+// eg MyTxHistory("KMD") //< shortcut for the last 50 transactions with the fiat price of now
+// eg MyTxHistory("KMD", "50", "1") //< return 50 last transaction page 1
+// eg MyTxHistory("KMD", "50", "1", "true") //< return 50 last transaction page 1 with fiat price at the time of the tx
+// eg MyTxHistory("KMD", "50", "1", "false") //< return 50 last transaction page 1 with fiat price of now
+// eg MyTxHistory("KMD", "max") //< return all transactions
+// eg MyTxHistory("KMD", "50", 2) //< return 50 last transactions page 2
+func MyTxHistory(coin string, args []string) {
+	if resp := processTxHistory(coin, args); resp != nil {
+		fmt.Println("success")
 	}
 }
