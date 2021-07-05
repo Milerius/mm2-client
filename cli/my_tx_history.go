@@ -32,11 +32,29 @@ func MyTxHistory(coin string, args []string) {
 		if len(args) >= 3 {
 			withFiatValue, _ = strconv.ParseBool(args[2])
 		}
-		if val.Type == "BEP-20" || val.Type == "ERC-20" {
-			http.CustomMyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue, isMax)
-		} else {
+		switch val.Type {
+		case "BEP-20":
+			contract := ""
+			toQuery := "bnb_tx_history"
+			if val.Coin != "BNB" && val.Coin != "BNBT" {
+				contract = config.RetrieveContractsInfo(val.Coin)
+				toQuery = "bep_tx_history"
+			}
+			if resp := http.MyBalance(val.Coin); resp != nil {
+				http.CustomMyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue, isMax, contract, toQuery, resp.Address)
+			}
+		case "ERC-20":
+			contract := ""
+			toQuery := "eth_tx_history"
+			if val.Coin != "ETH" && val.Coin != "ETHR" {
+				contract = config.RetrieveContractsInfo(val.Coin)
+				toQuery = "erc_tx_history"
+			}
+			if resp := http.MyBalance(val.Coin); resp != nil {
+				http.CustomMyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue, isMax, contract, toQuery, resp.Address)
+			}
+		default:
 			http.MyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue, isMax)
 		}
 	}
-
 }

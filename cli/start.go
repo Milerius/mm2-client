@@ -31,6 +31,7 @@ func StartMM2() {
 				fmt.Printf("cmd.Release failed: %v\n", err)
 			} else {
 				config.ParseDesktopRegistry(http.GetLastDesktopVersion())
+				config.ParseMM2CFGRegistry()
 				go services.StartBinanceWebsocketService()
 				helpers.PrintCheck("MM2 successfully started", true)
 			}
