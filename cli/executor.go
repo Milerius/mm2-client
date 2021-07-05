@@ -74,11 +74,7 @@ func Executor(fullCommand string) {
 		if len(command) < 4 {
 			ShowCommandHelp("send")
 		} else {
-			if resp := Withdraw(command[1], command[2], command[3], command[4:]); resp != nil {
-				resp.ToTable()
-				fmt.Println()
-				Broadcast(resp.Coin, resp.TxHex)
-			}
+			Send(command[1], command[2], command[3], command[4:])
 		}
 	case "broadcast":
 		if len(command) != 3 {

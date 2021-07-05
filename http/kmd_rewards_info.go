@@ -29,14 +29,16 @@ type KMDRewardsInfoAnswer struct {
 	} `json:"result"`
 }
 
-func (answer *KMDRewardsInfoAnswer) ToTable() {
+func (answer *KMDRewardsInfoAnswer) ToTable() bool {
 	var data [][]string
+	valid := false
 	for _, cur := range answer.Result {
 		val := services.RetrieveUSDValIfSupported("KMD")
 		accrued := cur.AccruedRewards.Accrued
 		if val != "0" {
 			if cur.AccruedRewards.Accrued != "" {
 				val = helpers.BigFloatMultiply(cur.AccruedRewards.Accrued, val, 2)
+				valid = true
 			} else {
 				accrued = emoji.Sprintf(":x: %s", cur.AccruedRewards.NotAccruedReason)
 				//accrued = cur.AccruedRewards.NotAccruedReason
@@ -58,6 +60,7 @@ func (answer *KMDRewardsInfoAnswer) ToTable() {
 	table.SetCenterSeparator("|")
 	table.AppendBulk(data) // Add Bulk Data
 	table.Render()
+	return valid
 }
 
 func KmdRewardsInfo() *KMDRewardsInfoAnswer {
