@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"mm2_client/config"
 	"mm2_client/http"
 	"strconv"
 )
@@ -13,22 +14,29 @@ import (
 // eg MyTxHistory("KMD", "max") //< return all transactions
 // eg MyTxHistory("KMD", "50", 2) //< return 50 last transactions page 2
 func MyTxHistory(coin string, args []string) {
-	defaultNbTx := 50
-	defaultPage := 1
-	withFiatValue := false
-	isMax := false
-	if len(args) >= 1 {
-		if args[0] == "max" {
-			isMax = true
+	if val, ok := config.GCFGRegistry[coin]; ok {
+		defaultNbTx := 50
+		defaultPage := 1
+		withFiatValue := false
+		isMax := false
+		if len(args) >= 1 {
+			if args[0] == "max" {
+				isMax = true
+			} else {
+				defaultNbTx, _ = strconv.Atoi(args[0])
+			}
+		}
+		if len(args) >= 2 {
+			defaultPage, _ = strconv.Atoi(args[1])
+		}
+		if len(args) >= 3 {
+			withFiatValue, _ = strconv.ParseBool(args[2])
+		}
+		if val.Type == "BEP-20" || val.Type == "ERC-20" {
+			http.CustomMyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue, isMax)
 		} else {
-			defaultNbTx, _ = strconv.Atoi(args[0])
+			http.MyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue, isMax)
 		}
 	}
-	if len(args) >= 2 {
-		defaultPage, _ = strconv.Atoi(args[1])
-	}
-	if len(args) >= 3 {
-		withFiatValue, _ = strconv.ParseBool(args[2])
-	}
-	http.MyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue, isMax)
+
 }
