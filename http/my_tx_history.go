@@ -1,6 +1,10 @@
 package http
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+)
 
 type MyTxHistoryAnswer struct {
 	Result struct {
@@ -38,11 +42,33 @@ type MyTxHistoryAnswer struct {
 	} `json:"result"`
 }
 
-func MyTxHistory(coin string, defaultNbTx int, defaultPage int, withFiatValue bool, isMax bool) {
+const customTxEndpoint = "https://komodo.live:3334/api/"
+
+func MyTxHistory(coin string, defaultNbTx int, defaultPage int, withFiatValue bool, isMax bool) *MyTxHistoryAnswer {
 	fmt.Printf("%s %d %d %t %t\n", coin, defaultNbTx, defaultPage, withFiatValue, isMax)
+	return nil
 }
 
 func CustomMyTxHistory(coin string, defaultNbTx int, defaultPage int, withFiatValue bool, isMax bool, contract string,
-	query string, address string) {
-	fmt.Printf("%s %d %d %t %t %s %s %s\n", coin, defaultNbTx, defaultPage, withFiatValue, isMax, contract, query, address)
+	query string, address string) *MyTxHistoryAnswer {
+	endpoint := customTxEndpoint
+	if contract != "" {
+		endpoint = endpoint + "v2/" + query + "/" + contract + "/" + address
+	} else {
+		endpoint = endpoint + "v1/" + query + "/" + address
+	}
+	fmt.Printf("%s %d %d %t %t %s\n", coin, defaultNbTx, defaultPage, withFiatValue, isMax, endpoint)
+	resp, err := http.Get(endpoint)
+	if err != nil {
+		fmt.Printf("Error occured: %v\n", err)
+		return nil
+	}
+	defer resp.Body.Close()
+	var cResp = new(MyTxHistoryAnswer)
+	if decodeErr := json.NewDecoder(resp.Body).Decode(cResp); decodeErr != nil {
+		fmt.Printf("Error occured: %v\n", decodeErr)
+		return nil
+	}
+
+	return cResp
 }
