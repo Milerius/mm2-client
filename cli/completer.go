@@ -339,6 +339,14 @@ func (c *Completer) argumentsCompleter(args []string) []prompt.Suggest {
 			}
 			return prompt.FilterContains(subCommandsTxSecond, cur, true)
 		}
+		if len(args) == 4 {
+			if args[2] != "max" {
+				var subCommandsTxThird = []prompt.Suggest{
+					{Text: "1", Description: "Specify the page of history"},
+				}
+				return prompt.FilterContains(subCommandsTxThird, cur, true)
+			}
+		}
 	case "withdraw", "send":
 		cur := args[len(args)-1]
 		if len(args) == 2 {
