@@ -1,9 +1,11 @@
 package http
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/olekukonko/tablewriter"
+	"io/ioutil"
 	"mm2_client/config"
 	"mm2_client/helpers"
 	"mm2_client/services"
@@ -46,6 +48,31 @@ type MyTxHistoryAnswer struct {
 		} `json:"transactions"`
 	} `json:"result"`
 	CoinType string
+}
+
+type MyTxHistoryRequest struct {
+	Userpass string `json:"userpass"`
+	Method   string `json:"method"`
+	Coin     string `json:"coin"`
+	Limit    int    `json:"limit"`
+	//FromId     string `json:"from_id,omitempty"`
+	PageNumber int  `json:"page_number,omitempty"`
+	Max        bool `json:"max,omitempty"`
+}
+
+func NewMyTxHistoryRequest(coin string, defaultNbTx int, defaultPage int, max bool) *MyTxHistoryRequest {
+	genReq := NewGenericRequest("my_tx_history")
+	req := &MyTxHistoryRequest{Userpass: genReq.Userpass, Method: genReq.Method, Coin: coin, Limit: defaultNbTx, PageNumber: defaultPage, Max: max}
+	return req
+}
+
+func (req *MyTxHistoryRequest) ToJson() string {
+	b, err := json.Marshal(req)
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	return string(b)
 }
 
 func (answer *MyTxHistoryAnswer) ToTable(page int, tx int, withOriginalFiatValue bool, max bool, custom bool) {
@@ -102,7 +129,30 @@ func (answer *MyTxHistoryAnswer) ToTable(page int, tx int, withOriginalFiatValue
 const customTxEndpoint = "https://komodo.live:3334/api/"
 
 func MyTxHistory(coin string, defaultNbTx int, defaultPage int, withFiatValue bool, isMax bool) *MyTxHistoryAnswer {
-	fmt.Printf("%s %d %d %t %t\n", coin, defaultNbTx, defaultPage, withFiatValue, isMax)
+	if _, ok := config.GCFGRegistry[coin]; ok {
+		req := NewMyTxHistoryRequest(coin, defaultNbTx, defaultPage, isMax).ToJson()
+		resp, err := http.Post(GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
+		if err != nil {
+			fmt.Printf("Err: %v\n", err)
+			return nil
+		}
+		if resp.StatusCode == http.StatusOK {
+			defer resp.Body.Close()
+			var answer = &MyTxHistoryAnswer{}
+			decodeErr := json.NewDecoder(resp.Body).Decode(answer)
+			if decodeErr != nil {
+				fmt.Printf("Err: %v\n", err)
+				return nil
+			}
+			return answer
+		} else {
+			bodyBytes, _ := ioutil.ReadAll(resp.Body)
+			fmt.Printf("Err: %s\n", bodyBytes)
+		}
+	} else {
+		fmt.Printf("coin: %s doesn't exist or is not present in the desktop configuration\n", coin)
+		return nil
+	}
 	return nil
 }
 
