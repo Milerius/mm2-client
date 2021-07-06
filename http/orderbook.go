@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/kyokomi/emoji/v2"
 	"github.com/olekukonko/tablewriter"
 	"io/ioutil"
 	"mm2_client/config"
@@ -143,19 +144,28 @@ func resizeNb(nb string) string {
 	}
 }
 
+func transformIsMine(isMine bool) string {
+	if isMine {
+		return emoji.Sprintf(":white_check_mark:")
+	} else {
+		return emoji.Sprintf(":x:")
+	}
+}
+
 func renderTable(contents []OrderbookContent, base string, rel string, depth int, size int, isAsks bool) {
 	var data [][]string
 
 	for _, cur := range contents {
-		var out = []string{resizeNb(cur.Price), resizeNb(cur.BaseMaxVolume), resizeNb(cur.RelMaxVolume)}
+		var out = []string{resizeNb(cur.Price), resizeNb(cur.BaseMaxVolume), resizeNb(cur.RelMaxVolume), transformIsMine(cur.IsMine)}
 		data = append(data, out)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetAutoWrapText(false)
-	table.SetHeader([]string{"Price (" + rel + ")", "Qty (" + base + ")", "Total (" + rel + ")"})
+	table.SetHeader([]string{"Price (" + rel + ")", "Qty (" + base + ")", "Total (" + rel + ")", "Is Mine"})
 	if isAsks {
 		table.SetHeaderColor(
+			tablewriter.Colors{tablewriter.FgHiRedColor, tablewriter.Bold, tablewriter.BgBlackColor},
 			tablewriter.Colors{tablewriter.FgHiRedColor, tablewriter.Bold, tablewriter.BgBlackColor},
 			tablewriter.Colors{tablewriter.FgHiRedColor, tablewriter.Bold, tablewriter.BgBlackColor},
 			tablewriter.Colors{tablewriter.FgHiRedColor, tablewriter.Bold, tablewriter.BgBlackColor})
@@ -163,9 +173,10 @@ func renderTable(contents []OrderbookContent, base string, rel string, depth int
 		table.SetHeaderColor(
 			tablewriter.Colors{tablewriter.FgHiGreenColor, tablewriter.Bold, tablewriter.BgBlackColor},
 			tablewriter.Colors{tablewriter.FgHiGreenColor, tablewriter.Bold, tablewriter.BgBlackColor},
+			tablewriter.Colors{tablewriter.FgHiGreenColor, tablewriter.Bold, tablewriter.BgBlackColor},
 			tablewriter.Colors{tablewriter.FgHiGreenColor, tablewriter.Bold, tablewriter.BgBlackColor})
 	}
-	table.SetFooter([]string{"", "Depth: " + strconv.Itoa(depth), "NbOrders: " + strconv.Itoa(size)})
+	table.SetFooter([]string{"", "Depth: " + strconv.Itoa(depth), "NbOrders: " + strconv.Itoa(size), ""})
 	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	table.SetCenterSeparator("|")
 	table.AppendBulk(data) // Add Bulk Data
