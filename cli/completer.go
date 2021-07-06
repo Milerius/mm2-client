@@ -18,6 +18,7 @@ var commands = []prompt.Suggest{
 	{Text: "get_enabled_coins", Description: "List the enabled coins"},
 	{Text: "disable_coin", Description: "Disable the specified coin(s)"},
 	{Text: "disable_enabled_coins", Description: "Disable the enabled coin(s)"},
+	{Text: "disable_zero_balance", Description: "Disable all coins that have 0 balance"},
 	{Text: "my_balance", Description: "Show the balance of the specified coin(s)"},
 	{Text: "balance_all", Description: "Show the balance of all the active coin(s)"},
 	{Text: "kmd_rewards_info", Description: "Show the Komodo rewards information"},

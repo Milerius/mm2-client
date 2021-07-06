@@ -58,6 +58,8 @@ func Executor(fullCommand string) {
 		KmdRewardsInfo()
 	case "disable_enabled_coins":
 		DisableCoins(http.GetEnabledCoins().ToSlice())
+	case "disable_zero_balance":
+		DisableCoins(http.ToSliceEmptyBalance(MyBalanceMultipleCoinsSilent(http.GetEnabledCoins().ToSlice()), true))
 	case "my_tx_history":
 		if len(command) == 1 {
 			ShowCommandHelp("my_tx_history")

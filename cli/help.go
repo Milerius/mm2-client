@@ -25,6 +25,8 @@ const (
 	disableCoinUsage        = `disable_coin <coin_1> <coin_2> ...`
 	disableEnabledCoinHelp  = `Disable the enabled coin(s) from MM2`
 	disableEnabledCoinUsage = `disable_enabled_coins`
+	disableZeroBalanceHelp  = `Disable all coins that have 0 balance`
+	disableZeroBalanceUsage = `disable_zero_balance`
 	getEnabledCoinsHelp     = `List the enabled coins`
 	getEnabledCoinsUsage    = `get_enabled_coins`
 	myBalanceHelp           = `Show the balance of the specified coin(s)`
@@ -66,6 +68,7 @@ func ShowGlobalHelp() {
 		{"enable_all_coins", "", enableAllCoinsUsage, enableAllCoinsUsage},
 		{"disable_coin", "<coin_1> <coin_2> ...", disableCoinHelp, disableCoinUsage},
 		{"disable_enabled_coin", "", disableEnabledCoinHelp, disableEnabledCoinUsage},
+		{"disable_zero_balance", "", disableEnabledCoinHelp, disableEnabledCoinUsage},
 		{"get_enabled_coins", "", getEnabledCoinsHelp, getEnabledCoinsUsage},
 		{"my_balance", "<coin_1> <coin_2> ...", myBalanceHelp, myBalanceUsage},
 		{"balance_all", "", balanceAllHelp, balanceAllUsage},
@@ -114,6 +117,9 @@ func ShowCommandHelp(command string) {
 	case "disable_enabled_coin":
 		fmt.Println(disableEnabledCoinHelp)
 		fmt.Printf("usage: %s\n", disableEnabledCoinUsage)
+	case "disable_zero_balance":
+		fmt.Println(disableZeroBalanceHelp)
+		fmt.Printf("usage: %s\n", disableZeroBalanceUsage)
 	case "get_enabled_coins":
 		fmt.Println(getEnabledCoinsHelp)
 		fmt.Printf("usage: %s\n", getEnabledCoinsUsage)

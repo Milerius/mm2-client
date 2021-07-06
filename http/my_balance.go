@@ -11,6 +11,8 @@ import (
 	"mm2_client/services"
 	"net/http"
 	"os"
+	"strconv"
+	"strings"
 )
 
 type MyBalanceRequest struct {
@@ -87,6 +89,23 @@ func ToTableMyBalanceAnswers(answers []MyBalanceAnswer) {
 	table.SetCenterSeparator("|")
 	table.AppendBulk(data) // Add Bulk Data
 	table.Render()
+}
+
+func ToSliceEmptyBalance(answers []MyBalanceAnswer, withoutTestCoin bool) []string {
+	var out []string
+	for _, cur := range answers {
+		if v, err := strconv.ParseFloat(cur.Balance, 64); err == nil && v <= 0 {
+			out = append(out, cur.Coin)
+		}
+		if withoutTestCoin {
+			if val, ok := config.GCFGRegistry[cur.Coin]; ok {
+				if val.IsTestNet || strings.Contains(val.Name, "TESTCOIN") {
+					out = append(out, cur.Coin)
+				}
+			}
+		}
+	}
+	return out
 }
 
 func MyBalance(coin string) *MyBalanceAnswer {

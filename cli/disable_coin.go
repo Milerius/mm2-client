@@ -21,6 +21,7 @@ func DisableCoins(coins []string) {
 	var outBatch []interface{}
 	for _, v := range coins {
 		if val, ok := config.GCFGRegistry[v]; ok {
+			//fmt.Printf("%s became inactive\n", v)
 			config.GCFGRegistry[v].Active = false
 			outBatch = append(outBatch, http.NewDisableCoinRequest(val))
 		} else {
@@ -36,7 +37,6 @@ func DisableCoins(coins []string) {
 			if err != nil {
 				fmt.Printf("Err: %v\n", err)
 			} else {
-				go config.Update(http.GetLastDesktopVersion())
 				for _, cur := range outResp {
 					if len(cur.Error) == 0 {
 						helpers.PrintCheck(cur.Result.Coin+" successfully disabled", true)
@@ -44,6 +44,7 @@ func DisableCoins(coins []string) {
 						fmt.Println(cur.Error)
 					}
 				}
+				config.Update(http.GetLastDesktopVersion())
 			}
 		}
 	} else {

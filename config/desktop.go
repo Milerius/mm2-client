@@ -83,13 +83,17 @@ func (cfg *DesktopCFG) RetrieveContracts() (string, string) {
 }
 
 func Update(version string) {
+	//fmt.Println("Updating cfg")
 	var desktopCoinsPath = constants.GMM2Dir + "/" + version + "-coins.json"
 	e := os.Remove(desktopCoinsPath)
 	if e != nil {
 		fmt.Printf("Err: %v", e)
 	} else {
 		file, _ := json.MarshalIndent(GCFGRegistry, "", " ")
-		_ = ioutil.WriteFile(desktopCoinsPath, file, 0644)
+		err := ioutil.WriteFile(desktopCoinsPath, file, 0644)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
 }
 
