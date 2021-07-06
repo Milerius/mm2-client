@@ -125,3 +125,19 @@ func CheckMM2Configuration(cfg *config.MM2Config) {
 		ConfigureRpcPassword(cfg)
 	}
 }
+
+func CheckMM2DB(cfg *config.MM2Config) {
+	prompt := promptui.Select{
+		Label: "Do you want to use Desktop DB path ?",
+		Items: []string{"Yes", "No"},
+	}
+	_, result, _ := prompt.Run()
+
+	fmt.Printf("You choose %q\n", result)
+
+	if result == "Yes" {
+		cfg.Dbdir = config.GetDesktopDB()
+		cfg.WriteToFile()
+		fmt.Printf("Successfully overwrite mm2 db path: %q\n", cfg.Dbdir)
+	}
+}

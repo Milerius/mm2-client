@@ -89,6 +89,7 @@ func processMM2Json() {
 		}
 		helpers.PrintCheck("Successfully generated a MM2.json template configuration", true)
 		CheckMM2Configuration(mm2CFG)
+		CheckMM2DB(mm2CFG)
 	} else {
 		CheckMM2Configuration(config.NewMM2ConfigFromFile(targetPath))
 	}

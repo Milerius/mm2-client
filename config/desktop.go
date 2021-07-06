@@ -7,6 +7,7 @@ import (
 	"mm2_client/constants"
 	"mm2_client/helpers"
 	"os"
+	"runtime"
 	"strconv"
 )
 
@@ -49,6 +50,19 @@ const (
 )
 
 var GCFGRegistry = make(map[string]*DesktopCFG)
+
+func GetDesktopDB() string {
+	switch runtime.GOOS {
+	case "linux":
+		return os.Getenv("HOME") + "/atomic_qt/mm2/DB"
+	case "darwin":
+		return os.Getenv("HOME") + "/Library/Application Support/AtomicDex Desktop/mm2/DB"
+	case "windows":
+		return os.Getenv("APPDATA") + "/atomic_qt/mm2/DB"
+	default:
+		return os.Getenv("HOME") + "atomic_qt/mm2/DB"
+	}
+}
 
 func ParseDesktopRegistry(version string) {
 	var desktopCoinsPath = constants.GMM2Dir + "/" + version + "-coins.json"
