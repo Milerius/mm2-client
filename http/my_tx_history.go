@@ -12,6 +12,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 )
 
 type MyTxHistoryAnswer struct {
@@ -76,8 +77,27 @@ func (req *MyTxHistoryRequest) ToJson() string {
 	return string(b)
 }
 
-func (answer *MyTxHistoryAnswer) ToTable(page int, tx int, withOriginalFiatValue bool, max bool, custom bool) {
+func (answer *MyTxHistoryAnswer) ToTable(coinReq string, page int, tx int, withOriginalFiatValue bool, max bool, custom bool) {
 	var data [][]string
+	cfg, cfgExist := config.GCFGRegistry[coinReq]
+
+	functor := func(timestamp int64, geckoID string, wg *sync.WaitGroup) {
+		defer wg.Done()
+		HandleGeckoPrice(timestamp, geckoID)
+	}
+
+	if withOriginalFiatValue {
+		var wg sync.WaitGroup
+		for _, curAnswer := range answer.Result.Transactions {
+			if cfgExist {
+				if !ExistInGeckoRegistry(curAnswer.Timestamp, cfg.CoingeckoID) {
+					wg.Add(1)
+					go functor(curAnswer.Timestamp, cfg.CoingeckoID, &wg)
+				}
+			}
+		}
+		wg.Wait()
+	}
 
 	for _, curAnswer := range answer.Result.Transactions {
 		if curAnswer.Coin != "" {
@@ -86,6 +106,10 @@ func (answer *MyTxHistoryAnswer) ToTable(page int, tx int, withOriginalFiatValue
 				val = services.RetrieveUSDValIfSupported(curAnswer.Coin)
 				if val != "0" {
 					val = helpers.BigFloatMultiply(curAnswer.MyBalanceChange, val, 2)
+				}
+			} else {
+				if cfgExist {
+					val = helpers.BigFloatMultiply(curAnswer.MyBalanceChange, GetFromRegistry(curAnswer.Timestamp, cfg.CoingeckoID), 2)
 				}
 			}
 
@@ -97,13 +121,7 @@ func (answer *MyTxHistoryAnswer) ToTable(page int, tx int, withOriginalFiatValue
 			}
 
 			txUrl := ""
-			coin := curAnswer.Coin
-			if (answer.CoinType == "ERC20" || answer.CoinType == "BEP20") &&
-				(curAnswer.Coin != "BNB" && curAnswer.Coin != "BNBT" && curAnswer.Coin != "ETH" && curAnswer.Coin != "ETHR") {
-				coin = coin + "-" + answer.CoinType
-			}
-
-			if cfg, ok := config.GCFGRegistry[coin]; ok {
+			if cfgExist {
 				if cfg.ExplorerTxURL != "" {
 					txUrl = cfg.ExplorerURL[0] + cfg.ExplorerTxURL + curAnswer.TxHash
 				} else {

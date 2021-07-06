@@ -63,6 +63,6 @@ func processTxHistory(coin string, args []string) (*http.MyTxHistoryAnswer, int,
 // eg MyTxHistory("KMD", "50", 2) //< return 50 last transactions page 2
 func MyTxHistory(coin string, args []string) {
 	if resp, page, nbTx, withFiatValue, isMax, isCustom := processTxHistory(coin, args); resp != nil {
-		resp.ToTable(page, nbTx, withFiatValue, isMax, isCustom)
+		resp.ToTable(coin, page, nbTx, withFiatValue, isMax, isCustom)
 	}
 }

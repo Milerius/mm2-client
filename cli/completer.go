@@ -347,6 +347,13 @@ func (c *Completer) argumentsCompleter(args []string) []prompt.Suggest {
 				return prompt.FilterContains(subCommandsTxThird, cur, true)
 			}
 		}
+		if len(args) == 5 {
+			var subCommandsTxFourth = []prompt.Suggest{
+				{Text: "true", Description: "If you want fiat value at the time of the tx"},
+				{Text: "false", Description: "If you want fiat value at the time of today"},
+			}
+			return prompt.FilterContains(subCommandsTxFourth, cur, true)
+		}
 	case "withdraw", "send":
 		cur := args[len(args)-1]
 		if len(args) == 2 {
