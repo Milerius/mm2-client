@@ -11,6 +11,7 @@ import (
 	"mm2_client/services"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 type MyTxHistoryAnswer struct {
@@ -118,6 +119,9 @@ func (answer *MyTxHistoryAnswer) ToTable(page int, tx int, withOriginalFiatValue
 	helpers.SortDoubleSliceByDate(data, 4, false)
 
 	table := tablewriter.NewWriter(os.Stdout)
+	if !custom && !max {
+		table.SetFooter([]string{"", "", "Current Page", strconv.Itoa(page), "Nb Pages", strconv.Itoa(answer.Result.TotalPages)}) // Add Footer
+	}
 	table.SetAutoWrapText(false)
 	table.SetHeader([]string{"From", "To", "Balance Change", "Fee", "Date", "TxUrl"})
 	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
