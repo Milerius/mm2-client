@@ -314,6 +314,11 @@ func (c *Completer) argumentsCompleter(args []string) []prompt.Suggest {
 	}
 	first := args[0]
 	switch first {
+	case "orderbook":
+		cur := args[len(args)-1]
+		if len(args) == 2 || len(args) == 3 {
+			return prompt.FilterHasPrefix(subCommandsEnable, cur, true)
+		}
 	case "help":
 		second := args[1]
 		if len(args) == 2 {
