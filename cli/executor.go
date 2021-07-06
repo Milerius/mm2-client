@@ -60,6 +60,12 @@ func Executor(fullCommand string) {
 		DisableCoins(http.GetEnabledCoins().ToSlice())
 	case "disable_zero_balance":
 		DisableCoins(http.ToSliceEmptyBalance(MyBalanceMultipleCoinsSilent(http.GetEnabledCoins().ToSlice()), true))
+	case "orderbook":
+		if len(command) != 3 {
+			ShowCommandHelp("orderbook")
+		} else {
+			Orderbook(command[1], command[2])
+		}
 	case "my_tx_history":
 		if len(command) == 1 {
 			ShowCommandHelp("my_tx_history")
