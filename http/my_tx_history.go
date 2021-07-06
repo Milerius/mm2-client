@@ -88,11 +88,17 @@ func (answer *MyTxHistoryAnswer) ToTable(coinReq string, page int, tx int, withO
 
 	if withOriginalFiatValue {
 		var wg sync.WaitGroup
+		visited := make(map[string]bool)
 		for _, curAnswer := range answer.Result.Transactions {
 			if cfgExist {
 				if !ExistInGeckoRegistry(curAnswer.Timestamp, cfg.CoingeckoID) {
-					wg.Add(1)
-					go functor(curAnswer.Timestamp, cfg.CoingeckoID, &wg)
+					key := cfg.CoingeckoID + "-" + TimestampToGeckoDate(curAnswer.Timestamp)
+					if _, ok := visited[key]; !ok {
+						//fmt.Printf("key %s don't exist processing\n", key)
+						wg.Add(1)
+						go functor(curAnswer.Timestamp, cfg.CoingeckoID, &wg)
+						visited[key] = true
+					}
 				}
 			}
 		}

@@ -255,7 +255,7 @@ func HandleGeckoPrice(timestamp int64, geckoId string) {
 		return
 	}
 	if resp.StatusCode == http.StatusOK {
-		fmt.Printf("OK for %s\n", geckoId)
+		//fmt.Printf("OK for %s\n", geckoId)
 		defer resp.Body.Close()
 		var answer = &CoingeckoHistoryResponse{}
 		decodeErr := json.NewDecoder(resp.Body).Decode(answer)
@@ -265,6 +265,7 @@ func HandleGeckoPrice(timestamp int64, geckoId string) {
 		key := geckoId + "-" + TimestampToGeckoDate(timestamp)
 		GeckoPriceAtDateRegistry.Store(key, fmt.Sprintf("%.2f", answer.MarketData.CurrentPrice.Usd))
 	} else if resp.StatusCode == http.StatusTooManyRequests {
+		fmt.Println("Too many request, waiting 1sec and retrying")
 		time.Sleep(1 * time.Second)
 		HandleGeckoPrice(timestamp, geckoId)
 	}
