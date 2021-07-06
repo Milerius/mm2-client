@@ -332,6 +332,13 @@ func (c *Completer) argumentsCompleter(args []string) []prompt.Suggest {
 		if len(args) == 2 {
 			return prompt.FilterHasPrefix(subCommandsEnable, cur, true)
 		}
+		if len(args) == 3 {
+			var subCommandsTxSecond = []prompt.Suggest{
+				{Text: "max", Description: "Show the full history"},
+				{Text: "50", Description: "Show the N last transactions"},
+			}
+			return prompt.FilterContains(subCommandsTxSecond, cur, true)
+		}
 	case "withdraw", "send":
 		cur := args[len(args)-1]
 		if len(args) == 2 {
