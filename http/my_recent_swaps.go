@@ -133,13 +133,21 @@ func (answer *MyRecentSwapsAnswer) ToTable() {
 	var data [][]string
 
 	for _, cur := range answer.Result.Swaps {
-		out := []string{cur.MyInfo.MyCoin, helpers.ResizeNb(cur.MyInfo.MyAmount), "<--->", helpers.ResizeNb(cur.MyInfo.OtherAmount), cur.MyInfo.OtherCoin, helpers.GetDateFromTimestamp(cur.MyInfo.StartedAt, true)}
+		out := []string{cur.MyInfo.MyCoin, helpers.ResizeNb(cur.MyInfo.MyAmount), "",
+			helpers.ResizeNb(cur.MyInfo.OtherAmount), cur.MyInfo.OtherCoin,
+			helpers.GetDateFromTimestamp(cur.MyInfo.StartedAt, true), cur.Uuid}
 		data = append(data, out)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetAutoWrapText(false)
-	table.SetHeader([]string{"MyCoin", "MyAmount", "", "OtherAmount", "OtherCoin", "Date"})
+	table.SetHeader([]string{"MyCoin", "MyAmount", "", "OtherAmount", "OtherCoin", "Date", "UUID"})
+	table.SetFooter([]string{
+		"Page: " + strconv.Itoa(answer.Result.PageNumber),
+		"Total pages: " + strconv.Itoa(answer.Result.TotalPages),
+		"Nb swaps (DB): " + strconv.Itoa(answer.Result.Total),
+		"Limit: " + strconv.Itoa(answer.Result.Limit),
+		"Skipped: " + strconv.Itoa(answer.Result.Skipped), "", ""})
 	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	table.SetCenterSeparator("|")
 	table.AppendBulk(data) // Add Bulk Data
