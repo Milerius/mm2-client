@@ -340,6 +340,29 @@ func (c *Completer) argumentsCompleter(args []string) []prompt.Suggest {
 		if len(args) == 2 {
 			return prompt.FilterHasPrefix(subCommandsEnable, cur, true)
 		}
+	case "my_recent_swaps":
+		cur := args[len(args)-1]
+		if len(args) == 2 {
+			var subCommandsRecentSwapsSecond = []prompt.Suggest{
+				{Text: "50", Description: "Show the N last swaps"},
+			}
+			return prompt.FilterContains(subCommandsRecentSwapsSecond, cur, true)
+		}
+		if len(args) == 3 {
+			var subCommandsRecentSwapsThird = []prompt.Suggest{
+				{Text: "1", Description: "Cursor the swap history on this page"},
+			}
+			return prompt.FilterContains(subCommandsRecentSwapsThird, cur, true)
+		}
+		if len(args) == 4 || len(args) == 5 {
+			return prompt.FilterHasPrefix(subCommandsEnable, cur, true)
+		}
+		if len(args) == 6 || len(args) == 7 {
+			var subCommandsRecentSwapsFifth = []prompt.Suggest{
+				{Text: "01-02-2021", Description: "Choose the date from/to"},
+			}
+			return prompt.FilterContains(subCommandsRecentSwapsFifth, cur, true)
+		}
 	case "my_tx_history":
 		cur := args[len(args)-1]
 		if len(args) == 2 {

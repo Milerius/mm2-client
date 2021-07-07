@@ -11,11 +11,14 @@ func processMyRecentSwaps(limit string, pageNumber string, args []string) *http.
 	to := ""
 	if len(args) >= 1 {
 		baseCoin = args[0]
-	} else if len(args) >= 2 {
+	}
+	if len(args) >= 2 {
 		relCoin = args[1]
-	} else if len(args) >= 3 {
+	}
+	if len(args) >= 3 {
 		from = args[2]
-	} else if len(args) >= 4 {
+	}
+	if len(args) >= 4 {
 		to = args[3]
 	}
 	return http.ProcessMyRecentSwaps(limit, pageNumber, baseCoin, relCoin, from, to)
