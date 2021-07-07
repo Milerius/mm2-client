@@ -11,3 +11,11 @@ func BigFloatMultiply(first string, second string, prec int) string {
 	}
 	return result.FloatString(prec)
 }
+
+func ResizeNb(nb string) string {
+	if len(nb) >= 8 {
+		return nb[0:8]
+	} else {
+		return nb
+	}
+}

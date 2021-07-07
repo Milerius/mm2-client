@@ -8,6 +8,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"io/ioutil"
 	"mm2_client/config"
+	"mm2_client/helpers"
 	"net/http"
 	"os"
 	"strconv"
@@ -136,14 +137,6 @@ func (req *OrderbookRequest) ToJson() string {
 	return string(b)
 }
 
-func resizeNb(nb string) string {
-	if len(nb) >= 8 {
-		return nb[0:8]
-	} else {
-		return nb
-	}
-}
-
 func transformIsMine(isMine bool) string {
 	if isMine {
 		return emoji.Sprintf(":white_check_mark:")
@@ -156,7 +149,7 @@ func renderTable(contents []OrderbookContent, base string, rel string, depth int
 	var data [][]string
 
 	for _, cur := range contents {
-		var out = []string{resizeNb(cur.Price), resizeNb(cur.BaseMaxVolume), resizeNb(cur.RelMaxVolume), transformIsMine(cur.IsMine)}
+		var out = []string{helpers.ResizeNb(cur.Price), helpers.ResizeNb(cur.BaseMaxVolume), helpers.ResizeNb(cur.RelMaxVolume), transformIsMine(cur.IsMine)}
 		data = append(data, out)
 	}
 

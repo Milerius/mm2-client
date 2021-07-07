@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/olekukonko/tablewriter"
 	"io/ioutil"
 	"mm2_client/helpers"
 	"net/http"
+	"os"
 	"strconv"
 )
 
@@ -76,7 +78,7 @@ type MyRecentSwapsAnswer struct {
 				MyCoin      string `json:"my_coin"`
 				OtherAmount string `json:"other_amount"`
 				OtherCoin   string `json:"other_coin"`
-				StartedAt   int    `json:"started_at"`
+				StartedAt   int64  `json:"started_at"`
 			} `json:"my_info"`
 			MakerCoin     string   `json:"maker_coin"`
 			MakerAmount   string   `json:"maker_amount"`
@@ -125,6 +127,23 @@ func (req *MyRecentSwapsRequest) ToJson() string {
 		return ""
 	}
 	return string(b)
+}
+
+func (answer *MyRecentSwapsAnswer) ToTable() {
+	var data [][]string
+
+	for _, cur := range answer.Result.Swaps {
+		out := []string{cur.MyInfo.MyCoin, helpers.ResizeNb(cur.MyInfo.MyAmount), "<--->", helpers.ResizeNb(cur.MyInfo.OtherAmount), cur.MyInfo.OtherCoin, helpers.GetDateFromTimestamp(cur.MyInfo.StartedAt, true)}
+		data = append(data, out)
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetAutoWrapText(false)
+	table.SetHeader([]string{"MyCoin", "MyAmount", "", "OtherAmount", "OtherCoin", "Date"})
+	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
+	table.SetCenterSeparator("|")
+	table.AppendBulk(data) // Add Bulk Data
+	table.Render()
 }
 
 func ProcessMyRecentSwaps(limit string, pageNumber string, baseCoin string, relCoin string, from string, to string) *MyRecentSwapsAnswer {
