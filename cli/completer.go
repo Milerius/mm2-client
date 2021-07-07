@@ -26,6 +26,7 @@ var commands = []prompt.Suggest{
 	{Text: "broadcast", Description: "Send a transaction to the network"},
 	{Text: "send", Description: "withdraw + broadcast equivalent"},
 	{Text: "my_tx_history", Description: "Show the tx history of the specified coin"},
+	{Text: "my_recent_swaps", Description: "Show the swaps history"},
 	{Text: "orderbook", Description: "Show the orderbook of the given pair"},
 }
 

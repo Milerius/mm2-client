@@ -49,6 +49,15 @@ eg: my_tx_history KMD 50 2
 eg: my_tx_history KMD 50 1 true
 eg: my_tx_history KMD max
 eg: my_tx_history KMD max 1 true`
+	MyRecentSwapsHelp  = `Show the swaps history`
+	MyRecentSwapsUsage = `my_recent_swaps <limit> <page_number> (base_coin) (rel_coin) (from) (to)
+eg: my_recent_swaps
+eg: my_recent_swaps 50
+eg: my_recent_swaps 50 1
+eg: my_recent_swaps 50 1 KMD
+eg: my_recent_swaps 50 1 KMD LTC
+eg: my_recent_swaps 50 1 KMD LTC 01-02-2021
+eg: my_recent_swaps 50 1 KMD LTC 01-02-2021 01-03-2021`
 	withdrawHelp  = `Prepare a transaction to send`
 	withdrawUsage = `withdraw <coin> amount|max <address> fees...
 eg: withdraw KMD 1 RWaZ8yDea2j5peA6J5ftC1huPywxK66X2s
@@ -78,6 +87,7 @@ func ShowGlobalHelp() {
 		{"broadcast", "<coin> <tx_hex>", BroadcastHelp, BroadcastUsage},
 		{"withdraw", "", withdrawHelp, withdrawUsage},
 		{"my_tx_history", "", MyTxHistoryHelp, MyTxHistoryUsage},
+		{"my_recent_swaps", "", MyRecentSwapsHelp, MyRecentSwapsUsage},
 		{"send", "", SendHelp, SendUsage},
 		{"orderbook", "<base> <rel>", OrderbookHelp, OrderbookUsage},
 	}
@@ -147,6 +157,9 @@ func ShowCommandHelp(command string) {
 	case "my_tx_history":
 		fmt.Println(MyTxHistoryHelp)
 		fmt.Printf("usage: %s\n", MyTxHistoryUsage)
+	case "my_recent_swaps":
+		fmt.Println(MyRecentSwapsHelp)
+		fmt.Printf("usage: %s\n", MyRecentSwapsUsage)
 	case "orderbook":
 		fmt.Println(OrderbookHelp)
 		fmt.Printf("usage: %s\n", OrderbookUsage)
