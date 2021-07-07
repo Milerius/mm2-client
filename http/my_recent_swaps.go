@@ -28,6 +28,7 @@ type SwapContent struct {
 	Events      []struct {
 		Event struct {
 			Data struct {
+				Error                     string `json:"error,omitempty"`
 				LockDuration              int    `json:"lock_duration,omitempty"`
 				MakerAmount               string `json:"maker_amount,omitempty"`
 				MakerCoin                 string `json:"maker_coin,omitempty"`
@@ -96,6 +97,18 @@ type MyRecentSwapsAnswer struct {
 	} `json:"result"`
 }
 
+func (receiver *SwapContent) getLastStatus() string {
+	lastEvent := receiver.Events[len(receiver.Events)-1].Event.Type
+	if lastEvent == "Finished" {
+		for _, cur := range receiver.Events {
+			if cur.Event.Data.Error != "" {
+				lastEvent = cur.Event.Type
+			}
+		}
+	}
+	return lastEvent
+}
+
 func NewMyRecentSwapsRequest(limit string, pageNumber string, baseCoin string, relCoin string, from string, to string) *MyRecentSwapsRequest {
 	genReq := NewGenericRequest("my_recent_swaps")
 	limitNb, err := strconv.Atoi(limit)
@@ -137,19 +150,19 @@ func (answer *MyRecentSwapsAnswer) ToTable() {
 	for _, cur := range answer.Result.Swaps {
 		out := []string{cur.MyInfo.MyCoin, helpers.ResizeNb(cur.MyInfo.MyAmount), "",
 			helpers.ResizeNb(cur.MyInfo.OtherAmount), cur.MyInfo.OtherCoin,
-			helpers.GetDateFromTimestamp(cur.MyInfo.StartedAt, true), cur.Uuid}
+			helpers.GetDateFromTimestamp(cur.MyInfo.StartedAt, true), cur.Uuid, cur.getLastStatus()}
 		data = append(data, out)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetAutoWrapText(false)
-	table.SetHeader([]string{"MyCoin", "MyAmount", "", "OtherAmount", "OtherCoin", "Date", "UUID"})
+	table.SetHeader([]string{"MyCoin", "MyAmount", "", "OtherAmount", "OtherCoin", "Date", "UUID", "Status"})
 	table.SetFooter([]string{
 		"Page: " + strconv.Itoa(answer.Result.PageNumber),
 		"Total pages: " + strconv.Itoa(answer.Result.TotalPages),
 		"Nb swaps (DB): " + strconv.Itoa(answer.Result.Total),
 		"Limit: " + strconv.Itoa(answer.Result.Limit),
-		"Skipped: " + strconv.Itoa(answer.Result.Skipped), "", ""})
+		"Skipped: " + strconv.Itoa(answer.Result.Skipped), "", "", ""})
 	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	table.SetCenterSeparator("|")
 	table.AppendBulk(data) // Add Bulk Data
