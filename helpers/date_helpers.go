@@ -23,3 +23,12 @@ func DateToTimestamp(date string, withoutSecond bool) int64 {
 	}
 	return parse.Unix()
 }
+
+func SimpleDateToTimestamp(date string) int64 {
+	layout := "02-01-2006"
+	parse, err := time.Parse(layout, date)
+	if err != nil {
+		return 0
+	}
+	return parse.Unix()
+}
