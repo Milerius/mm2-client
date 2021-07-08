@@ -13,4 +13,6 @@ Future tasks:
 - [ ] update_maker_order (want to track UUID)
 - [ ] gecko price service
 - [ ] paprika price service
-- [ ] get_binance_supported_pairs
+- [ ] add total in my_balance_all
+- [ ] add am_i_seed in MM2.json if user wants it  
+- [x] get_binance_supported_pairs
