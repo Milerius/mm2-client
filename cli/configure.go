@@ -141,3 +141,19 @@ func CheckMM2DB(cfg *config.MM2Config) {
 		fmt.Printf("Successfully overwrite mm2 db path: %q\n", cfg.Dbdir)
 	}
 }
+
+func CheckMM2SeedNode(cfg *config.MM2Config) {
+	prompt := promptui.Select{
+		Label: "Do you want to be a seed node?",
+		Items: []string{"Yes", "No"},
+	}
+	_, result, _ := prompt.Run()
+
+	fmt.Printf("You choose %q\n", result)
+
+	if result == "Yes" {
+		cfg.IMASeed = true
+		cfg.WriteToFile()
+		fmt.Printf("Successfully overwrite mm2 im_a_seed: %t\n", cfg.IMASeed)
+	}
+}

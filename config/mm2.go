@@ -15,6 +15,7 @@ type MM2Config struct {
 	Passphrase  string `json:"passphrase"`
 	RPCPassword string `json:"rpc_password"`
 	Userhome    string `json:"userhome"`
+	IMASeed     bool   `json:"im_a_seed,omitempty"`
 }
 
 func NewMM2ConfigFromFile(targetPath string) *MM2Config {
