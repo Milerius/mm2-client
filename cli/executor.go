@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"mm2_client/config"
 	"mm2_client/http"
+	"mm2_client/services"
 	"os"
 	"strings"
 )
@@ -106,6 +107,8 @@ func Executor(fullCommand string) {
 		} else {
 			Broadcast(command[1], command[2])
 		}
+	case "get_binance_supported_pairs":
+		services.GetBinanceSupportedPairs()
 	case "exit":
 		fmt.Println("Quitting the application - trying to shutdown MM2")
 		StopMM2()
