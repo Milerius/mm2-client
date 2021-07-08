@@ -33,7 +33,7 @@ func (answer *KMDRewardsInfoAnswer) ToTable() bool {
 	var data [][]string
 	valid := false
 	for _, cur := range answer.Result {
-		val := services.RetrieveUSDValIfSupported("KMD")
+		val, _ := services.RetrieveUSDValIfSupported("KMD")
 		accrued := cur.AccruedRewards.Accrued
 		if val != "0" {
 			if cur.AccruedRewards.Accrued != "" {

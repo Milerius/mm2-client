@@ -12,6 +12,12 @@ func GetDateFromTimestamp(timestamp int64, withoutSecond bool) string {
 	return tm.UTC().Format("2 Jan 2006 15:04:05")
 }
 
+func GetDateFromTimestampStandard(timestamp int64) string {
+	//fmt.Println(timestamp)
+	tm := time.Unix(timestamp/1000, timestamp)
+	return tm.UTC().Format(time.RFC3339)
+}
+
 func DateToTimestamp(date string, withoutSecond bool) int64 {
 	layout := "2 Jan 2006 15:04:05"
 	if withoutSecond {

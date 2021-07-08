@@ -18,31 +18,33 @@ var BinanceSupportedTickers = make(map[string]bool)
 
 //! <symbol>@ticker
 
-func contains(coin string, stablecoin string) (string, bool) {
+func contains(coin string, stablecoin string) (string, string, bool) {
 	val, ok := BinancePriceRegistry.Load(helpers.RetrieveMainTicker(coin) + stablecoin)
 	valStr := "0"
+	dateStr := helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
 	if ok {
-		valStr = val.(string)
+		valStr = val.([]string)[0]
+		dateStr = val.([]string)[1]
 	}
-	return valStr, ok
+	return valStr, dateStr, ok
 }
 
-func RetrieveUSDValIfSupported(coin string) string {
+func RetrieveUSDValIfSupported(coin string) (string, string) {
 
-	if valUSD, okUSD := contains(coin, "USD"); okUSD {
-		return valUSD
-	} else if valUSDT, okUSDT := contains(coin, "USDT"); okUSDT {
-		return valUSDT
-	} else if valBUSD, okBUSD := contains(coin, "BUSD"); okBUSD {
-		return valBUSD
-	} else if valUSDC, okUSDC := contains(coin, "USDC"); okUSDC {
-		return valUSDC
-	} else if valDAI, okDAI := contains(coin, "DAI"); okDAI {
-		return valDAI
+	if valUSD, dateUSD, okUSD := contains(coin, "USD"); okUSD {
+		return valUSD, dateUSD
+	} else if valUSDT, dateUSDT, okUSDT := contains(coin, "USDT"); okUSDT {
+		return valUSDT, dateUSDT
+	} else if valBUSD, dateBUSD, okBUSD := contains(coin, "BUSD"); okBUSD {
+		return valBUSD, dateBUSD
+	} else if valUSDC, dateUSDC, okUSDC := contains(coin, "USDC"); okUSDC {
+		return valUSDC, dateUSDC
+	} else if valDAI, dateDAI, okDAI := contains(coin, "DAI"); okDAI {
+		return valDAI, dateDAI
 	} else if helpers.IsAStableCoin(coin) {
-		return "1"
+		return "1", helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
 	}
-	return "0"
+	return "0", helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
 }
 
 func StartBinanceWebsocketService() {
@@ -77,7 +79,8 @@ func StartBinanceWebsocketService() {
 
 func startWebsocketForSymbol(cur string) {
 	wsMarketHandler := func(event *binance.WsMarketStatEvent) {
-		BinancePriceRegistry.Store(event.Symbol, event.LastPrice)
+		//fmt.Println(event.Time)
+		BinancePriceRegistry.Store(event.Symbol, []string{event.LastPrice, helpers.GetDateFromTimestampStandard(event.Time)})
 	}
 	errHandler := func(err error) {
 		if strings.Contains(err.Error(), "websocket: close 1006 (abnormal closure)") {
@@ -116,28 +119,30 @@ func GetBinanceSupportedPairs() []string {
 		splitted := strings.Split(curPair, "-")
 		base := splitted[0]
 		rel := splitted[1]
-		basePrice := RetrieveUSDValIfSupported(base)
-		relPrice := RetrieveUSDValIfSupported(rel)
+		basePrice, dateBase := RetrieveUSDValIfSupported(base)
+		relPrice, dateRel := RetrieveUSDValIfSupported(rel)
 		combined := base + rel
 		price := helpers.BigFloatDivide(basePrice, relPrice, 8)
 		calculated := true
+		date := helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
 		if val, ok := BinancePriceRegistry.Load(combined); ok {
-			price = val.(string)
+			price = val.([]string)[0]
+			date = val.([]string)[1]
 			calculated = false
 		}
 		var cur []string
 		if !calculated {
-			cur = []string{base, basePrice, rel, relPrice, price, emoji.Sprintf(":x:")}
+			cur = []string{base, basePrice, rel, relPrice, price, emoji.Sprintf(":x:"), date, date}
 		} else {
-			cur = []string{base, basePrice, rel, relPrice, price, emoji.Sprintf(":white_check_mark:")}
+			cur = []string{base, basePrice, rel, relPrice, price, emoji.Sprintf(":white_check_mark:"), dateBase, dateRel}
 		}
 		data = append(data, cur)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetAutoWrapText(false)
-	table.SetHeader([]string{"Base", "BasePrice", "Rel", "RelPrice", "PriceOfThePair", "Calculated"})
-	table.SetFooter([]string{"Base", "BasePrice", "Rel", "RelPrice", "PriceOfThePair", "Calculated"})
+	table.SetHeader([]string{"Base", "BasePrice", "Rel", "RelPrice", "PriceOfThePair", "Calculated", "BaseLastUpdate", "RelLastUpdate"})
+	table.SetFooter([]string{"Base", "BasePrice", "Rel", "RelPrice", "PriceOfThePair", "Calculated", "BaseLastUpdate", "RelLastUpdate"})
 	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	table.SetCenterSeparator("|")
 	table.AppendBulk(data) // Add Bulk Data
