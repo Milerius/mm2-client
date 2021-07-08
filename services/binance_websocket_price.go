@@ -95,15 +95,20 @@ func startWebsocketForSymbol(cur string) {
 	}
 }
 
-func GetBinanceSupportedPairs() []string {
+func GetBinanceSupportedPairsInternals() []string {
 	var out []string
-	for key, _ := range BinanceSupportedTickers {
-		for alt, _ := range BinanceSupportedTickers {
-			if key != alt {
-				out = append(out, key+"-"+alt)
+	for base, _ := range BinanceSupportedTickers {
+		for rel, _ := range BinanceSupportedTickers {
+			if base != rel {
+				out = append(out, base+"-"+rel)
 			}
 		}
 	}
+	return out
+}
+
+func GetBinanceSupportedPairs() []string {
+	var out = GetBinanceSupportedPairsInternals()
 
 	var data [][]string
 
