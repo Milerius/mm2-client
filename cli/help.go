@@ -7,42 +7,44 @@ import (
 )
 
 const (
-	initHelp                = `The init command allow you to bootstrap mm2 by downloading all the requirements`
-	initUsage               = `init`
-	startHelp               = `The start command allow you to start MM2 into a detached process`
-	startUsage              = `start`
-	stopHelp                = `The stop command allow you to stop MM2`
-	stopUsage               = `stop`
-	exitHelp                = `Quit the mm2-client CLI, doesn't shutdown mm2`
-	exitUsage               = `exit`
-	enableHelp              = `Enable the specified coin(s) within MM2`
-	enableUsage             = `enable <coin_1> <coin_2> ...`
-	enableActiveCoinsHelp   = `Enable the active coins from the cfg within MM2`
-	enableActiveCoinsUsage  = `enable_active_coins`
-	enableAllCoinsHelp      = `Enable all the coins from the cfg within MM2`
-	enableAllCoinsUsage     = `enable_all_coins`
-	disableCoinHelp         = `Disable the specified coin(s) within MM2`
-	disableCoinUsage        = `disable_coin <coin_1> <coin_2> ...`
-	disableEnabledCoinHelp  = `Disable the enabled coin(s) from MM2`
-	disableEnabledCoinUsage = `disable_enabled_coins`
-	disableZeroBalanceHelp  = `Disable all coins that have 0 balance`
-	disableZeroBalanceUsage = `disable_zero_balance`
-	getEnabledCoinsHelp     = `List the enabled coins`
-	getEnabledCoinsUsage    = `get_enabled_coins`
-	myBalanceHelp           = `Show the balance of the specified coin(s)`
-	myBalanceUsage          = `my_balance <coin_1> <coin_2> ...`
-	balanceAllHelp          = `Show the balance of the active coin(s)`
-	balanceAllUsage         = `balance_all`
-	kmdRewardsInfoHelp      = `Show the Komodo rewards information`
-	kmdRewardsInfoUsage     = `kmd_rewards_info`
-	BroadcastHelp           = `Broadcast a transaction to the network`
-	BroadcastUsage          = `broadcast <coin> <tx_hex>`
-	OrderbookHelp           = `Show the orderbook for the given pair`
-	OrderbookUsage          = `orderbook <base> <rel>`
-	SendHelp                = `withdraw + broadcast equivalent`
-	SendUsage               = `same as withdraw`
-	MyTxHistoryHelp         = `Show the tx history of the given coin`
-	MyTxHistoryUsage        = `my_tx_history <coin> (limit|max) (page_number) (true|false)
+	initHelp                      = `The init command allow you to bootstrap mm2 by downloading all the requirements`
+	initUsage                     = `init`
+	startHelp                     = `The start command allow you to start MM2 into a detached process`
+	startUsage                    = `start`
+	stopHelp                      = `The stop command allow you to stop MM2`
+	stopUsage                     = `stop`
+	exitHelp                      = `Quit the mm2-client CLI, doesn't shutdown mm2`
+	exitUsage                     = `exit`
+	enableHelp                    = `Enable the specified coin(s) within MM2`
+	enableUsage                   = `enable <coin_1> <coin_2> ...`
+	enableActiveCoinsHelp         = `Enable the active coins from the cfg within MM2`
+	enableActiveCoinsUsage        = `enable_active_coins`
+	enableAllCoinsHelp            = `Enable all the coins from the cfg within MM2`
+	enableAllCoinsUsage           = `enable_all_coins`
+	disableCoinHelp               = `Disable the specified coin(s) within MM2`
+	disableCoinUsage              = `disable_coin <coin_1> <coin_2> ...`
+	disableEnabledCoinHelp        = `Disable the enabled coin(s) from MM2`
+	disableEnabledCoinUsage       = `disable_enabled_coins`
+	disableZeroBalanceHelp        = `Disable all coins that have 0 balance`
+	disableZeroBalanceUsage       = `disable_zero_balance`
+	getEnabledCoinsHelp           = `List the enabled coins`
+	getEnabledCoinsUsage          = `get_enabled_coins`
+	myBalanceHelp                 = `Show the balance of the specified coin(s)`
+	myBalanceUsage                = `my_balance <coin_1> <coin_2> ...`
+	balanceAllHelp                = `Show the balance of the active coin(s)`
+	balanceAllUsage               = `balance_all`
+	kmdRewardsInfoHelp            = `Show the Komodo rewards information`
+	kmdRewardsInfoUsage           = `kmd_rewards_info`
+	BroadcastHelp                 = `Broadcast a transaction to the network`
+	BroadcastUsage                = `broadcast <coin> <tx_hex>`
+	OrderbookHelp                 = `Show the orderbook for the given pair`
+	OrderbookUsage                = `orderbook <base> <rel>`
+	SendHelp                      = `withdraw + broadcast equivalent`
+	SendUsage                     = `same as withdraw`
+	GetBinanceSupportedPairsHelp  = `Show supported pair for binance auto market maker bot`
+	GetBinanceSupportedPairsUsage = `get_binance_supported_pairs`
+	MyTxHistoryHelp               = `Show the tx history of the given coin`
+	MyTxHistoryUsage              = `my_tx_history <coin> (limit|max) (page_number) (true|false)
 eg: my_tx_history KMD
 eg: my_tx_history KMD 50
 eg: my_tx_history KMD 50 2
@@ -90,6 +92,7 @@ func ShowGlobalHelp() {
 		{"my_recent_swaps", "", MyRecentSwapsHelp, MyRecentSwapsUsage},
 		{"send", "", SendHelp, SendUsage},
 		{"orderbook", "<base> <rel>", OrderbookHelp, OrderbookUsage},
+		{"get_binance_supported_pairs", "", GetBinanceSupportedPairsHelp, GetBinanceSupportedPairsUsage},
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
@@ -163,6 +166,9 @@ func ShowCommandHelp(command string) {
 	case "orderbook":
 		fmt.Println(OrderbookHelp)
 		fmt.Printf("usage: %s\n", OrderbookUsage)
+	case "get_binance_supported_pairs":
+		fmt.Println(GetBinanceSupportedPairsHelp)
+		fmt.Printf("usage: %s\n", GetBinanceSupportedPairsUsage)
 	default:
 		fmt.Printf("Command %s not found\n", command)
 	}

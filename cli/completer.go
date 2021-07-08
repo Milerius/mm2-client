@@ -49,6 +49,9 @@ var subCommandsHelp = []prompt.Suggest{
 	{Text: "broadcast", Description: "Show the help of the broadcast command"},
 	{Text: "send", Description: "Show the help of the send command"},
 	{Text: "my_tx_history", Description: "Show the help of the my_tx_history command"},
+	{Text: "my_recent_swaps", Description: "Show the help of the my_recent_swaps command"},
+	{Text: "orderbook", Description: "Show the help of the orderbook command"},
+	{Text: "get_binance_supported_pairs", Description: "Show the help of the get_binance_supported_pairs command"},
 }
 
 var subCommandsEnable = []prompt.Suggest{

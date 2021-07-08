@@ -6,6 +6,8 @@ Future tasks:
 - [ ] Wallet + encryption seed
 - [ ] cancel_all_order
 - [ ] setprice
+- [ ] buy
+- [ ] sell  
 - [x] my_recent_swaps
 - [ ] my_orders
 - [x] prompt use DB desktop
