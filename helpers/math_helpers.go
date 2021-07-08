@@ -12,6 +12,14 @@ func BigFloatMultiply(first string, second string, prec int) string {
 	return result.FloatString(prec)
 }
 
+func BigFloatAdd(first string, second string, prec int) string {
+	result, err := evaler.Eval(first + "+" + second)
+	if err != nil {
+		return "0"
+	}
+	return result.FloatString(prec)
+}
+
 func BigFloatDivide(first string, second string, prec int) string {
 	result, err := evaler.Eval(first + "/" + second)
 	if err != nil {

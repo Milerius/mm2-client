@@ -68,6 +68,7 @@ func (answer *MyBalanceAnswer) ToTable() {
 func ToTableMyBalanceAnswers(answers []MyBalanceAnswer) {
 	var data [][]string
 
+	total := "0"
 	for _, answer := range answers {
 		if answer.Coin != "" {
 			val, _ := services.RetrieveUSDValIfSupported(answer.Coin)
@@ -76,6 +77,7 @@ func ToTableMyBalanceAnswers(answers []MyBalanceAnswer) {
 			}
 
 			cur := []string{answer.Coin, answer.Address, answer.Balance, val, answer.UnspendableBalance}
+			total = helpers.BigFloatAdd(total, val, 2)
 			data = append(data, cur)
 		}
 	}
@@ -85,6 +87,7 @@ func ToTableMyBalanceAnswers(answers []MyBalanceAnswer) {
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetAutoWrapText(false)
 	table.SetHeader([]string{"Coin", "Address", "Balance", "Balance (USD)", "Unspendable"})
+	table.SetFooter([]string{"", "", "", "Total: " + total + " $", ""})
 	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	table.SetCenterSeparator("|")
 	table.AppendBulk(data) // Add Bulk Data
