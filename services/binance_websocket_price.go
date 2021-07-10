@@ -29,7 +29,7 @@ func contains(coin string, stablecoin string) (string, string, bool) {
 	return valStr, dateStr, ok
 }
 
-func RetrieveUSDValIfSupported(coin string) (string, string) {
+func BinanceRetrieveUSDValIfSupported(coin string) (string, string) {
 
 	if valUSD, dateUSD, okUSD := contains(coin, "USD"); okUSD {
 		return valUSD, dateUSD
