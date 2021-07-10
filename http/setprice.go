@@ -4,8 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/olekukonko/tablewriter"
 	"io/ioutil"
+	"mm2_client/helpers"
 	"net/http"
+	"os"
 )
 
 type SetPriceRequest struct {
@@ -30,7 +33,7 @@ type SetPriceAnswer struct {
 		Rel           string          `json:"rel"`
 		MaxBaseVol    string          `json:"max_base_vol"`
 		MaxBaseVolRat [][]interface{} `json:"max_base_vol_rat"`
-		MinBaseVol    interface{}     `json:"min_base_vol"`
+		MinBaseVol    string          `json:"min_base_vol"`
 		CreatedAt     int64           `json:"created_at"`
 		Matches       struct {
 		} `json:"matches"`
@@ -82,6 +85,22 @@ func NewSetPriceRequest(base string, rel string, price string, volume *string, m
 		req.RelNota = relNota
 	}
 	return req
+}
+
+func (answer *SetPriceAnswer) ToTable() {
+
+	data := [][]string{
+		{answer.Result.Base, answer.Result.MinBaseVol, answer.Result.MaxBaseVol,
+			answer.Result.Price, "", answer.Result.Rel, helpers.BigFloatMultiply(answer.Result.MaxBaseVol, answer.Result.Price, 8)},
+	}
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetAutoWrapText(false)
+	table.SetHeader([]string{"Base", "Base Min Vol", "Base Amount", "Base Price", " ", "Rel", "Rel Amount"})
+	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
+	table.SetCenterSeparator("|")
+	table.AppendBulk(data) // Add Bulk Data
+	table.Render()
 }
 
 func SetPrice(base string, rel string, price string, volume *string, max *bool, cancelPrevious bool, minVolume *string,

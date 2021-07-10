@@ -80,7 +80,7 @@ func interractiveSetPrice(base string, rel string, price string, volume *string,
 	cancelPrevious := retrieveCancelPrevious(base, rel)
 	minVolume := retrieveMinVolume(base, volume, max)
 	if resp := http.SetPrice(base, rel, price, volume, max, cancelPrevious, minVolume, nil, nil, nil, nil); resp != nil {
-		fmt.Println(resp)
+		resp.ToTable()
 	}
 }
 
