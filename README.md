@@ -9,7 +9,7 @@ Future tasks:
 - [ ] buy
 - [ ] sell  
 - [x] my_recent_swaps
-- [ ] my_orders
+- [x] my_orders
 - [x] prompt use DB desktop
 - [ ] cancel (if i want to cancel by UUID)
 - [ ] update_maker_order (want to track UUID)
