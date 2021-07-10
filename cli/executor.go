@@ -73,6 +73,8 @@ func Executor(fullCommand string) {
 		} else {
 			MyTxHistory(command[1], command[2:])
 		}
+	case "my_orders":
+		MyOrders()
 	case "my_recent_swaps":
 		if len(command) == 1 {
 			MyRecentSwaps("50", "1", []string{})

@@ -43,6 +43,8 @@ const (
 	SendUsage                     = `same as withdraw`
 	GetBinanceSupportedPairsHelp  = `Show supported pair for binance auto market maker bot`
 	GetBinanceSupportedPairsUsage = `get_binance_supported_pairs`
+	MyOrdersHelp                  = `Show active orders`
+	MyOrdersUsage                 = `my_orders`
 	MyTxHistoryHelp               = `Show the tx history of the given coin`
 	MyTxHistoryUsage              = `my_tx_history <coin> (limit|max) (page_number) (true|false)
 eg: my_tx_history KMD
@@ -90,6 +92,7 @@ func ShowGlobalHelp() {
 		{"withdraw", "", withdrawHelp, withdrawUsage},
 		{"my_tx_history", "", MyTxHistoryHelp, MyTxHistoryUsage},
 		{"my_recent_swaps", "", MyRecentSwapsHelp, MyRecentSwapsUsage},
+		{"my_orders", "", MyOrdersHelp, MyOrdersUsage},
 		{"send", "", SendHelp, SendUsage},
 		{"orderbook", "<base> <rel>", OrderbookHelp, OrderbookUsage},
 		{"get_binance_supported_pairs", "", GetBinanceSupportedPairsHelp, GetBinanceSupportedPairsUsage},
@@ -163,6 +166,9 @@ func ShowCommandHelp(command string) {
 	case "my_recent_swaps":
 		fmt.Println(MyRecentSwapsHelp)
 		fmt.Printf("usage: %s\n", MyRecentSwapsUsage)
+	case "my_orders":
+		fmt.Println(MyOrdersHelp)
+		fmt.Printf("usage: %s\n", MyOrdersUsage)
 	case "orderbook":
 		fmt.Println(OrderbookHelp)
 		fmt.Printf("usage: %s\n", OrderbookUsage)

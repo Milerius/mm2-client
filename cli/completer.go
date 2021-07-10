@@ -27,6 +27,7 @@ var commands = []prompt.Suggest{
 	{Text: "send", Description: "withdraw + broadcast equivalent"},
 	{Text: "my_tx_history", Description: "Show the tx history of the specified coin"},
 	{Text: "my_recent_swaps", Description: "Show the swaps history"},
+	{Text: "my_orders", Description: "Show the active orders"},
 	{Text: "orderbook", Description: "Show the orderbook of the given pair"},
 	{Text: "get_binance_supported_pairs", Description: "Show a table of binance supported pairs with average and real calculation"},
 }
