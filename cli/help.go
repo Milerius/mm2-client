@@ -45,6 +45,8 @@ const (
 	GetBinanceSupportedPairsUsage = `get_binance_supported_pairs`
 	MyOrdersHelp                  = `Show active orders`
 	MyOrdersUsage                 = `my_orders`
+	CancelOrderHelp               = `Cancel the given order`
+	CancelOrderUsage              = `cancel_order <uuid>`
 	MyTxHistoryHelp               = `Show the tx history of the given coin`
 	MyTxHistoryUsage              = `my_tx_history <coin> (limit|max) (page_number) (true|false)
 eg: my_tx_history KMD
@@ -93,6 +95,7 @@ func ShowGlobalHelp() {
 		{"my_tx_history", "", MyTxHistoryHelp, MyTxHistoryUsage},
 		{"my_recent_swaps", "", MyRecentSwapsHelp, MyRecentSwapsUsage},
 		{"my_orders", "", MyOrdersHelp, MyOrdersUsage},
+		{"cancel_order", "", CancelOrderHelp, CancelOrderUsage},
 		{"send", "", SendHelp, SendUsage},
 		{"orderbook", "<base> <rel>", OrderbookHelp, OrderbookUsage},
 		{"get_binance_supported_pairs", "", GetBinanceSupportedPairsHelp, GetBinanceSupportedPairsUsage},
@@ -175,6 +178,9 @@ func ShowCommandHelp(command string) {
 	case "get_binance_supported_pairs":
 		fmt.Println(GetBinanceSupportedPairsHelp)
 		fmt.Printf("usage: %s\n", GetBinanceSupportedPairsUsage)
+	case "cancel_order":
+		fmt.Println(CancelOrderHelp)
+		fmt.Println(CancelOrderUsage)
 	default:
 		fmt.Printf("Command %s not found\n", command)
 	}

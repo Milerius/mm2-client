@@ -28,6 +28,7 @@ var commands = []prompt.Suggest{
 	{Text: "my_tx_history", Description: "Show the tx history of the specified coin"},
 	{Text: "my_recent_swaps", Description: "Show the swaps history"},
 	{Text: "my_orders", Description: "Show the active orders"},
+	{Text: "cancel_order", Description: "Cancel the given order"},
 	{Text: "orderbook", Description: "Show the orderbook of the given pair"},
 	{Text: "get_binance_supported_pairs", Description: "Show a table of binance supported pairs with average and real calculation"},
 }
@@ -51,6 +52,8 @@ var subCommandsHelp = []prompt.Suggest{
 	{Text: "send", Description: "Show the help of the send command"},
 	{Text: "my_tx_history", Description: "Show the help of the my_tx_history command"},
 	{Text: "my_recent_swaps", Description: "Show the help of the my_recent_swaps command"},
+	{Text: "my_orders", Description: "Show the help of the my_orders command"},
+	{Text: "cancel_order", Description: "Show the help of the cancel_order command"},
 	{Text: "orderbook", Description: "Show the help of the orderbook command"},
 	{Text: "get_binance_supported_pairs", Description: "Show the help of the get_binance_supported_pairs command"},
 }

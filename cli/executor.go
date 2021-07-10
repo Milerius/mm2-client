@@ -13,6 +13,12 @@ func Executor(fullCommand string) {
 	fullCommand = strings.TrimSpace(fullCommand)
 	command := strings.Split(fullCommand, " ")
 	switch command[0] {
+	case "cancel_order":
+		if len(command) != 2 {
+			ShowCommandHelp(command[0])
+		} else {
+			CancelOrder(command[1])
+		}
 	case "init":
 		InitMM2()
 	case "help":
