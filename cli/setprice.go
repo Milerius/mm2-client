@@ -36,7 +36,7 @@ func promptMinVol(base string, vol string) string {
 	}
 
 	promptAskMinVol := promptui.Prompt{
-		Label:    "Please enter your desired min_vol",
+		Label:    "Please enter your desired min_vol (couldn't be more than " + vol + ")",
 		Validate: validate,
 	}
 	resultMinVol, err := promptAskMinVol.Run()
@@ -55,8 +55,7 @@ func askMinVolume(base string, volume *string, max *bool) *string {
 	if max != nil && *max {
 		curVol = http.MyBalance(base).Balance
 	}
-	fmt.Println("The minimum amount of base coin available for the order; it must be less or equal than volume param; " +
-		"The following values must be greater than or equal to the min_trading_vol of the corresponding coin")
+	fmt.Println("The minimum amount of base coin available for the order; it must be less or equal than volume param;")
 	curVol = promptMinVol(base, curVol)
 	return &curVol
 }

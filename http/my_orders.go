@@ -157,15 +157,15 @@ func renderTableMakerOrders(makerOrders map[string]MakerOrderContent) {
 	var data [][]string
 
 	for _, cur := range makerOrders {
-		var out = []string{cur.Base, cur.AvailableAmount, "", helpers.BigFloatMultiply(cur.AvailableAmount, cur.Price, 8), cur.Rel, cur.Uuid}
+		var out = []string{cur.Base, cur.MinBaseVol, cur.AvailableAmount, "", helpers.BigFloatMultiply(cur.AvailableAmount, cur.Price, 8), cur.Rel, cur.Price, cur.Uuid}
 		data = append(data, out)
 	}
 
 	if len(data) > 0 {
 		table := tablewriter.NewWriter(os.Stdout)
 		table.SetAutoWrapText(false)
-		table.SetHeader([]string{"Base", "Base Amount", "", "Rel Amount", "Rel", "UUID"})
-		table.SetFooter([]string{"", "", "", "", "", "MakerOrders"})
+		table.SetHeader([]string{"Base", "Base MinVol", "Base Amount", "", "Rel Amount", "Rel", "Price", "UUID"})
+		table.SetFooter([]string{"", "", "", "", "", "", "", "MakerOrders"})
 		table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 		table.SetCenterSeparator("|")
 		table.AppendBulk(data) // Add Bulk Data
