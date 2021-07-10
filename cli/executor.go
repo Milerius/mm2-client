@@ -13,6 +13,12 @@ func Executor(fullCommand string) {
 	fullCommand = strings.TrimSpace(fullCommand)
 	command := strings.Split(fullCommand, " ")
 	switch command[0] {
+	case "setprice":
+		if len(command) != 5 {
+			ShowCommandHelp(command[0])
+		} else {
+			SetPrice(command[1], command[2], command[3], command[4])
+		}
 	case "cancel_order":
 		if len(command) != 2 {
 			ShowCommandHelp(command[0])

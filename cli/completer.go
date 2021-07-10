@@ -30,6 +30,7 @@ var commands = []prompt.Suggest{
 	{Text: "my_orders", Description: "Show the active orders"},
 	{Text: "cancel_order", Description: "Cancel the given order"},
 	{Text: "orderbook", Description: "Show the orderbook of the given pair"},
+	{Text: "setprice", Description: "The setprice method places an order on the orderbook, and it relies on this node acting as a maker, also called a Bob node."},
 	{Text: "get_binance_supported_pairs", Description: "Show a table of binance supported pairs with average and real calculation"},
 }
 
@@ -53,6 +54,7 @@ var subCommandsHelp = []prompt.Suggest{
 	{Text: "my_tx_history", Description: "Show the help of the my_tx_history command"},
 	{Text: "my_recent_swaps", Description: "Show the help of the my_recent_swaps command"},
 	{Text: "my_orders", Description: "Show the help of the my_orders command"},
+	{Text: "setprice", Description: "Show the help of the setprice command"},
 	{Text: "cancel_order", Description: "Show the help of the cancel_order command"},
 	{Text: "orderbook", Description: "Show the help of the orderbook command"},
 	{Text: "get_binance_supported_pairs", Description: "Show the help of the get_binance_supported_pairs command"},
@@ -328,6 +330,24 @@ func (c *Completer) argumentsCompleter(args []string) []prompt.Suggest {
 	}
 	first := args[0]
 	switch first {
+	case "setprice":
+		cur := args[len(args)-1]
+		if len(args) == 2 || len(args) == 3 {
+			return prompt.FilterHasPrefix(subCommandsEnable, cur, true)
+		}
+		if len(args) == 4 {
+			var subCommandsSetPriceFirst = []prompt.Suggest{
+				{Text: "1", Description: "Set the price per unit for (" + args[1] + ")"},
+			}
+			return prompt.FilterContains(subCommandsSetPriceFirst, cur, true)
+		}
+		if len(args) == 5 {
+			var subCommandsSetPriceSecond = []prompt.Suggest{
+				{Text: "1", Description: "Set the volume of (" + args[1] + ") that you want to sell"},
+				{Text: "max", Description: "Use the max balance of (" + args[1] + ")"},
+			}
+			return prompt.FilterContains(subCommandsSetPriceSecond, cur, true)
+		}
 	case "orderbook":
 		cur := args[len(args)-1]
 		if len(args) == 2 || len(args) == 3 {

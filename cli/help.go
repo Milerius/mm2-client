@@ -47,8 +47,12 @@ const (
 	MyOrdersUsage                 = `my_orders`
 	CancelOrderHelp               = `Cancel the given order`
 	CancelOrderUsage              = `cancel_order <uuid>`
-	MyTxHistoryHelp               = `Show the tx history of the given coin`
-	MyTxHistoryUsage              = `my_tx_history <coin> (limit|max) (page_number) (true|false)
+	SetPriceHelp                  = `The setprice method places an order on the orderbook, and it relies as a maker`
+	SetPriceUsage                 = `setprice <base> <rel> <price> volume|max
+eg: setprice RICK MORTY 1 1
+eg: setprice RICK MORTY 1 max`
+	MyTxHistoryHelp  = `Show the tx history of the given coin`
+	MyTxHistoryUsage = `my_tx_history <coin> (limit|max) (page_number) (true|false)
 eg: my_tx_history KMD
 eg: my_tx_history KMD 50
 eg: my_tx_history KMD 50 2
@@ -181,6 +185,9 @@ func ShowCommandHelp(command string) {
 	case "cancel_order":
 		fmt.Println(CancelOrderHelp)
 		fmt.Println(CancelOrderUsage)
+	case "setprice":
+		fmt.Println(SetPriceHelp)
+		fmt.Println(SetPriceUsage)
 	default:
 		fmt.Printf("Command %s not found\n", command)
 	}
