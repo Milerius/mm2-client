@@ -98,12 +98,46 @@ func startWebsocketForSymbol(cur string) {
 	}
 }
 
+func retrievePossibilities(cur string) []string {
+	var base []string
+	var rel []string
+	var out []string
+
+	res := strings.Split(cur, "/")
+	curBase := res[0]
+	curRel := res[1]
+	functorAppendIfExist := func(out *[]string, ticker string) {
+		if val, ok := config.GCFGRegistry[ticker]; ok {
+			*out = append(*out, val.Coin)
+		}
+	}
+
+	functorAppendIfExist(&base, curBase)
+	functorAppendIfExist(&base, curBase+"-ERC20")
+	functorAppendIfExist(&base, curBase+"-QRC20")
+	functorAppendIfExist(&base, curBase+"-BEP20")
+	functorAppendIfExist(&rel, curRel)
+	functorAppendIfExist(&rel, curRel+"-ERC20")
+	functorAppendIfExist(&rel, curRel+"-QRC20")
+	functorAppendIfExist(&rel, curRel+"-BEP20")
+
+	for _, b := range base {
+		for _, r := range rel {
+			out = append(out, b+"/"+r)
+		}
+	}
+
+	return out
+}
+
 func GetBinanceSupportedPairsInternals() []string {
 	var out []string
 	for base, _ := range BinanceSupportedTickers {
 		for rel, _ := range BinanceSupportedTickers {
 			if base != rel {
-				out = append(out, base+"-"+rel)
+				combination := base + "/" + rel
+				possibilities := retrievePossibilities(combination)
+				out = append(out, possibilities...)
 			}
 		}
 	}
@@ -116,7 +150,7 @@ func GetBinanceSupportedPairs() []string {
 	var data [][]string
 
 	for _, curPair := range out {
-		splitted := strings.Split(curPair, "-")
+		splitted := strings.Split(curPair, "/")
 		base := splitted[0]
 		rel := splitted[1]
 		basePrice, dateBase := RetrieveUSDValIfSupported(base)
