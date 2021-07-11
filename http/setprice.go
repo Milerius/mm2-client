@@ -9,6 +9,7 @@ import (
 	"mm2_client/helpers"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 type SetPriceRequest struct {
@@ -91,12 +92,14 @@ func (answer *SetPriceAnswer) ToTable() {
 
 	data := [][]string{
 		{answer.Result.Base, answer.Result.MinBaseVol, answer.Result.MaxBaseVol,
-			answer.Result.Price, "", answer.Result.Rel, helpers.BigFloatMultiply(answer.Result.MaxBaseVol, answer.Result.Price, 8)},
+			answer.Result.Price, strconv.Itoa(answer.Result.ConfSettings.BaseConfs), "", answer.Result.Rel,
+			helpers.BigFloatMultiply(answer.Result.MaxBaseVol, answer.Result.Price, 8),
+			strconv.Itoa(answer.Result.ConfSettings.RelConfs), answer.Result.Uuid},
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetAutoWrapText(false)
-	table.SetHeader([]string{"Base", "Base Min Vol", "Base Amount", "Base Price", " ", "Rel", "Rel Amount"})
+	table.SetHeader([]string{"Base", "Base Min Vol", "Base Amount", "Base Price", "Base Confs", " ", "Rel", "Rel Amount", "Rel confs", "UUID"})
 	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	table.SetCenterSeparator("|")
 	table.AppendBulk(data) // Add Bulk Data

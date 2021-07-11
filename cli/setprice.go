@@ -6,6 +6,7 @@ import (
 	"github.com/manifoldco/promptui"
 	"mm2_client/helpers"
 	"mm2_client/http"
+	"strconv"
 )
 
 func retrieveCancelPrevious(base string, rel string) bool {
@@ -76,10 +77,67 @@ func retrieveMinVolume(base string, volume *string, max *bool) *string {
 	}
 }
 
+func askRetrieveConfs(ticker string, header string) *int {
+	validate := func(input string) error {
+		if !helpers.IsInteger(input) {
+			return errors.New("input should be a valid integer > 0")
+		}
+		return nil
+	}
+
+	promptAskConfs := promptui.Prompt{
+		Label:    "Please enter your desired " + header + " confs for " + ticker,
+		Validate: validate,
+	}
+	resultConfs, err := promptAskConfs.Run()
+	if err != nil {
+		fmt.Printf("Prompt failed: %v\n", err)
+		askRetrieveConfs(ticker, header)
+	}
+	val, _ := strconv.Atoi(resultConfs)
+	return &val
+}
+
+func retrieveConfs(ticker string, header string) *int {
+	prompt := promptui.Select{
+		Label: "Do you want to use a " + header + " confs for " + ticker,
+		Items: []string{"Yes", "No"},
+	}
+	_, result, _ := prompt.Run()
+
+	fmt.Printf("You choose %q\n", result)
+
+	if result == "Yes" {
+		return askRetrieveConfs(ticker, header)
+	} else {
+		return nil
+	}
+}
+
+func retrieveNota(ticker string, header string) *bool {
+	prompt := promptui.Select{
+		Label: "Do you want to use a " + header + " nota for " + ticker,
+		Items: []string{"Yes", "No"},
+	}
+	_, result, _ := prompt.Run()
+
+	fmt.Printf("You choose %q\n", result)
+
+	if result == "Yes" {
+		return helpers.BoolAddr(true)
+	} else {
+		return nil
+	}
+}
+
 func interractiveSetPrice(base string, rel string, price string, volume *string, max *bool) {
 	cancelPrevious := retrieveCancelPrevious(base, rel)
 	minVolume := retrieveMinVolume(base, volume, max)
-	if resp := http.SetPrice(base, rel, price, volume, max, cancelPrevious, minVolume, nil, nil, nil, nil); resp != nil {
+	baseConfs := retrieveConfs(base, "base")
+	relConfs := retrieveConfs(rel, "rel")
+	baseNota := retrieveNota(base, "base")
+	relNota := retrieveNota(rel, "rel")
+	if resp := http.SetPrice(base, rel, price, volume, max, cancelPrevious, minVolume, baseConfs, baseNota, relConfs, relNota); resp != nil {
 		resp.ToTable()
 	}
 }
