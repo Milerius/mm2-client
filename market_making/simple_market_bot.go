@@ -66,7 +66,7 @@ func updateOrderFromCfg(cfg SimplePairMarketMakerConf, makerOrder http.MakerOrde
 		price := helpers.BigFloatMultiply(cexPrice, cfg.Spread, 8)
 		resp := http.UpdateMakerOrder(makerOrder.Uuid, &price, nil, &cfg.Max, &makerOrder.MinBaseVol, &cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
 		if resp != nil {
-			InfoLogger.Printf("Successfully updated order %s - cex_price: [%s] - new_price: [%s] - calculated: [%t] resp: [%v]", makerOrder.Uuid, cexPrice, price, calculated, resp)
+			InfoLogger.Printf("Successfully updated order %s - cex_price: [%s] - new_price: [%s] - calculated: [%t] elapsed_since_price: %f seconds\n resp: [%v]", makerOrder.Uuid, cexPrice, price, calculated, elapsed, resp)
 		}
 	} else {
 		cancelResp := http.CancelOrder(makerOrder.Uuid)
