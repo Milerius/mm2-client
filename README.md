@@ -39,8 +39,10 @@ cp assets/simple_market_bot.template.json mm2/simple_market_bot.json
 > help
 > start
 > enable_active_coins
-> enable COIN_FROM_CFG COIN_2_FROM_CFG
+> enable COIN_FROM_CFG COIN_2_FROM_CFG # use that if they are not enable yet - you can use active coins next run
 > get_binance_supported_pairs COIN_FROM_CFG # you can see if your coin is supported
+
+# Be sure your balance is funded before starting the bot
 > start_simple_market_maker_bot
 
 > my_orders
