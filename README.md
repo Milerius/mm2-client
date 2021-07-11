@@ -18,3 +18,4 @@ Future tasks:
 - [x] add total in my_balance_all
 - [x] add am_i_seed in MM2.json if user wants it  
 - [x] get_binance_supported_pairs
+- [x] add a way to start mm2 without extra services
