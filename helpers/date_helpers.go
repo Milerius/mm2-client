@@ -38,3 +38,12 @@ func SimpleDateToTimestamp(date string) int64 {
 	}
 	return parse.Unix()
 }
+
+func DateToTimeElapsed(date string) float64 {
+	cur, err := time.Parse(time.RFC3339, date)
+	if err != nil {
+		return (time.Minute * 5).Seconds()
+	}
+	elapsed := time.Since(cur)
+	return elapsed.Seconds()
+}

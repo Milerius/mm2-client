@@ -60,38 +60,58 @@ func NewMarketMakerConfFromFile(targetPath string) bool {
 	return true
 }
 
-func createOrderFromConf(cfg SimplePairMarketMakerConf) {
-	cexPrice, calculated, _ := services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
-	if helpers.AsFloat(cexPrice) > 0 {
+func updateOrderFromCfg(cfg SimplePairMarketMakerConf, makerOrder http.MakerOrderContent) {
+	cexPrice, calculated, date := services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
+	if elapsed := helpers.DateToTimeElapsed(date); elapsed < (5 * time.Minute).Seconds() {
 		price := helpers.BigFloatMultiply(cexPrice, cfg.Spread, 8)
-		var max *bool = nil
-		var volume *string = nil
-		var minVolume *string = nil
-		var maxBalance = http.MyBalance(cfg.Base).Balance
-		if cfg.Max {
-			max = helpers.BoolAddr(true)
-		} else {
-			vol := helpers.BigFloatMultiply(maxBalance, cfg.BalancePercent, 8)
-			volume = &vol
-		}
-		if cfg.MinVolume != nil {
-			if cfg.Max {
-				minVol := helpers.BigFloatMultiply(maxBalance, *cfg.MinVolume, 8)
-				minVolume = &minVol
-			} else if !cfg.Max && volume != nil {
-				minVol := helpers.BigFloatMultiply(*volume, *cfg.MinVolume, 8)
-				minVolume = &minVol
-			}
-		}
-		resp := http.SetPrice(cfg.Base, cfg.Rel, price, volume, max, true, minVolume,
-			&cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
+		resp := http.UpdateMakerOrder(makerOrder.Uuid, &price, nil, &cfg.Max, &makerOrder.MinBaseVol, &cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
 		if resp != nil {
-			InfoLogger.Printf("Successfully placed the order: %s, calculated: %t cex_price: [%s] - our price: [%s]\n", resp.Result.Uuid, calculated, cexPrice, price)
-		} else {
-			ErrorLogger.Printf("Couldn't place the order for %s/%s\n", cfg.Base, cfg.Rel)
+			InfoLogger.Printf("Successfully updated order %s - cex_price: [%s] - new_price: [%s] - calculated: [%t] resp: [%v]", makerOrder.Uuid, cexPrice, price, calculated, resp)
 		}
 	} else {
-		WarningLogger.Printf("Price is 0 for %s/%s - skipping order creation\n", cfg.Base, cfg.Rel)
+		cancelResp := http.CancelOrder(makerOrder.Uuid)
+		if cancelResp != nil {
+			WarningLogger.Printf("Cancelled order %s - reason: price elapsed > 5min\n", makerOrder.Uuid)
+		}
+	}
+}
+
+func createOrderFromConf(cfg SimplePairMarketMakerConf) {
+	cexPrice, calculated, date := services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
+	if elapsed := helpers.DateToTimeElapsed(date); elapsed < (5 * time.Minute).Seconds() {
+		if helpers.AsFloat(cexPrice) > 0 {
+			price := helpers.BigFloatMultiply(cexPrice, cfg.Spread, 8)
+			var max *bool = nil
+			var volume *string = nil
+			var minVolume *string = nil
+			var maxBalance = http.MyBalance(cfg.Base).Balance
+			if cfg.Max {
+				max = helpers.BoolAddr(true)
+			} else {
+				vol := helpers.BigFloatMultiply(maxBalance, cfg.BalancePercent, 8)
+				volume = &vol
+			}
+			if cfg.MinVolume != nil {
+				if cfg.Max {
+					minVol := helpers.BigFloatMultiply(maxBalance, *cfg.MinVolume, 8)
+					minVolume = &minVol
+				} else if !cfg.Max && volume != nil {
+					minVol := helpers.BigFloatMultiply(*volume, *cfg.MinVolume, 8)
+					minVolume = &minVol
+				}
+			}
+			resp := http.SetPrice(cfg.Base, cfg.Rel, price, volume, max, true, minVolume,
+				&cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
+			if resp != nil {
+				InfoLogger.Printf("Successfully placed the order: %s, calculated: %t cex_price: [%s] - our price: [%s] - elapsed since last price update: %f seconds\n", resp.Result.Uuid, calculated, cexPrice, price, elapsed)
+			} else {
+				ErrorLogger.Printf("Couldn't place the order for %s/%s\n", cfg.Base, cfg.Rel)
+			}
+		} else {
+			WarningLogger.Printf("Price is 0 for %s/%s - skipping order creation\n", cfg.Base, cfg.Rel)
+		}
+	} else {
+		WarningLogger.Printf("Last Price update is too far %f seconds, need to be under 5 minute to create an order\n", helpers.DateToTimeElapsed(date))
 	}
 }
 
@@ -102,33 +122,40 @@ func marketMakerProcess() {
 
 	InfoLogger.Println("Retrieving my orders for the update")
 	//! Need to iterate through existing orders and update them
+	wgUpdate := sync.WaitGroup{}
+	updateFunctor := func(cfg SimplePairMarketMakerConf, makerOrder http.MakerOrderContent, combination string) {
+		defer wgUpdate.Done()
+		updateOrderFromCfg(cfg, makerOrder)
+	}
 	if resp := http.MyOrders(); resp != nil {
 		for _, curMakerOrder := range resp.Result.MakerOrders {
 			combination := curMakerOrder.Base + "/" + curMakerOrder.Rel
 			if val, ok := gSimpleMarketMakerRegistry[combination]; ok && val.Enable {
-				InfoLogger.Printf("Updating order [%s] from pair [%s]\n", curMakerOrder.Uuid, combination)
+				wgUpdate.Add(1)
+				go updateFunctor(val, curMakerOrder, combination)
 				hitRegistry[combination] = true
 			}
 		}
 	}
+	wgUpdate.Wait()
 	InfoLogger.Println("Orders updated")
 
 	InfoLogger.Println("Iterating over order that have not been updated and that need a creation")
 	//! If i didn't visit one of the supported coin i need to create an order
-	wg := sync.WaitGroup{}
+	wgCreate := sync.WaitGroup{}
 	creatorFunctor := func(cfg SimplePairMarketMakerConf, combination string) {
-		defer wg.Done()
+		defer wgCreate.Done()
 		InfoLogger.Printf("Need to create order for pair: [%s]\n", combination)
 		createOrderFromConf(cfg)
 	}
 
 	for curCombination, cfg := range gSimpleMarketMakerRegistry {
 		if _, ok := hitRegistry[curCombination]; !ok && cfg.Enable {
-			wg.Add(1)
+			wgCreate.Add(1)
 			go creatorFunctor(cfg, curCombination)
 		}
 	}
-	wg.Wait()
+	wgCreate.Wait()
 	InfoLogger.Println("Orders created")
 }
 
@@ -140,6 +167,7 @@ func startSimpleMarketMakerBotService() {
 			constants.GSimpleMarketMakerBotRunning = false
 			close(gQuitMarketMakerBot)
 			constants.GSimpleMarketMakerBotStopping = false
+			cancelPendingOrders()
 			return
 		default:
 			marketMakerProcess()
@@ -153,11 +181,34 @@ func StopSimpleMarketMakerBotService() {
 		constants.GSimpleMarketMakerBotStopping = true
 		//! Also need to cancel all existing orders (Could use by UUID meanwhile this time)
 		InfoLogger.Println("Stopping Simple Market Maker Bot Service - may take up to 30 seconds")
+		cancelPendingOrders()
 		go func() {
 			gQuitMarketMakerBot <- struct{}{}
 		}()
 	} else {
 		fmt.Println("Simple market maker is still shutting down or not running")
+	}
+}
+
+func cancelPendingOrders() {
+	var outBatch []interface{}
+	if resp := http.MyOrders(); resp != nil {
+		for _, cur := range resp.Result.MakerOrders {
+			if req := http.NewCancelOrderRequest(cur.Uuid); req != nil {
+				outBatch = append(outBatch, req)
+			}
+		}
+	}
+
+	resp := http.BatchRequest(outBatch)
+	if len(resp) > 0 {
+		var outResp []http.CancelOrderAnswer
+		err := json.Unmarshal([]byte(resp), &outResp)
+		if err != nil {
+			WarningLogger.Println("Couldn't cancel all pending orders")
+		} else {
+			InfoLogger.Println("Successfully cancelled all pending orders")
+		}
 	}
 }
 
@@ -167,6 +218,7 @@ func StartSimpleMarketMakerBot() {
 			fmt.Println("Simple Market Maker bot is already running (or being stopped) - skipping")
 		} else {
 			if resp := NewMarketMakerConfFromFile(constants.GSimpleMarketMakerConf); resp {
+				cancelPendingOrders()
 				InfoLogger.Printf("Starting simple market maker bot with %d coin(s)\n", len(gSimpleMarketMakerRegistry))
 				constants.GSimpleMarketMakerBotRunning = true
 				gQuitMarketMakerBot = make(chan struct{})
