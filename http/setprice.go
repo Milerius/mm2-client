@@ -90,16 +90,19 @@ func NewSetPriceRequest(base string, rel string, price string, volume *string, m
 
 func (answer *SetPriceAnswer) ToTable() {
 
+	baseNota := strconv.FormatBool(answer.Result.ConfSettings.BaseNota)
+	relNota := strconv.FormatBool(answer.Result.ConfSettings.RelNota)
 	data := [][]string{
+
 		{answer.Result.Base, answer.Result.MinBaseVol, answer.Result.MaxBaseVol,
-			answer.Result.Price, strconv.Itoa(answer.Result.ConfSettings.BaseConfs), "", answer.Result.Rel,
+			answer.Result.Price, strconv.Itoa(answer.Result.ConfSettings.BaseConfs), baseNota, "", answer.Result.Rel,
 			helpers.BigFloatMultiply(answer.Result.MaxBaseVol, answer.Result.Price, 8),
-			strconv.Itoa(answer.Result.ConfSettings.RelConfs), answer.Result.Uuid},
+			strconv.Itoa(answer.Result.ConfSettings.RelConfs), relNota, answer.Result.Uuid},
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetAutoWrapText(false)
-	table.SetHeader([]string{"Base", "Base Min Vol", "Base Amount", "Base Price", "Base Confs", " ", "Rel", "Rel Amount", "Rel confs", "UUID"})
+	table.SetHeader([]string{"Base", "Base Min Vol", "Base Amount", "Base Price", "Base Confs", "Base Nota", " ", "Rel", "Rel Amount", "Rel confs", "Rel nota", "UUID"})
 	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	table.SetCenterSeparator("|")
 	table.AppendBulk(data) // Add Bulk Data
