@@ -14,9 +14,21 @@
   "KMD-BEP20/QTUM": {
     "base": "KMD-BEP20",
     "rel": "QTUM",
-    "max": true,
-    "min_volume": "0.25",
-    "spread": "1.025",
+    "max": true, //< Use max balance
+    "min_volume": "0.25", //< range is [0-1]: 0.25 = 25% of the balance as min_volume
+    "spread": "1.025", //! < target_price eg: for KMD/BUSD calculated price 0.77 (USD) * 1.025 (+2.5%)
+    "base_confs": 3,
+    "base_nota": false,
+    "rel_confs": 1,
+    "rel_nota": false,
+    "enable": true
+  },
+  "KMD-BEP20/FIRO": { ///< i want to SELL BASE against REL, eg KMD-BEP20 against FIRO
+    "base": "KMD-BEP20",
+    "rel": "FIRO",
+    "balance_percent": "0.5", //< range is [0-1]: 0.5 = 50% of the balance
+    "min_volume": "0.25", //< range is [0-1]: 0.25 = 25% of the balance as min_volume
+    "spread": "1.025", //! < target_price eg: for KMD/BUSD calculated price 0.77 (USD) * 1.025 (+2.5%)
     "base_confs": 3,
     "base_nota": false,
     "rel_confs": 1,
