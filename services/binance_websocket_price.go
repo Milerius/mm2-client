@@ -184,3 +184,18 @@ func GetBinanceSupportedPairs() []string {
 
 	return out
 }
+
+func BinanceRetrieveCEXRatesFromPair(base string, rel string) (string, bool, string) {
+	basePrice, _ := BinanceRetrieveUSDValIfSupported(base)
+	relPrice, _ := BinanceRetrieveUSDValIfSupported(rel)
+	combined := base + rel
+	price := helpers.BigFloatDivide(basePrice, relPrice, 8)
+	calculated := true
+	date := helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
+	if val, ok := BinancePriceRegistry.Load(combined); ok {
+		price = val.([]string)[0]
+		date = val.([]string)[1]
+		calculated = false
+	}
+	return price, calculated, date
+}

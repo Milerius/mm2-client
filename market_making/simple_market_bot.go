@@ -6,9 +6,12 @@ import (
 	"io/ioutil"
 	"log"
 	"mm2_client/constants"
+	"mm2_client/helpers"
 	"mm2_client/http"
+	"mm2_client/services"
 	"os"
 	"path/filepath"
+	"sync"
 	"time"
 )
 
@@ -16,9 +19,9 @@ type SimplePairMarketMakerConf struct {
 	Base           string  `json:"base"`
 	Rel            string  `json:"rel"`
 	Max            bool    `json:"max,omitempty"`
-	BalancePercent int     `json:"balance_percent,omitempty"`
-	MinVolume      int     `json:"min_volume"`
-	Spread         float64 `json:"spread"`
+	BalancePercent string  `json:"balance_percent,omitempty"`
+	MinVolume      *string `json:"min_volume,omitempty"`
+	Spread         string  `json:"spread"`
 	BaseConfs      int     `json:"base_confs"`
 	BaseNota       bool    `json:"base_nota"`
 	RelConfs       int     `json:"rel_confs"`
@@ -57,10 +60,47 @@ func NewMarketMakerConfFromFile(targetPath string) bool {
 	return true
 }
 
+func createOrderFromConf(cfg SimplePairMarketMakerConf) {
+	cexPrice, calculated, _ := services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
+	if helpers.AsFloat(cexPrice) > 0 {
+		price := helpers.BigFloatMultiply(cexPrice, cfg.Spread, 8)
+		var max *bool = nil
+		var volume *string = nil
+		var minVolume *string = nil
+		var maxBalance = http.MyBalance(cfg.Base).Balance
+		if cfg.Max {
+			max = helpers.BoolAddr(true)
+		} else {
+			vol := helpers.BigFloatMultiply(maxBalance, cfg.BalancePercent, 8)
+			volume = &vol
+		}
+		if cfg.MinVolume != nil {
+			if cfg.Max {
+				minVol := helpers.BigFloatMultiply(maxBalance, *cfg.MinVolume, 8)
+				minVolume = &minVol
+			} else if !cfg.Max && volume != nil {
+				minVol := helpers.BigFloatMultiply(*volume, *cfg.MinVolume, 8)
+				minVolume = &minVol
+			}
+		}
+		resp := http.SetPrice(cfg.Base, cfg.Rel, price, volume, max, true, minVolume,
+			&cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
+		if resp != nil {
+			InfoLogger.Printf("Successfully placed the order: %s, calculated: %t cex_price: [%s] - our price: [%s]\n", resp.Result.Uuid, calculated, cexPrice, price)
+		} else {
+			ErrorLogger.Printf("Couldn't place the order for %s/%s\n", cfg.Base, cfg.Rel)
+		}
+	} else {
+		WarningLogger.Printf("Price is 0 for %s/%s - skipping order creation\n", cfg.Base, cfg.Rel)
+	}
+}
+
 func marketMakerProcess() {
 	InfoLogger.Println("process market maker")
 
 	hitRegistry := make(map[string]bool)
+
+	InfoLogger.Println("Retrieving my orders for the update")
 	//! Need to iterate through existing orders and update them
 	if resp := http.MyOrders(); resp != nil {
 		for _, curMakerOrder := range resp.Result.MakerOrders {
@@ -71,17 +111,28 @@ func marketMakerProcess() {
 			}
 		}
 	}
+	InfoLogger.Println("Orders updated")
 
+	InfoLogger.Println("Iterating over order that have not been updated and that need a creation")
 	//! If i didn't visit one of the supported coin i need to create an order
-	for curCombination, value := range gSimpleMarketMakerRegistry {
-		if _, ok := hitRegistry[curCombination]; !ok && value.Enable {
-			InfoLogger.Printf("Need to create order for pair: [%s]\n", curCombination)
-		}
+	wg := sync.WaitGroup{}
+	creatorFunctor := func(cfg SimplePairMarketMakerConf, combination string) {
+		defer wg.Done()
+		InfoLogger.Printf("Need to create order for pair: [%s]\n", combination)
+		createOrderFromConf(cfg)
 	}
 
+	for curCombination, cfg := range gSimpleMarketMakerRegistry {
+		if _, ok := hitRegistry[curCombination]; !ok && cfg.Enable {
+			wg.Add(1)
+			go creatorFunctor(cfg, curCombination)
+		}
+	}
+	wg.Wait()
+	InfoLogger.Println("Orders created")
 }
 
-func StartSimpleMarketMakerBotService() {
+func startSimpleMarketMakerBotService() {
 	for {
 		select {
 		case <-gQuitMarketMakerBot:
@@ -119,7 +170,7 @@ func StartSimpleMarketMakerBot() {
 				InfoLogger.Printf("Starting simple market maker bot with %d coin(s)\n", len(gSimpleMarketMakerRegistry))
 				constants.GSimpleMarketMakerBotRunning = true
 				gQuitMarketMakerBot = make(chan struct{})
-				go StartSimpleMarketMakerBotService()
+				go startSimpleMarketMakerBotService()
 			} else {
 				fmt.Println("Couldn't start simple market maker without valid conf")
 			}

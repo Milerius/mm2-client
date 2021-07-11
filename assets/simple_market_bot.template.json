@@ -1,38 +1,26 @@
 {
-  "KMD_BUSD/BEP20": {
-    "base": "KMD",
+  "KMD-BEP20/BUSD-BEP20": {
+    "base": "KMD-BEP20",
     "rel": "BUSD-BEP20",
     "max": true,
-    "min_volume": 25,
-    "spread": 2.5,
-    "base_confs": 1,
+    "min_volume": "0.25",
+    "spread": "1.025",
+    "base_confs": 3,
     "base_nota": false,
     "rel_confs": 1,
     "rel_nota": false,
     "enable": true
   },
-  "KMD_BUSD/ERC20": {
-    "base": "KMD",
-    "rel": "BUSD-ERC20",
-    "balance_percent": 50,
-    "min_volume": 25,
-    "spread": 2.5,
-    "base_confs": 1,
+  "KMD-BEP20/QTUM": {
+    "base": "KMD-BEP20",
+    "rel": "QTUM",
+    "max": true,
+    "min_volume": "0.25",
+    "spread": "1.025",
+    "base_confs": 3,
     "base_nota": false,
     "rel_confs": 1,
     "rel_nota": false,
-    "enable": true
-  },
-  "BUSD/ERC20_KMD": {
-    "base": "BUSD-ERC20",
-    "rel": "KMD",
-    "balance_percent": 20,
-    "min_volume": 10,
-    "spread": 1,
-    "base_confs": 1,
-    "base_nota": false,
-    "rel_confs": 1,
-    "rel_nota": true,
     "enable": true
   }
 }

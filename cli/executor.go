@@ -140,6 +140,7 @@ func Executor(fullCommand string) {
 		market_making.StopSimpleMarketMakerBotService()
 	case "exit":
 		fmt.Println("Quitting the application - trying to shutdown MM2")
+		market_making.StopSimpleMarketMakerBotService()
 		StopMM2()
 		os.Exit(0)
 	}
