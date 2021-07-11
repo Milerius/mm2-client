@@ -60,6 +60,8 @@ var subCommandsHelp = []prompt.Suggest{
 	{Text: "cancel_order", Description: "Show the help of the cancel_order command"},
 	{Text: "orderbook", Description: "Show the help of the orderbook command"},
 	{Text: "get_binance_supported_pairs", Description: "Show the help of the get_binance_supported_pairs command"},
+	{Text: "start_simple_market_maker_bot", Description: "Show the help of the start_simple_market_maker_bot command"},
+	{Text: "stop_simple_market_maker_bot", Description: "Show the help of the stop_simple_market_maker_bot command"},
 }
 
 var subCommandsEnable = []prompt.Suggest{

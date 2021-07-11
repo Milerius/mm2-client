@@ -7,48 +7,52 @@ import (
 )
 
 const (
-	initHelp                      = `The init command allow you to bootstrap mm2 by downloading all the requirements`
-	initUsage                     = `init`
-	startHelp                     = `The start command allow you to start MM2 (with or without services)`
-	startUsage                    = `start (true|false)`
-	stopHelp                      = `The stop command allow you to stop MM2`
-	stopUsage                     = `stop`
-	exitHelp                      = `Quit the mm2-client CLI, doesn't shutdown mm2`
-	exitUsage                     = `exit`
-	enableHelp                    = `Enable the specified coin(s) within MM2`
-	enableUsage                   = `enable <coin_1> <coin_2> ...`
-	enableActiveCoinsHelp         = `Enable the active coins from the cfg within MM2`
-	enableActiveCoinsUsage        = `enable_active_coins`
-	enableAllCoinsHelp            = `Enable all the coins from the cfg within MM2`
-	enableAllCoinsUsage           = `enable_all_coins`
-	disableCoinHelp               = `Disable the specified coin(s) within MM2`
-	disableCoinUsage              = `disable_coin <coin_1> <coin_2> ...`
-	disableEnabledCoinHelp        = `Disable the enabled coin(s) from MM2`
-	disableEnabledCoinUsage       = `disable_enabled_coins`
-	disableZeroBalanceHelp        = `Disable all coins that have 0 balance`
-	disableZeroBalanceUsage       = `disable_zero_balance`
-	getEnabledCoinsHelp           = `List the enabled coins`
-	getEnabledCoinsUsage          = `get_enabled_coins`
-	myBalanceHelp                 = `Show the balance of the specified coin(s)`
-	myBalanceUsage                = `my_balance <coin_1> <coin_2> ...`
-	balanceAllHelp                = `Show the balance of the active coin(s)`
-	balanceAllUsage               = `balance_all`
-	kmdRewardsInfoHelp            = `Show the Komodo rewards information`
-	kmdRewardsInfoUsage           = `kmd_rewards_info`
-	BroadcastHelp                 = `Broadcast a transaction to the network`
-	BroadcastUsage                = `broadcast <coin> <tx_hex>`
-	OrderbookHelp                 = `Show the orderbook for the given pair`
-	OrderbookUsage                = `orderbook <base> <rel>`
-	SendHelp                      = `withdraw + broadcast equivalent`
-	SendUsage                     = `same as withdraw`
-	GetBinanceSupportedPairsHelp  = `Show supported pair for binance auto market maker bot`
-	GetBinanceSupportedPairsUsage = `get_binance_supported_pairs`
-	MyOrdersHelp                  = `Show active orders`
-	MyOrdersUsage                 = `my_orders`
-	CancelOrderHelp               = `Cancel the given order`
-	CancelOrderUsage              = `cancel_order <uuid>`
-	SetPriceHelp                  = `The setprice method places an order on the orderbook, and it relies as a maker`
-	SetPriceUsage                 = `setprice <base> <rel> <price> volume|max
+	initHelp                       = `The init command allow you to bootstrap mm2 by downloading all the requirements`
+	initUsage                      = `init`
+	startHelp                      = `The start command allow you to start MM2 (with or without services)`
+	startUsage                     = `start (true|false)`
+	startSimpleMarketMakerBotHelp  = `The start_simple_market_maker_bot start a AMM bot that follow binance CEX prices`
+	startSimpleMarketMakerBotUsage = `start_simple_market_maker_bot`
+	stopSimpleMarketMakerBotHelp   = `The stop_simple_market_maker_bot stop the simple AMM bot`
+	stopSimpleMarketMakerBotUsage  = `stop_simple_market_maker_bot`
+	stopHelp                       = `The stop command allow you to stop MM2`
+	stopUsage                      = `stop`
+	exitHelp                       = `Quit the mm2-client CLI, doesn't shutdown mm2`
+	exitUsage                      = `exit`
+	enableHelp                     = `Enable the specified coin(s) within MM2`
+	enableUsage                    = `enable <coin_1> <coin_2> ...`
+	enableActiveCoinsHelp          = `Enable the active coins from the cfg within MM2`
+	enableActiveCoinsUsage         = `enable_active_coins`
+	enableAllCoinsHelp             = `Enable all the coins from the cfg within MM2`
+	enableAllCoinsUsage            = `enable_all_coins`
+	disableCoinHelp                = `Disable the specified coin(s) within MM2`
+	disableCoinUsage               = `disable_coin <coin_1> <coin_2> ...`
+	disableEnabledCoinHelp         = `Disable the enabled coin(s) from MM2`
+	disableEnabledCoinUsage        = `disable_enabled_coins`
+	disableZeroBalanceHelp         = `Disable all coins that have 0 balance`
+	disableZeroBalanceUsage        = `disable_zero_balance`
+	getEnabledCoinsHelp            = `List the enabled coins`
+	getEnabledCoinsUsage           = `get_enabled_coins`
+	myBalanceHelp                  = `Show the balance of the specified coin(s)`
+	myBalanceUsage                 = `my_balance <coin_1> <coin_2> ...`
+	balanceAllHelp                 = `Show the balance of the active coin(s)`
+	balanceAllUsage                = `balance_all`
+	kmdRewardsInfoHelp             = `Show the Komodo rewards information`
+	kmdRewardsInfoUsage            = `kmd_rewards_info`
+	BroadcastHelp                  = `Broadcast a transaction to the network`
+	BroadcastUsage                 = `broadcast <coin> <tx_hex>`
+	OrderbookHelp                  = `Show the orderbook for the given pair`
+	OrderbookUsage                 = `orderbook <base> <rel>`
+	SendHelp                       = `withdraw + broadcast equivalent`
+	SendUsage                      = `same as withdraw`
+	GetBinanceSupportedPairsHelp   = `Show supported pair for binance auto market maker bot`
+	GetBinanceSupportedPairsUsage  = `get_binance_supported_pairs`
+	MyOrdersHelp                   = `Show active orders`
+	MyOrdersUsage                  = `my_orders`
+	CancelOrderHelp                = `Cancel the given order`
+	CancelOrderUsage               = `cancel_order <uuid>`
+	SetPriceHelp                   = `The setprice method places an order on the orderbook, and it relies as a maker`
+	SetPriceUsage                  = `setprice <base> <rel> <price> volume|max
 eg: setprice RICK MORTY 1 1
 eg: setprice RICK MORTY 1 max`
 	MyTxHistoryHelp  = `Show the tx history of the given coin`
@@ -84,6 +88,8 @@ func ShowGlobalHelp() {
 		{"exit", "", exitHelp, exitUsage},
 		{"start", "(true|false)", startHelp, startUsage},
 		{"stop", "", stopHelp, stopUsage},
+		{"start_simple_market_maker_bot", "", startSimpleMarketMakerBotHelp, startSimpleMarketMakerBotUsage},
+		{"stop_simple_market_maker_bot", "", stopSimpleMarketMakerBotHelp, stopSimpleMarketMakerBotUsage},
 		{"enable", "<coin_1> <coin_2> ...", enableHelp, enableUsage},
 		{"enable_active_coins", "", enableActiveCoinsHelp, enableActiveCoinsUsage},
 		{"enable_all_coins", "", enableAllCoinsUsage, enableAllCoinsUsage},
@@ -188,6 +194,12 @@ func ShowCommandHelp(command string) {
 	case "setprice":
 		fmt.Println(SetPriceHelp)
 		fmt.Println(SetPriceUsage)
+	case "start_simple_market_maker_bot":
+		fmt.Println(startSimpleMarketMakerBotHelp)
+		fmt.Println(startSimpleMarketMakerBotUsage)
+	case "stop_simple_market_maker_bot":
+		fmt.Println(stopSimpleMarketMakerBotHelp)
+		fmt.Println(stopSimpleMarketMakerBotUsage)
 	default:
 		fmt.Printf("Command %s not found\n", command)
 	}
