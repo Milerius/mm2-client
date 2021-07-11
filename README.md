@@ -5,7 +5,7 @@ Future tasks:
 
 - [ ] Wallet + encryption seed
 - [ ] cancel_all_order
-- [ ] setprice
+- [x] setprice
 - [ ] buy
 - [ ] sell  
 - [x] my_recent_swaps
