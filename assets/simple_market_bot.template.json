@@ -26,7 +26,7 @@
   "KMD-BEP20/FIRO": { ///< i want to SELL BASE against REL, eg KMD-BEP20 against FIRO
     "base": "KMD-BEP20", //< the coin you would like to sell
     "rel": "FIRO", //< the coin you would like to get
-    "balance_percent": "0.5", //< range is [0-1]: 0.5 = 50% of the balance
+    "balance_percent": "0.5", //< range is [0-1]: 0.5 = 50% of the balance - ignored if max field is set to true
     "min_volume": "0.25", //< range is [0-1]: 0.25 = 25% of the balance as min_volume
     "spread": "1.025", //! < target_price eg: for KMD/BUSD calculated price 0.77 (USD) * 1.025 (+2.5%)
     "base_confs": 3, //< number of base transactions before the swap could be confirmed
