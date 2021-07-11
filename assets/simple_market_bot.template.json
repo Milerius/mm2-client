@@ -24,15 +24,15 @@
     "enable": true
   },
   "KMD-BEP20/FIRO": { ///< i want to SELL BASE against REL, eg KMD-BEP20 against FIRO
-    "base": "KMD-BEP20",
-    "rel": "FIRO",
+    "base": "KMD-BEP20", //< the coin you would like to sell
+    "rel": "FIRO", //< the coin you would like to get
     "balance_percent": "0.5", //< range is [0-1]: 0.5 = 50% of the balance
     "min_volume": "0.25", //< range is [0-1]: 0.25 = 25% of the balance as min_volume
     "spread": "1.025", //! < target_price eg: for KMD/BUSD calculated price 0.77 (USD) * 1.025 (+2.5%)
-    "base_confs": 3,
-    "base_nota": false,
-    "rel_confs": 1,
-    "rel_nota": false,
-    "enable": true
+    "base_confs": 3, //< number of base transactions before the swap could be confirmed
+    "base_nota": false, //< if you want to wait for notarization (works only if you're base coin support nota)
+    "rel_confs": 1, //< number of rel transactions before the swap could be confirmed
+    "rel_nota": false, //< if you want to wait for notarization (works only if you're rel coin support nota)
+    "enable": true //< the bot will ignore this entry if this value is set to false
   }
 }
