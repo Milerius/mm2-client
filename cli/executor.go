@@ -133,6 +133,10 @@ func Executor(fullCommand string) {
 		}
 	case "get_binance_supported_pairs":
 		services.GetBinanceSupportedPairs()
+	case "start_simple_market_maker_bot":
+		services.StartSimpleMarketMakerBot()
+	case "stop_simple_market_maker_bot":
+		services.StopSimpleMarketMakerBotService()
 	case "exit":
 		fmt.Println("Quitting the application - trying to shutdown MM2")
 		StopMM2()

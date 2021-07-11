@@ -38,6 +38,7 @@ func StartMM2(withServices bool) {
 					fmt.Println("Start MM2 without extra services")
 				}
 				helpers.PrintCheck("MM2 successfully started", true)
+				constants.GMM2Running = true
 			}
 		}
 	}
