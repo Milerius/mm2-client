@@ -37,6 +37,7 @@ cp assets/simple_market_bot.template.json mm2/simple_market_bot.json
 ./mm2_client
 
 > help
+> init # you need to do only the first time
 > start
 > enable_active_coins
 > enable COIN_FROM_CFG COIN_2_FROM_CFG # use that if they are not enable yet - you can use active coins next run
