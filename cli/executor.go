@@ -6,6 +6,7 @@ import (
 	"mm2_client/http"
 	"mm2_client/services"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -34,7 +35,16 @@ func Executor(fullCommand string) {
 			ShowCommandHelp(command[1])
 		}
 	case "start":
-		StartMM2()
+		if len(command) == 1 {
+			StartMM2(true)
+		} else if len(command) == 2 {
+			withServices, err := strconv.ParseBool(command[1])
+			if err != nil {
+				withServices = false
+				fmt.Printf("%v - mm2 starting without services\n", err)
+			}
+			StartMM2(withServices)
+		}
 	case "stop":
 		StopMM2()
 	case "enable":

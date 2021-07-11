@@ -11,7 +11,7 @@ import (
 	"os/exec"
 )
 
-func StartMM2() {
+func StartMM2(withServices bool) {
 	if !helpers.FileExists(constants.GMM2BinPath) {
 		fmt.Println("MM2 need to be configured, please run the init command")
 	} else {
@@ -32,7 +32,11 @@ func StartMM2() {
 			} else {
 				config.ParseDesktopRegistry(http.GetLastDesktopVersion())
 				config.ParseMM2CFGRegistry()
-				go services.StartBinanceWebsocketService()
+				if withServices {
+					services.LaunchServices()
+				} else {
+					fmt.Println("Start MM2 without extra services")
+				}
 				helpers.PrintCheck("MM2 successfully started", true)
 			}
 		}

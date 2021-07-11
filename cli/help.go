@@ -9,8 +9,8 @@ import (
 const (
 	initHelp                      = `The init command allow you to bootstrap mm2 by downloading all the requirements`
 	initUsage                     = `init`
-	startHelp                     = `The start command allow you to start MM2 into a detached process`
-	startUsage                    = `start`
+	startHelp                     = `The start command allow you to start MM2 (with or without services)`
+	startUsage                    = `start (true|false)`
 	stopHelp                      = `The stop command allow you to stop MM2`
 	stopUsage                     = `stop`
 	exitHelp                      = `Quit the mm2-client CLI, doesn't shutdown mm2`
@@ -82,7 +82,7 @@ func ShowGlobalHelp() {
 	data := [][]string{
 		{"init", "", initHelp, initUsage},
 		{"exit", "", exitHelp, exitUsage},
-		{"start", "", startHelp, startUsage},
+		{"start", "(true|false)", startHelp, startUsage},
 		{"stop", "", stopHelp, stopUsage},
 		{"enable", "<coin_1> <coin_2> ...", enableHelp, enableUsage},
 		{"enable_active_coins", "", enableActiveCoinsHelp, enableActiveCoinsUsage},

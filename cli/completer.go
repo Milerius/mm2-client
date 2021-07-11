@@ -330,6 +330,15 @@ func (c *Completer) argumentsCompleter(args []string) []prompt.Suggest {
 	}
 	first := args[0]
 	switch first {
+	case "start":
+		cur := args[len(args)-1]
+		if len(args) == 2 {
+			var subCommandsStart = []prompt.Suggest{
+				{Text: "true", Description: "Start MM2 with extra services (price, data)"},
+				{Text: "false", Description: "Start MM2 without extra services (price, data)"},
+			}
+			return prompt.FilterContains(subCommandsStart, cur, true)
+		}
 	case "setprice":
 		cur := args[len(args)-1]
 		if len(args) == 2 || len(args) == 3 {
