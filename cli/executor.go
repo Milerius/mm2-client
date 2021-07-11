@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"mm2_client/config"
 	"mm2_client/http"
+	"mm2_client/market_making"
 	"mm2_client/services"
 	"os"
 	"strconv"
@@ -134,9 +135,9 @@ func Executor(fullCommand string) {
 	case "get_binance_supported_pairs":
 		services.GetBinanceSupportedPairs()
 	case "start_simple_market_maker_bot":
-		services.StartSimpleMarketMakerBot()
+		market_making.StartSimpleMarketMakerBot()
 	case "stop_simple_market_maker_bot":
-		services.StopSimpleMarketMakerBotService()
+		market_making.StopSimpleMarketMakerBotService()
 	case "exit":
 		fmt.Println("Quitting the application - trying to shutdown MM2")
 		StopMM2()

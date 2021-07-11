@@ -1,5 +1,5 @@
 {
-  "KMD_BUSD-BEP20": {
+  "KMD_BUSD/BEP20": {
     "base": "KMD",
     "rel": "BUSD-BEP20",
     "max": true,
@@ -11,7 +11,7 @@
     "rel_nota": false,
     "enable": true
   },
-  "KMD_BUSD-ERC20": {
+  "KMD_BUSD/ERC20": {
     "base": "KMD",
     "rel": "BUSD-ERC20",
     "balance_percent": 50,
@@ -23,7 +23,7 @@
     "rel_nota": false,
     "enable": true
   },
-  "BUSD-ERC20_KMD": {
+  "BUSD/ERC20_KMD": {
     "base": "BUSD-ERC20",
     "rel": "KMD",
     "balance_percent": 20,

@@ -7,13 +7,14 @@ import (
 )
 
 var (
-	GMM2Dir                      = helpers.GetWorkingDir() + "/mm2"
-	GMM2BinPath                  = GMM2Dir + "/mm2"
-	GMM2ConfPath                 = GMM2Dir + "/MM2.json"
-	GMM2CoinsPath                = GMM2Dir + "/coins.json"
-	GSimpleMarketMakerConf       = GMM2Dir + "/simple_market_bot.json"
-	GMM2Running                  = false
-	GSimpleMarketMakerBotRunning = false
+	GMM2Dir                       = helpers.GetWorkingDir() + "/mm2"
+	GMM2BinPath                   = GMM2Dir + "/mm2"
+	GMM2ConfPath                  = GMM2Dir + "/MM2.json"
+	GMM2CoinsPath                 = GMM2Dir + "/coins.json"
+	GSimpleMarketMakerConf        = GMM2Dir + "/simple_market_bot.json"
+	GMM2Running                   = false
+	GSimpleMarketMakerBotRunning  = false
+	GSimpleMarketMakerBotStopping = false
 )
 
 func GetAppDataPath() string {

@@ -1,4 +1,4 @@
-package services
+package market_making
 
 import (
 	"encoding/json"
@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"mm2_client/constants"
+	"mm2_client/http"
 	"os"
 	"path/filepath"
 	"time"
@@ -32,11 +33,11 @@ var (
 )
 
 var gSimpleMarketMakerRegistry = make(map[string]SimplePairMarketMakerConf)
-var gQuitMarketMakerBot chan bool
+var gQuitMarketMakerBot chan struct{}
 
 func init() {
 	_ = os.MkdirAll(filepath.Join(constants.GetAppDataPath(), "logs"), os.ModePerm)
-	file, err := os.OpenFile(constants.GetAppDataPath()+"/logs/simple.market.maker.logs", os.O_CREATE|os.O_WRONLY, 0666)
+	file, err := os.OpenFile(constants.GetAppDataPath()+"/logs/simple.market.maker.logs", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -58,11 +59,26 @@ func NewMarketMakerConfFromFile(targetPath string) bool {
 
 func marketMakerProcess() {
 	InfoLogger.Println("process market maker")
-	for key, value := range gSimpleMarketMakerRegistry {
-		if value.Enable {
-			InfoLogger.Printf("Treating %s\n", key)
+
+	hitRegistry := make(map[string]bool)
+	//! Need to iterate through existing orders and update them
+	if resp := http.MyOrders(); resp != nil {
+		for _, curMakerOrder := range resp.Result.MakerOrders {
+			combination := curMakerOrder.Base + "/" + curMakerOrder.Rel
+			if val, ok := gSimpleMarketMakerRegistry[combination]; ok && val.Enable {
+				InfoLogger.Printf("Updating order [%s] from pair [%s]\n", curMakerOrder.Uuid, combination)
+				hitRegistry[combination] = true
+			}
 		}
 	}
+
+	//! If i didn't visit one of the supported coin i need to create an order
+	for curCombination, value := range gSimpleMarketMakerRegistry {
+		if _, ok := hitRegistry[curCombination]; !ok && value.Enable {
+			InfoLogger.Printf("Need to create order for pair: [%s]\n", curCombination)
+		}
+	}
+
 }
 
 func StartSimpleMarketMakerBotService() {
@@ -72,6 +88,7 @@ func StartSimpleMarketMakerBotService() {
 			InfoLogger.Println("Simple Market Maker Bot service successfully stopped")
 			constants.GSimpleMarketMakerBotRunning = false
 			close(gQuitMarketMakerBot)
+			constants.GSimpleMarketMakerBotStopping = false
 			return
 		default:
 			marketMakerProcess()
@@ -81,10 +98,16 @@ func StartSimpleMarketMakerBotService() {
 }
 
 func StopSimpleMarketMakerBotService() {
-	InfoLogger.Println("Stopping Simple Market Maker Bot Service - may take up to 30 seconds")
-	go func() {
-		gQuitMarketMakerBot <- true
-	}()
+	if !constants.GSimpleMarketMakerBotStopping && constants.GSimpleMarketMakerBotRunning {
+		constants.GSimpleMarketMakerBotStopping = true
+		//! Also need to cancel all existing orders (Could use by UUID meanwhile this time)
+		InfoLogger.Println("Stopping Simple Market Maker Bot Service - may take up to 30 seconds")
+		go func() {
+			gQuitMarketMakerBot <- struct{}{}
+		}()
+	} else {
+		fmt.Println("Simple market maker is still shutting down or not running")
+	}
 }
 
 func StartSimpleMarketMakerBot() {
@@ -95,7 +118,7 @@ func StartSimpleMarketMakerBot() {
 			if resp := NewMarketMakerConfFromFile(constants.GSimpleMarketMakerConf); resp {
 				InfoLogger.Printf("Starting simple market maker bot with %d coin(s)\n", len(gSimpleMarketMakerRegistry))
 				constants.GSimpleMarketMakerBotRunning = true
-				gQuitMarketMakerBot = make(chan bool)
+				gQuitMarketMakerBot = make(chan struct{})
 				go StartSimpleMarketMakerBotService()
 			} else {
 				fmt.Println("Couldn't start simple market maker without valid conf")
