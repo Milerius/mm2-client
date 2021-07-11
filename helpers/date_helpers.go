@@ -14,7 +14,7 @@ func GetDateFromTimestamp(timestamp int64, withoutSecond bool) string {
 
 func GetDateFromTimestampStandard(timestamp int64) string {
 	//fmt.Println(timestamp)
-	tm := time.Unix(timestamp/1000, timestamp)
+	tm := time.Unix(0, timestamp)
 	return tm.UTC().Format(time.RFC3339)
 }
 

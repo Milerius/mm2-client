@@ -133,7 +133,11 @@ func Executor(fullCommand string) {
 			Broadcast(command[1], command[2])
 		}
 	case "get_binance_supported_pairs":
-		services.GetBinanceSupportedPairs()
+		if len(command) == 1 {
+			services.GetBinanceSupportedPairs("")
+		} else if len(command) == 2 {
+			services.GetBinanceSupportedPairs(command[1])
+		}
 	case "start_simple_market_maker_bot":
 		market_making.StartSimpleMarketMakerBot()
 	case "stop_simple_market_maker_bot":
