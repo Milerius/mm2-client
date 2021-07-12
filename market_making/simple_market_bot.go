@@ -16,17 +16,18 @@ import (
 )
 
 type SimplePairMarketMakerConf struct {
-	Base           string  `json:"base"`
-	Rel            string  `json:"rel"`
-	Max            bool    `json:"max,omitempty"`
-	BalancePercent string  `json:"balance_percent,omitempty"`
-	MinVolume      *string `json:"min_volume,omitempty"`
-	Spread         string  `json:"spread"`
-	BaseConfs      int     `json:"base_confs"`
-	BaseNota       bool    `json:"base_nota"`
-	RelConfs       int     `json:"rel_confs"`
-	RelNota        bool    `json:"rel_nota"`
-	Enable         bool    `json:"enable"`
+	Base                 string   `json:"base"`
+	Rel                  string   `json:"rel"`
+	Max                  bool     `json:"max,omitempty"`
+	BalancePercent       string   `json:"balance_percent,omitempty"`
+	MinVolume            *string  `json:"min_volume,omitempty"`
+	Spread               string   `json:"spread"`
+	BaseConfs            int      `json:"base_confs"`
+	BaseNota             bool     `json:"base_nota"`
+	RelConfs             int      `json:"rel_confs"`
+	RelNota              bool     `json:"rel_nota"`
+	Enable               bool     `json:"enable"`
+	PriceElapsedValidity *float64 `json:"price_elapsed_validity,omitempty"`
 }
 
 var (
@@ -57,12 +58,20 @@ func NewMarketMakerConfFromFile(targetPath string) bool {
 		fmt.Println("Couldn't parse cfg file - aborting")
 		return false
 	}
+	for key, cur := range gSimpleMarketMakerRegistry {
+		if cur.PriceElapsedValidity == nil {
+			validity := 300.0
+			cur.PriceElapsedValidity = &validity
+			gSimpleMarketMakerRegistry[key] = cur
+			InfoLogger.Printf("Overriding price elapsed validity settings for %s/%s with %f - because it's not present in the json configuration\n", cur.Base, cur.Rel, 300.0)
+		}
+	}
 	return true
 }
 
 func updateOrderFromCfg(cfg SimplePairMarketMakerConf, makerOrder http.MakerOrderContent) {
 	cexPrice, calculated, date, provider := services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
-	if elapsed := helpers.DateToTimeElapsed(date); elapsed < (5 * time.Minute).Seconds() {
+	if elapsed := helpers.DateToTimeElapsed(date); elapsed < *cfg.PriceElapsedValidity {
 		price := helpers.BigFloatMultiply(cexPrice, cfg.Spread, 8)
 		resp := http.UpdateMakerOrder(makerOrder.Uuid, &price, nil, &cfg.Max, &makerOrder.MinBaseVol, &cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
 		if resp != nil {
@@ -73,47 +82,52 @@ func updateOrderFromCfg(cfg SimplePairMarketMakerConf, makerOrder http.MakerOrde
 	} else {
 		cancelResp := http.CancelOrder(makerOrder.Uuid)
 		if cancelResp != nil {
-			WarningLogger.Printf("Cancelled %s/%s order %s - reason: price elapsed > 5min\n", makerOrder.Base, makerOrder.Rel, makerOrder.Uuid)
+			WarningLogger.Printf("Cancelled %s/%s order %s - reason: price elapsed > %1f seconds\n", makerOrder.Base, makerOrder.Rel, makerOrder.Uuid, *cfg.PriceElapsedValidity)
 		}
 	}
 }
 
 func createOrderFromConf(cfg SimplePairMarketMakerConf) {
 	cexPrice, calculated, date, provider := services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
-	if elapsed := helpers.DateToTimeElapsed(date); elapsed < (5 * time.Minute).Seconds() {
+	if elapsed := helpers.DateToTimeElapsed(date); elapsed < *cfg.PriceElapsedValidity {
 		if helpers.AsFloat(cexPrice) > 0 {
 			price := helpers.BigFloatMultiply(cexPrice, cfg.Spread, 8)
 			var max *bool = nil
 			var volume *string = nil
 			var minVolume *string = nil
-			var maxBalance = http.MyBalance(cfg.Base).Balance
-			if cfg.Max {
-				max = helpers.BoolAddr(true)
-			} else {
-				vol := helpers.BigFloatMultiply(maxBalance, cfg.BalancePercent, 8)
-				volume = &vol
-			}
-			if cfg.MinVolume != nil {
+			respBalance := http.MyBalance(cfg.Base)
+			if respBalance != nil {
+				var maxBalance = respBalance.Balance
 				if cfg.Max {
-					minVol := helpers.BigFloatMultiply(maxBalance, *cfg.MinVolume, 8)
-					minVolume = &minVol
-				} else if !cfg.Max && volume != nil {
-					minVol := helpers.BigFloatMultiply(*volume, *cfg.MinVolume, 8)
-					minVolume = &minVol
+					max = helpers.BoolAddr(true)
+				} else {
+					vol := helpers.BigFloatMultiply(maxBalance, cfg.BalancePercent, 8)
+					volume = &vol
 				}
-			}
-			resp := http.SetPrice(cfg.Base, cfg.Rel, price, volume, max, true, minVolume,
-				&cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
-			if resp != nil {
-				InfoLogger.Printf("Successfully placed the %s/%s order: %s, calculated: %t cex_price: [%s] - our price: [%s] - elapsed since last price update: %f seconds - provider: %s\n", cfg.Base, cfg.Rel, resp.Result.Uuid, calculated, cexPrice, price, elapsed, provider)
+				if cfg.MinVolume != nil {
+					if cfg.Max {
+						minVol := helpers.BigFloatMultiply(maxBalance, *cfg.MinVolume, 8)
+						minVolume = &minVol
+					} else if !cfg.Max && volume != nil {
+						minVol := helpers.BigFloatMultiply(*volume, *cfg.MinVolume, 8)
+						minVolume = &minVol
+					}
+				}
+				resp := http.SetPrice(cfg.Base, cfg.Rel, price, volume, max, true, minVolume,
+					&cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
+				if resp != nil {
+					InfoLogger.Printf("Successfully placed the %s/%s order: %s, calculated: %t cex_price: [%s] - our price: [%s] - elapsed since last price update: %f seconds - provider: %s\n", cfg.Base, cfg.Rel, resp.Result.Uuid, calculated, cexPrice, price, elapsed, provider)
+				} else {
+					ErrorLogger.Printf("Couldn't place the order for %s/%s\n", cfg.Base, cfg.Rel)
+				}
 			} else {
-				ErrorLogger.Printf("Couldn't place the order for %s/%s\n", cfg.Base, cfg.Rel)
+				ErrorLogger.Printf("Cannot retrieve balance of %s - skipping", cfg.Base)
 			}
 		} else {
 			WarningLogger.Printf("Price is 0 for %s/%s - skipping order creation\n", cfg.Base, cfg.Rel)
 		}
 	} else {
-		WarningLogger.Printf("Last Price update for %s/%s is too far %f seconds, need to be under 5 minute to create an order\n", cfg.Base, cfg.Rel, helpers.DateToTimeElapsed(date))
+		WarningLogger.Printf("Last Price update for %s/%s is too far %1f seconds, need to be under %f seconds to create an order\n", cfg.Base, cfg.Rel, helpers.DateToTimeElapsed(date), *cfg.PriceElapsedValidity)
 	}
 }
 
