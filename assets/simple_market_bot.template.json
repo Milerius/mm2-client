@@ -33,6 +33,7 @@
     "base_nota": false, //< if you want to wait for notarization (works only if you're base coin support nota)
     "rel_confs": 1, //< number of rel transactions before the swap could be confirmed
     "rel_nota": false, //< if you want to wait for notarization (works only if you're rel coin support nota)
-    "enable": true //< the bot will ignore this entry if this value is set to false
+    "enable": true, //< the bot will ignore this entry if this value is set to false
+    "price_elapsed_validity": 30.0 ///< will cancel / not create order if price_last_update > price_elapsed_validity (optional fields - default 5min)
   }
 }
