@@ -29,6 +29,7 @@ type GenericEnableAnswer struct {
 	RequiresNotarization  bool   `json:"requires_notarization"`
 	UnspendableBalance    string `json:"unspendable_balance"`
 	Result                string `json:"result"`
+	Error                 string `json:"error,omitempty"`
 }
 
 func (answer *GenericEnableAnswer) ToTable() {
@@ -65,6 +66,8 @@ func ToTableGenericEnableAnswers(answers []GenericEnableAnswer) {
 			cur := []string{answer.Coin, answer.Address, answer.Balance, val, strconv.Itoa(answer.RequiredConfirmations),
 				strconv.FormatBool(answer.RequiresNotarization), answer.UnspendableBalance, answer.Result, provider}
 			data = append(data, cur)
+		} else {
+			fmt.Println("Error: " + answer.Error)
 		}
 	}
 

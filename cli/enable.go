@@ -34,14 +34,18 @@ func EnableMultipleCoins(coins []string) {
 		if val, ok := config.GCFGRegistry[v]; ok {
 			switch val.Type {
 			case "BEP-20", "ERC-20":
-				outBatch = append(outBatch, http.NewEnableRequest(val))
+				req := http.NewEnableRequest(val)
+				//fmt.Println(req)
+				outBatch = append(outBatch, req)
 				if !val.Active {
 					val.Active = true
 					config.GCFGRegistry[v] = val
 					requireUpdate = true
 				}
 			case "UTXO", "QRC-20", "Smart Chain":
-				outBatch = append(outBatch, http.NewElectrumRequest(val))
+				req := http.NewElectrumRequest(val)
+				//fmt.Println(req.ToJson())
+				outBatch = append(outBatch, req)
 				if !val.Active {
 					val.Active = true
 					config.GCFGRegistry[v] = val

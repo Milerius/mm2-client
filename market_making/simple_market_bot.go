@@ -63,7 +63,7 @@ func NewMarketMakerConfFromFile(targetPath string) bool {
 			validity := 300.0
 			cur.PriceElapsedValidity = &validity
 			gSimpleMarketMakerRegistry[key] = cur
-			InfoLogger.Printf("Overriding price elapsed validity settings for %s/%s with %f - because it's not present in the json configuration\n", cur.Base, cur.Rel, 300.0)
+			InfoLogger.Printf("Overriding price elapsed validity settings for %s/%s with %.1f - because it's not present in the json configuration\n", cur.Base, cur.Rel, 300.0)
 		}
 	}
 	return true
@@ -82,7 +82,7 @@ func updateOrderFromCfg(cfg SimplePairMarketMakerConf, makerOrder http.MakerOrde
 	} else {
 		cancelResp := http.CancelOrder(makerOrder.Uuid)
 		if cancelResp != nil {
-			WarningLogger.Printf("Cancelled %s/%s order %s - reason: price elapsed > %1f seconds\n", makerOrder.Base, makerOrder.Rel, makerOrder.Uuid, *cfg.PriceElapsedValidity)
+			WarningLogger.Printf("Cancelled %s/%s order %s - reason: price elapsed > %.1f seconds\n", makerOrder.Base, makerOrder.Rel, makerOrder.Uuid, *cfg.PriceElapsedValidity)
 		}
 	}
 }
@@ -127,7 +127,7 @@ func createOrderFromConf(cfg SimplePairMarketMakerConf) {
 			WarningLogger.Printf("Price is 0 for %s/%s - skipping order creation\n", cfg.Base, cfg.Rel)
 		}
 	} else {
-		WarningLogger.Printf("Last Price update for %s/%s is too far %1f seconds, need to be under %f seconds to create an order\n", cfg.Base, cfg.Rel, helpers.DateToTimeElapsed(date), *cfg.PriceElapsedValidity)
+		WarningLogger.Printf("Last Price update for %s/%s is too far %f seconds, need to be under %.1f seconds to create an order\n", cfg.Base, cfg.Rel, helpers.DateToTimeElapsed(date), *cfg.PriceElapsedValidity)
 	}
 }
 

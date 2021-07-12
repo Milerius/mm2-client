@@ -11,26 +11,28 @@ import (
 	"strconv"
 )
 
+type ElectrumData struct {
+	URL                     string  `json:"url"`
+	Protocol                *string `json:"protocol,omitempty"`
+	DisableCertVerification *bool   `json:"disable_cert_verification,omitempty"`
+}
+
 type DesktopCFG struct {
-	Coin          string `json:"coin"`
-	Name          string `json:"name"`
-	CoinpaprikaID string `json:"coinpaprika_id"`
-	CoingeckoID   string `json:"coingecko_id"`
-	Electrum      []struct {
-		URL                     string `json:"url"`
-		Protocol                string `json:"protocol"`
-		DisableCertVerification bool   `json:"disable_cert_verification"`
-	} `json:"electrum,omitempty"`
-	Nodes              []string `json:"nodes,omitempty"`
-	ExplorerURL        []string `json:"explorer_url"`
-	ExplorerTxURL      string   `json:"explorer_tx_url,omitempty"`
-	ExplorerAddressURL string   `json:"explorer_address_url,omitempty"`
-	Type               string   `json:"type"`
-	Active             bool     `json:"active"`
-	CurrentlyEnabled   bool     `json:"currently_enabled"`
-	IsClaimable        bool     `json:"is_claimable,omitempty"`
-	WalletOnly         bool     `json:"wallet_only,omitempty"`
-	IsTestNet          bool     `json:"is_testnet,omitempty"`
+	Coin               string         `json:"coin"`
+	Name               string         `json:"name"`
+	CoinpaprikaID      string         `json:"coinpaprika_id"`
+	CoingeckoID        string         `json:"coingecko_id"`
+	Electrum           []ElectrumData `json:"electrum,omitempty"`
+	Nodes              []string       `json:"nodes,omitempty"`
+	ExplorerURL        []string       `json:"explorer_url"`
+	ExplorerTxURL      string         `json:"explorer_tx_url,omitempty"`
+	ExplorerAddressURL string         `json:"explorer_address_url,omitempty"`
+	Type               string         `json:"type"`
+	Active             bool           `json:"active"`
+	CurrentlyEnabled   bool           `json:"currently_enabled"`
+	IsClaimable        bool           `json:"is_claimable,omitempty"`
+	WalletOnly         bool           `json:"wallet_only,omitempty"`
+	IsTestNet          bool           `json:"is_testnet,omitempty"`
 }
 
 const (
@@ -94,6 +96,24 @@ func (cfg *DesktopCFG) RetrieveContracts() (string, string) {
 	default:
 		return "", ""
 	}
+}
+
+func (cfg *DesktopCFG) RetrieveElectrums() []ElectrumData {
+	switch cfg.Type {
+	case "QRC-20":
+		if cfg.IsTestNet {
+			if val, ok := GCFGRegistry["tQTUM"]; ok {
+				return val.Electrum
+			}
+		} else {
+			if val, ok := GCFGRegistry["QTUM"]; ok {
+				return val.Electrum
+			}
+		}
+	default:
+		return cfg.Electrum
+	}
+	return cfg.Electrum
 }
 
 func Update(version string) {

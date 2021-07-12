@@ -10,17 +10,13 @@ import (
 )
 
 type ElectrumRequest struct {
-	Userpass  string `json:"userpass"`
-	Method    string `json:"method"`
-	Coin      string `json:"coin"`
-	TxHistory bool   `json:"tx_history"`
-	Servers   []struct {
-		URL                     string `json:"url"`
-		Protocol                string `json:"protocol,omitempty"`
-		DisableCertVerification bool   `json:"disable_cert_verification,omitempty"`
-	} `json:"servers"`
-	SwapContractAddress  string `json:"swap_contract_address,omitempty"`
-	FallbackSwapContract string `json:"fallback_swap_contract,omitempty"`
+	Userpass             string                `json:"userpass"`
+	Method               string                `json:"method"`
+	Coin                 string                `json:"coin"`
+	TxHistory            bool                  `json:"tx_history"`
+	Servers              []config.ElectrumData `json:"servers"`
+	SwapContractAddress  string                `json:"swap_contract_address,omitempty"`
+	FallbackSwapContract string                `json:"fallback_swap_contract,omitempty"`
 }
 
 func NewElectrumRequest(cfg *config.DesktopCFG) *ElectrumRequest {
@@ -28,11 +24,12 @@ func NewElectrumRequest(cfg *config.DesktopCFG) *ElectrumRequest {
 	req := &ElectrumRequest{Userpass: genReq.Userpass, Method: genReq.Method}
 	req.Coin = cfg.Coin
 	req.TxHistory = true
-	req.Servers = []struct {
-		URL                     string `json:"url"`
-		Protocol                string `json:"protocol,omitempty"`
-		DisableCertVerification bool   `json:"disable_cert_verification,omitempty"`
-	}(cfg.Electrum)
+	req.Servers = cfg.RetrieveElectrums()
+	for i, cur := range req.Servers {
+		if cur.Protocol != nil && *cur.Protocol == "" {
+			req.Servers[i].Protocol = nil
+		}
+	}
 	req.SwapContractAddress, req.FallbackSwapContract = cfg.RetrieveContracts()
 	return req
 }
