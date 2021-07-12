@@ -5,7 +5,11 @@ func RetrieveUSDValIfSupported(coin string) (string, string, string) {
 	if val == "0" {
 		val, date, provider = CoingeckoRetrieveUSDValIfSupported(coin)
 	}
-	return val, date, provider
+	if val != "0" {
+		return val, date, provider
+	} else {
+		return val, date, "unknown"
+	}
 }
 
 func RetrieveCEXRatesFromPair(base string, rel string) (string, bool, string, string) {
@@ -13,6 +17,10 @@ func RetrieveCEXRatesFromPair(base string, rel string) (string, bool, string, st
 	if val == "0" {
 		val, calculated, date, provider = CoingeckoRetrieveCEXRatesFromPair(base, rel)
 	}
-	//! Later add coingecko / paprika
-	return val, calculated, date, provider
+
+	if val != "0" {
+		return val, calculated, date, provider
+	} else {
+		return val, calculated, date, "unknown"
+	}
 }
