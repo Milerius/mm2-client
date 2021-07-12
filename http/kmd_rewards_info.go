@@ -33,7 +33,7 @@ func (answer *KMDRewardsInfoAnswer) ToTable() bool {
 	var data [][]string
 	valid := false
 	for _, cur := range answer.Result {
-		val, _ := services.RetrieveUSDValIfSupported("KMD")
+		val, _, provider := services.RetrieveUSDValIfSupported("KMD")
 		accrued := cur.AccruedRewards.Accrued
 		if val != "0" {
 			if cur.AccruedRewards.Accrued != "" {
@@ -48,13 +48,13 @@ func (answer *KMDRewardsInfoAnswer) ToTable() bool {
 		toInsert := []string{
 			cur.Amount, accrued, val,
 			helpers.GetDateFromTimestamp(cur.AccrueStartAt, true),
-			helpers.GetDateFromTimestamp(cur.AccrueStopAt, true)}
+			helpers.GetDateFromTimestamp(cur.AccrueStopAt, true), provider}
 		data = append(data, toInsert)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetAutoWrapText(false)
-	headers := []string{"Amount", "Accrued", "Accrued (USD)", "Start at", "Stop At"}
+	headers := []string{"Amount", "Accrued", "Accrued (USD)", "Start at", "Stop At", "Price Provider"}
 	table.SetHeader(headers)
 	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	table.SetCenterSeparator("|")

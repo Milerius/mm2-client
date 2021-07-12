@@ -61,23 +61,25 @@ func NewMarketMakerConfFromFile(targetPath string) bool {
 }
 
 func updateOrderFromCfg(cfg SimplePairMarketMakerConf, makerOrder http.MakerOrderContent) {
-	cexPrice, calculated, date := services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
+	cexPrice, calculated, date, provider := services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
 	if elapsed := helpers.DateToTimeElapsed(date); elapsed < (5 * time.Minute).Seconds() {
 		price := helpers.BigFloatMultiply(cexPrice, cfg.Spread, 8)
 		resp := http.UpdateMakerOrder(makerOrder.Uuid, &price, nil, &cfg.Max, &makerOrder.MinBaseVol, &cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
 		if resp != nil {
-			InfoLogger.Printf("Successfully updated order %s - cex_price: [%s] - new_price: [%s] - calculated: [%t] elapsed_since_price: %f seconds\n resp: [%v]", makerOrder.Uuid, cexPrice, price, calculated, elapsed, resp)
+			InfoLogger.Printf("Successfully updated %s/%s order %s - cex_price: [%s] - new_price: [%s] - calculated: [%t] elapsed_since_price: %f seconds - provider: %s\n resp: [%v]",
+				makerOrder.Base, makerOrder.Rel, makerOrder.Uuid,
+				cexPrice, price, calculated, elapsed, provider, resp)
 		}
 	} else {
 		cancelResp := http.CancelOrder(makerOrder.Uuid)
 		if cancelResp != nil {
-			WarningLogger.Printf("Cancelled order %s - reason: price elapsed > 5min\n", makerOrder.Uuid)
+			WarningLogger.Printf("Cancelled %s/%s order %s - reason: price elapsed > 5min\n", makerOrder.Base, makerOrder.Rel, makerOrder.Uuid)
 		}
 	}
 }
 
 func createOrderFromConf(cfg SimplePairMarketMakerConf) {
-	cexPrice, calculated, date := services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
+	cexPrice, calculated, date, provider := services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
 	if elapsed := helpers.DateToTimeElapsed(date); elapsed < (5 * time.Minute).Seconds() {
 		if helpers.AsFloat(cexPrice) > 0 {
 			price := helpers.BigFloatMultiply(cexPrice, cfg.Spread, 8)
@@ -103,7 +105,7 @@ func createOrderFromConf(cfg SimplePairMarketMakerConf) {
 			resp := http.SetPrice(cfg.Base, cfg.Rel, price, volume, max, true, minVolume,
 				&cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
 			if resp != nil {
-				InfoLogger.Printf("Successfully placed the order: %s, calculated: %t cex_price: [%s] - our price: [%s] - elapsed since last price update: %f seconds\n", resp.Result.Uuid, calculated, cexPrice, price, elapsed)
+				InfoLogger.Printf("Successfully placed the %s/%s order: %s, calculated: %t cex_price: [%s] - our price: [%s] - elapsed since last price update: %f seconds - provider: %s\n", cfg.Base, cfg.Rel, resp.Result.Uuid, calculated, cexPrice, price, elapsed, provider)
 			} else {
 				ErrorLogger.Printf("Couldn't place the order for %s/%s\n", cfg.Base, cfg.Rel)
 			}
@@ -111,7 +113,7 @@ func createOrderFromConf(cfg SimplePairMarketMakerConf) {
 			WarningLogger.Printf("Price is 0 for %s/%s - skipping order creation\n", cfg.Base, cfg.Rel)
 		}
 	} else {
-		WarningLogger.Printf("Last Price update is too far %f seconds, need to be under 5 minute to create an order\n", helpers.DateToTimeElapsed(date))
+		WarningLogger.Printf("Last Price update for %s/%s is too far %f seconds, need to be under 5 minute to create an order\n", cfg.Base, cfg.Rel, helpers.DateToTimeElapsed(date))
 	}
 }
 

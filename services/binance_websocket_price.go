@@ -29,22 +29,22 @@ func contains(coin string, stablecoin string) (string, string, bool) {
 	return valStr, dateStr, ok
 }
 
-func BinanceRetrieveUSDValIfSupported(coin string) (string, string) {
+func BinanceRetrieveUSDValIfSupported(coin string) (string, string, string) {
 	coin = helpers.RetrieveMainTicker(coin)
 	if valUSD, dateUSD, okUSD := contains(coin, "USD"); okUSD {
-		return valUSD, dateUSD
+		return valUSD, dateUSD, "binance"
 	} else if valUSDT, dateUSDT, okUSDT := contains(coin, "USDT"); okUSDT {
-		return valUSDT, dateUSDT
+		return valUSDT, dateUSDT, "binance"
 	} else if valBUSD, dateBUSD, okBUSD := contains(coin, "BUSD"); okBUSD {
-		return valBUSD, dateBUSD
+		return valBUSD, dateBUSD, "binance"
 	} else if valUSDC, dateUSDC, okUSDC := contains(coin, "USDC"); okUSDC {
-		return valUSDC, dateUSDC
+		return valUSDC, dateUSDC, "binance"
 	} else if valDAI, dateDAI, okDAI := contains(coin, "DAI"); okDAI {
-		return valDAI, dateDAI
+		return valDAI, dateDAI, "binance"
 	} else if helpers.IsAStableCoin(coin) {
-		return "1", helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
+		return "1", helpers.GetDateFromTimestampStandard(time.Now().UnixNano()), "binance"
 	}
-	return "0", helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
+	return "0", helpers.GetDateFromTimestampStandard(time.Now().UnixNano()), "binance"
 }
 
 func StartBinanceWebsocketService() {
@@ -157,8 +157,8 @@ func GetBinanceSupportedPairs(ticker string) []string {
 			continue
 		}
 		rel := splitted[1]
-		basePrice, dateBase := RetrieveUSDValIfSupported(base)
-		relPrice, dateRel := RetrieveUSDValIfSupported(rel)
+		basePrice, dateBase, _ := BinanceRetrieveUSDValIfSupported(base)
+		relPrice, dateRel, _ := BinanceRetrieveUSDValIfSupported(rel)
 		combined := helpers.RetrieveMainTicker(base) + helpers.RetrieveMainTicker(rel)
 		price := helpers.BigFloatDivide(basePrice, relPrice, 8)
 		calculated := true
@@ -189,9 +189,9 @@ func GetBinanceSupportedPairs(ticker string) []string {
 	return out
 }
 
-func BinanceRetrieveCEXRatesFromPair(base string, rel string) (string, bool, string) {
-	basePrice, baseDate := BinanceRetrieveUSDValIfSupported(base)
-	relPrice, relDate := BinanceRetrieveUSDValIfSupported(rel)
+func BinanceRetrieveCEXRatesFromPair(base string, rel string) (string, bool, string, string) {
+	basePrice, baseDate, _ := BinanceRetrieveUSDValIfSupported(base)
+	relPrice, relDate, _ := BinanceRetrieveUSDValIfSupported(rel)
 	combined := helpers.RetrieveMainTicker(base) + helpers.RetrieveMainTicker(rel)
 	price := helpers.BigFloatDivide(basePrice, relPrice, 8)
 	calculated := true
@@ -208,5 +208,5 @@ func BinanceRetrieveCEXRatesFromPair(base string, rel string) (string, bool, str
 		date = val.([]string)[1]
 		calculated = false
 	}
-	return price, calculated, date
+	return price, calculated, date, "binance"
 }

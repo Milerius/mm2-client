@@ -124,7 +124,7 @@ func StartCoingeckoService() {
 	}
 }
 
-func CoingeckoRetrieveUSDValIfSupported(coin string) (string, string) {
+func CoingeckoRetrieveUSDValIfSupported(coin string) (string, string, string) {
 	coin = helpers.RetrieveMainTicker(coin)
 	val, ok := CoingeckoPriceRegistry.Load(coin)
 	valStr := "0"
@@ -134,12 +134,12 @@ func CoingeckoRetrieveUSDValIfSupported(coin string) (string, string) {
 		valStr = fmt.Sprintf("%f", resp.CurrentPrice)
 		dateStr = resp.LastUpdated
 	}
-	return valStr, dateStr
+	return valStr, dateStr, "coingecko"
 }
 
-func CoingeckoRetrieveCEXRatesFromPair(base string, rel string) (string, bool, string) {
-	basePrice, baseDate := CoingeckoRetrieveUSDValIfSupported(base)
-	relPrice, relDate := CoingeckoRetrieveUSDValIfSupported(rel)
+func CoingeckoRetrieveCEXRatesFromPair(base string, rel string) (string, bool, string, string) {
+	basePrice, baseDate, _ := CoingeckoRetrieveUSDValIfSupported(base)
+	relPrice, relDate, _ := CoingeckoRetrieveUSDValIfSupported(rel)
 	price := helpers.BigFloatDivide(basePrice, relPrice, 8)
 	calculated := true
 	date := helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
@@ -148,5 +148,5 @@ func CoingeckoRetrieveCEXRatesFromPair(base string, rel string) (string, bool, s
 	} else {
 		date = relDate
 	}
-	return price, calculated, date
+	return price, calculated, date, "coingecko"
 }
