@@ -7,4 +7,5 @@ import (
 func LaunchServices() {
 	helpers.PrintCheck("Starting binance websocket service", true)
 	go StartBinanceWebsocketService()
+	go StartCoingeckoService()
 }
