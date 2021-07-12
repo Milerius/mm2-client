@@ -47,3 +47,11 @@ func DateToTimeElapsed(date string) float64 {
 	elapsed := time.Since(cur)
 	return elapsed.Seconds()
 }
+
+func RFC3339ToTimestamp(date string) int64 {
+	parse, err := time.Parse(time.RFC3339, date)
+	if err != nil {
+		return 0
+	}
+	return parse.UnixNano()
+}

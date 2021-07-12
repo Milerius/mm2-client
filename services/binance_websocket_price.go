@@ -190,12 +190,19 @@ func GetBinanceSupportedPairs(ticker string) []string {
 }
 
 func BinanceRetrieveCEXRatesFromPair(base string, rel string) (string, bool, string) {
-	basePrice, _ := BinanceRetrieveUSDValIfSupported(base)
-	relPrice, _ := BinanceRetrieveUSDValIfSupported(rel)
+	basePrice, baseDate := BinanceRetrieveUSDValIfSupported(base)
+	relPrice, relDate := BinanceRetrieveUSDValIfSupported(rel)
 	combined := helpers.RetrieveMainTicker(base) + helpers.RetrieveMainTicker(rel)
 	price := helpers.BigFloatDivide(basePrice, relPrice, 8)
 	calculated := true
 	date := helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
+	if helpers.RFC3339ToTimestamp(baseDate) <= helpers.RFC3339ToTimestamp(relDate) {
+		//fmt.Printf("Pick [%s date: %s] instead of [%s date: %s]\n", base, baseDate, rel, relDate)
+		date = baseDate
+	} else {
+		//fmt.Printf("Pick [%s date: %s] instead of [%s date: %s]\n", rel, relDate, base, baseDate)
+		date = relDate
+	}
 	if val, ok := BinancePriceRegistry.Load(combined); ok {
 		price = val.([]string)[0]
 		date = val.([]string)[1]

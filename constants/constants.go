@@ -20,7 +20,7 @@ var (
 func GetAppDataPath() string {
 	switch runtime.GOOS {
 	case "linux":
-		return os.Getenv("HOME") + "/atomicdex_cli"
+		return os.Getenv("HOME") + "/.atomicdex_cli"
 	case "darwin":
 		return os.Getenv("HOME") + "/Library/Application Support/atomicdex_cli"
 	case "windows":
