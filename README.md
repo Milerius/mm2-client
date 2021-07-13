@@ -14,7 +14,7 @@ Future tasks:
 - [x] cancel (if i want to cancel by UUID)
 - [x] update_maker_order (want to track UUID)
 - [x] gecko price service
-- [ ] paprika price service
+- [x] paprika price service
 - [x] binance websocket service
 - [x] add total in my_balance_all
 - [x] add am_i_seed in MM2.json if user wants it  
