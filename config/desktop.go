@@ -7,6 +7,7 @@ import (
 	"mm2_client/constants"
 	"mm2_client/helpers"
 	"os"
+	"path/filepath"
 	"runtime"
 	"strconv"
 )
@@ -63,6 +64,32 @@ func GetDesktopDB() string {
 		return os.Getenv("APPDATA") + "/atomic_qt/mm2/DB"
 	default:
 		return os.Getenv("HOME") + "atomic_qt/mm2/DB"
+	}
+}
+
+func GetDesktopPath(appName string) string {
+	if appName == "standard" {
+		switch runtime.GOOS {
+		case "linux":
+			return filepath.Join(os.Getenv("HOME"), "atomic_qt")
+		case "darwin":
+			return filepath.Join(os.Getenv("HOME"), "Library", "Application Support", "AtomicDex Desktop")
+		case "windows":
+			return filepath.Join(os.Getenv("APPDATA"), "atomic_qt")
+		default:
+			return filepath.Join(os.Getenv("HOME"), "atomic_qt")
+		}
+	} else {
+		switch runtime.GOOS {
+		case "linux":
+			return filepath.Join(os.Getenv("HOME"), appName)
+		case "darwin":
+			return filepath.Join(os.Getenv("HOME"), "Library", "Application Support", appName)
+		case "windows":
+			return filepath.Join(os.Getenv("APPDATA"), appName)
+		default:
+			return filepath.Join(os.Getenv("HOME"), appName)
+		}
 	}
 }
 
