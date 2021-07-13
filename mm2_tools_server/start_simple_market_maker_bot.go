@@ -60,7 +60,7 @@ func StartSimpleMarketMakerBot(ctx *fasthttp.RequestCtx) {
 	if err == nil {
 		ctx.SetStatusCode(200)
 		ctx.SetBodyString("Successfully started")
-		ctx.SetContentType("application/json")
+		//ctx.SetContentType("application/json")
 	} else {
 		ctx.SetStatusCode(fasthttp.StatusInternalServerError)
 		_ = glg.Errorf("Error during initialization: %v", err)

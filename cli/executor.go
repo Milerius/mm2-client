@@ -140,12 +140,12 @@ func Executor(fullCommand string) {
 			services.GetBinanceSupportedPairs(command[1])
 		}
 	case "start_simple_market_maker_bot":
-		market_making.StartSimpleMarketMakerBot(constants.GSimpleMarketMakerConf, "standard")
+		_ = market_making.StartSimpleMarketMakerBot(constants.GSimpleMarketMakerConf, "standard")
 	case "stop_simple_market_maker_bot":
-		market_making.StopSimpleMarketMakerBotService()
+		_ = market_making.StopSimpleMarketMakerBotService()
 	case "exit":
 		fmt.Println("Quitting the application - trying to shutdown MM2")
-		market_making.StopSimpleMarketMakerBotService()
+		_ = market_making.StopSimpleMarketMakerBotService()
 		StopMM2()
 		os.Exit(0)
 	}

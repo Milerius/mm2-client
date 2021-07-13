@@ -199,7 +199,7 @@ func startSimpleMarketMakerBotService() {
 	}
 }
 
-func StopSimpleMarketMakerBotService() {
+func StopSimpleMarketMakerBotService() error {
 	if !constants.GSimpleMarketMakerBotStopping && constants.GSimpleMarketMakerBotRunning {
 		constants.GSimpleMarketMakerBotStopping = true
 		//! Also need to cancel all existing orders (Could use by UUID meanwhile this time)
@@ -208,8 +208,10 @@ func StopSimpleMarketMakerBotService() {
 		go func() {
 			gQuitMarketMakerBot <- struct{}{}
 		}()
+		return nil
 	} else {
 		fmt.Println("Simple market maker is still shutting down or not running")
+		return errors.New("simple market maker is still shutting down or not running")
 	}
 }
 

@@ -16,5 +16,6 @@ func setResponseHeader(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 func InitRooter() *router.Router {
 	r := router.New()
 	r.POST("/api/v1/start_simple_market_maker_bot", setResponseHeader(StartSimpleMarketMakerBot))
+	r.POST("/api/v1/stop_simple_market_maker_bot", setResponseHeader(StopSimpleMarketMakerBot))
 	return r
 }
