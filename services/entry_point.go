@@ -1,11 +1,10 @@
 package services
 
-import (
-	"mm2_client/helpers"
-)
-
 func LaunchServices() {
-	helpers.PrintCheck("Starting binance websocket service", true)
+	infoLogger.Println("Starting binance websocket service")
 	go StartBinanceWebsocketService()
+	infoLogger.Println("Starting coingecko price service")
 	go StartCoingeckoService()
+	infoLogger.Println("Starting coinpaprika price service")
+	go StartCoinpaprikaService()
 }
