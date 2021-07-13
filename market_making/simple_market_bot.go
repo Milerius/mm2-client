@@ -42,6 +42,7 @@ var gSimpleMarketMakerRegistry = make(map[string]SimplePairMarketMakerConf)
 var gQuitMarketMakerBot chan struct{}
 
 func initLog(path string) {
+	fmt.Println("Init " + path)
 	file, err := os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal(err)
@@ -236,7 +237,7 @@ func cancelPendingOrders() {
 
 func StartSimpleMarketMakerBot(path string, appName string) error {
 	if path != constants.GSimpleMarketMakerConf {
-		initLog(config.GetDesktopPath(filepath.Join(config.GetDesktopPath(appName), "logs", "simple.market.maker.log")))
+		initLog(filepath.Join(config.GetDesktopPath(appName), "logs", "simple.market.maker.log"))
 	}
 	if constants.GMM2Running {
 		if constants.GSimpleMarketMakerBotRunning {

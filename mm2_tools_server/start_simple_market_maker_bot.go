@@ -10,6 +10,7 @@ import (
 	"mm2_client/constants"
 	mm2_http "mm2_client/http"
 	"mm2_client/market_making"
+	"mm2_client/services"
 	"net/http"
 )
 
@@ -23,12 +24,19 @@ type StartSimpleMarketMakerRequest struct {
 func internalStartSimpleMarketMakerBot(out *StartSimpleMarketMakerRequest) error {
 	//! We assume mm2 is already running
 	constants.GMM2Running = true
-	mm2_http.GRuntimeUserpass = out.Mm2Userpass
-
+	if out.Mm2Userpass != "" {
+		mm2_http.GRuntimeUserpass = out.Mm2Userpass
+	} else {
+		return errors.New("mm2 userpass cannot be empty")
+	}
 	if res := config.ParseDesktopRegistryFromFile(out.DesktopCfgPath); res {
 		_ = glg.Infof("Desktop cfg successfully parsed, nb coins: %d", len(config.GCFGRegistry))
 		res = config.ParseMM2CFGRegistryFromFile(out.Mm2CoinsCfgPath)
 		if res {
+			//! Launch price services
+			services.LaunchServices()
+
+			//! Launch the bot afterwards
 			return market_making.StartSimpleMarketMakerBot(out.MarketMakerCfgPath, gAppName)
 		} else {
 			return errors.New("couldn't parse MM2 coins file")
@@ -55,6 +63,7 @@ func StartSimpleMarketMakerBot(ctx *fasthttp.RequestCtx) {
 		ctx.SetContentType("application/json")
 	} else {
 		ctx.SetStatusCode(fasthttp.StatusInternalServerError)
+		_ = glg.Errorf("Error during initialization: %v", err)
 		ctx.SetBodyString(err.Error())
 	}
 }
