@@ -13,7 +13,7 @@ Future tasks:
 - [x] prompt use DB desktop
 - [x] cancel (if i want to cancel by UUID)
 - [x] update_maker_order (want to track UUID)
-- [ ] gecko price service
+- [x] gecko price service
 - [ ] paprika price service
 - [x] binance websocket service
 - [x] add total in my_balance_all
