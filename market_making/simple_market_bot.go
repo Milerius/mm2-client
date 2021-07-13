@@ -2,9 +2,11 @@ package market_making
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"mm2_client/config"
 	"mm2_client/constants"
 	"mm2_client/helpers"
 	"mm2_client/http"
@@ -39,9 +41,8 @@ var (
 var gSimpleMarketMakerRegistry = make(map[string]SimplePairMarketMakerConf)
 var gQuitMarketMakerBot chan struct{}
 
-func init() {
-	_ = os.MkdirAll(filepath.Join(constants.GetAppDataPath(), "logs"), os.ModePerm)
-	file, err := os.OpenFile(constants.GetAppDataPath()+"/logs/simple.market.maker.logs", os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
+func initLog(path string) {
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -49,6 +50,11 @@ func init() {
 	InfoLogger = log.New(file, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
 	WarningLogger = log.New(file, "WARNING: ", log.Ldate|log.Ltime|log.Lshortfile)
 	ErrorLogger = log.New(file, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
+}
+
+func init() {
+	_ = os.MkdirAll(filepath.Join(constants.GetAppDataPath(), "logs"), os.ModePerm)
+	initLog(filepath.Join(constants.GetAppDataPath(), "logs", "simple.market.maker.logs"))
 }
 
 func NewMarketMakerConfFromFile(targetPath string) bool {
@@ -228,22 +234,29 @@ func cancelPendingOrders() {
 	}
 }
 
-func StartSimpleMarketMakerBot() {
+func StartSimpleMarketMakerBot(path string, appName string) error {
+	if path != constants.GSimpleMarketMakerConf {
+		initLog(config.GetDesktopPath(filepath.Join(config.GetDesktopPath(appName), "logs", "simple.market.maker.log")))
+	}
 	if constants.GMM2Running {
 		if constants.GSimpleMarketMakerBotRunning {
 			fmt.Println("Simple Market Maker bot is already running (or being stopped) - skipping")
+			return errors.New("simple Market Maker bot is already running (or being stopped) - skipping")
 		} else {
-			if resp := NewMarketMakerConfFromFile(constants.GSimpleMarketMakerConf); resp {
+			if resp := NewMarketMakerConfFromFile(path); resp {
 				cancelPendingOrders()
 				InfoLogger.Printf("Starting simple market maker bot with %d coin(s)\n", len(gSimpleMarketMakerRegistry))
 				constants.GSimpleMarketMakerBotRunning = true
 				gQuitMarketMakerBot = make(chan struct{})
 				go startSimpleMarketMakerBotService()
+				return nil
 			} else {
 				fmt.Println("Couldn't start simple market maker without valid conf")
+				return errors.New("couldn't start simple market maker without valid conf")
 			}
 		}
 	} else {
 		fmt.Println("MM2 need to be started before starting the simple market maker bot")
+		return errors.New("mm2 need to be started before starting the simple market maker bot")
 	}
 }

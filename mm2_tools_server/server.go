@@ -10,7 +10,10 @@ import (
 	"log"
 )
 
-func LaunchServer() {
+var gAppName = ""
+
+func LaunchServer(appName string) {
+	gAppName = appName
 	router := InitRooter()
 	rate, err := limiter.NewRateFromFormatted("30-M")
 	if err != nil {

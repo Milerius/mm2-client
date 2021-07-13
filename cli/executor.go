@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 	"mm2_client/config"
+	"mm2_client/constants"
 	"mm2_client/http"
 	"mm2_client/market_making"
 	"mm2_client/services"
@@ -139,7 +140,7 @@ func Executor(fullCommand string) {
 			services.GetBinanceSupportedPairs(command[1])
 		}
 	case "start_simple_market_maker_bot":
-		market_making.StartSimpleMarketMakerBot()
+		market_making.StartSimpleMarketMakerBot(constants.GSimpleMarketMakerConf, "standard")
 	case "stop_simple_market_maker_bot":
 		market_making.StopSimpleMarketMakerBotService()
 	case "exit":

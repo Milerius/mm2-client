@@ -23,5 +23,5 @@ func main() {
 	} else {
 		_ = glg.Infof("Logger initialized for app: %s", appName)
 	}
-	mm2_tools_server.LaunchServer()
+	mm2_tools_server.LaunchServer(appName)
 }

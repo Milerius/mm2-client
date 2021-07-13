@@ -17,7 +17,7 @@ type MM2GenericRequest struct {
 	Userpass string `json:"userpass"`
 }
 
-var gRuntimeUserpass = ""
+var GRuntimeUserpass = ""
 
 const GMM2Endpoint = "http://127.0.0.1:7783"
 
@@ -83,10 +83,10 @@ func ToTableGenericEnableAnswers(answers []GenericEnableAnswer) {
 }
 
 func NewGenericRequest(method string) *MM2GenericRequest {
-	if gRuntimeUserpass == "" {
-		gRuntimeUserpass = config.NewMM2ConfigFromFile(constants.GMM2ConfPath).RPCPassword
+	if GRuntimeUserpass == "" {
+		GRuntimeUserpass = config.NewMM2ConfigFromFile(constants.GMM2ConfPath).RPCPassword
 	}
-	return &MM2GenericRequest{Method: method, Userpass: gRuntimeUserpass}
+	return &MM2GenericRequest{Method: method, Userpass: GRuntimeUserpass}
 }
 
 func (req MM2GenericRequest) ToJson() string {

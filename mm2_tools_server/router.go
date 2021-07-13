@@ -15,7 +15,6 @@ func setResponseHeader(h fasthttp.RequestHandler) fasthttp.RequestHandler {
 
 func InitRooter() *router.Router {
 	r := router.New()
-	//r.GET("/api/v1/eth_tx_history/{address}", setResponseHeader(EthTransactionsHistory))
-	//r.GET("/api/v1/ohlc/tickers_list", OHLCGetAvailablePairs)
+	r.POST("/api/v1/start_simple_market_maker_bot", setResponseHeader(StartSimpleMarketMakerBot))
 	return r
 }

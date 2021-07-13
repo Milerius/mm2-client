@@ -68,6 +68,18 @@ func ParseMM2CFGRegistry() {
 	helpers.PrintCheck("Successfully load MM2 cfg with "+strconv.Itoa(len(GMM2CFGRegistry))+" coins", true)
 }
 
+func ParseMM2CFGRegistryFromFile(path string) bool {
+	file, _ := ioutil.ReadFile(path)
+	err := json.Unmarshal(file, &GMM2CFGArray)
+	if err != nil {
+		return false
+	}
+	for _, v := range GMM2CFGArray {
+		GMM2CFGRegistry[v.Coin] = v
+	}
+	return true
+}
+
 func RetrieveContractsInfo(coin string) string {
 	if val, ok := GMM2CFGRegistry[coin]; ok {
 		return val.Protocol.ProtocolData.ContractAddress

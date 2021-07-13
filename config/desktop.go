@@ -100,6 +100,12 @@ func ParseDesktopRegistry(version string) {
 	helpers.PrintCheck("Successfully load desktop cfg with "+strconv.Itoa(len(GCFGRegistry))+" coins", true)
 }
 
+func ParseDesktopRegistryFromFile(path string) bool {
+	file, _ := ioutil.ReadFile(path)
+	_ = json.Unmarshal([]byte(file), &GCFGRegistry)
+	return len(GCFGRegistry) > 0
+}
+
 func (cfg *DesktopCFG) RetrieveContracts() (string, string) {
 	switch cfg.Type {
 	case "BEP-20":
