@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"mm2_client/config"
 	"mm2_client/helpers"
 	"net/http"
 	"sync"
@@ -72,11 +73,20 @@ func processCoinpaprika() *[]CoinpaprikaAnswer {
 }
 
 func StartCoinpaprikaService() {
+	functorVerification := func(ticker string, answer CoinpaprikaAnswer) {
+		if val, ok := config.GCFGRegistry[ticker]; ok && val.CoinpaprikaID == answer.Id {
+			ticker = helpers.RetrieveMainTicker(ticker)
+			CoinpaprikaRegistry.Store(ticker, answer)
+		}
+	}
 	for {
 		if resp := processCoinpaprika(); resp != nil {
 			infoLogger.Println("Coinpaprika request successfully processed")
 			for _, cur := range *resp {
-				CoinpaprikaRegistry.Store(cur.Symbol, cur)
+				functorVerification(cur.Symbol, cur)
+				functorVerification(cur.Symbol+"-ERC20", cur)
+				functorVerification(cur.Symbol+"-BEP20", cur)
+				functorVerification(cur.Symbol+"-QRC20", cur)
 			}
 		} else {
 			warningLogger.Println("Something went wrong when processing coinpaprika request")
