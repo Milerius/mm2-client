@@ -200,24 +200,10 @@ func StopSimpleMarketMakerBotService() error {
 }
 
 func cancelPendingOrders() {
-	var outBatch []interface{}
-	if resp := http.MyOrders(); resp != nil {
-		for _, cur := range resp.Result.MakerOrders {
-			if req := http.NewCancelOrderRequest(cur.Uuid); req != nil {
-				outBatch = append(outBatch, req)
-			}
-		}
-	}
-
-	resp := http.BatchRequest(outBatch)
-	if len(resp) > 0 {
-		var outResp []http.CancelOrderAnswer
-		err := json.Unmarshal([]byte(resp), &outResp)
-		if err != nil {
-			glg.Warn("Couldn't cancel all pending orders")
-		} else {
-			glg.Info("Successfully cancelled all pending orders")
-		}
+	if resp := http.CancelAllOrders("all", []string{}); resp != nil {
+		glg.Info("Successfully cancelled all pending orders")
+	} else {
+		glg.Warn("Couldn't cancel all pending orders")
 	}
 }
 
