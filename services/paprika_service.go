@@ -3,6 +3,7 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/kpango/glg"
 	"io/ioutil"
 	"mm2_client/config"
 	"mm2_client/helpers"
@@ -51,7 +52,7 @@ var CoinpaprikaRegistry sync.Map
 
 func processCoinpaprika() *[]CoinpaprikaAnswer {
 	url := gPaprikaEndpoint
-	infoLogger.Printf("Processing coinpaprika request: %s\n", url)
+	glg.Infof("Processing coinpaprika request: %s", url)
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil
@@ -67,7 +68,7 @@ func processCoinpaprika() *[]CoinpaprikaAnswer {
 		return answer
 	} else {
 		bodyBytes, _ := ioutil.ReadAll(resp.Body)
-		warningLogger.Printf("Http status not OK: %s\n", bodyBytes)
+		glg.Errorf("Http status not OK: %s", bodyBytes)
 		return nil
 	}
 }
@@ -81,7 +82,7 @@ func StartCoinpaprikaService() {
 	}
 	for {
 		if resp := processCoinpaprika(); resp != nil {
-			infoLogger.Println("Coinpaprika request successfully processed")
+			glg.Info("Coinpaprika request successfully processed")
 			for _, cur := range *resp {
 				functorVerification(cur.Symbol, cur)
 				functorVerification(cur.Symbol+"-ERC20", cur)
@@ -89,7 +90,7 @@ func StartCoinpaprikaService() {
 				functorVerification(cur.Symbol+"-QRC20", cur)
 			}
 		} else {
-			warningLogger.Println("Something went wrong when processing coinpaprika request")
+			glg.Error("Something went wrong when processing coinpaprika request")
 		}
 		time.Sleep(time.Second * 30)
 	}

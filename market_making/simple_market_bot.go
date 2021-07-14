@@ -4,9 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/kpango/glg"
 	"io/ioutil"
-	"log"
-	"mm2_client/config"
 	"mm2_client/constants"
 	"mm2_client/helpers"
 	"mm2_client/http"
@@ -32,30 +31,11 @@ type SimplePairMarketMakerConf struct {
 	PriceElapsedValidity *float64 `json:"price_elapsed_validity,omitempty"`
 }
 
-var (
-	WarningLogger *log.Logger
-	InfoLogger    *log.Logger
-	ErrorLogger   *log.Logger
-)
-
 var gSimpleMarketMakerRegistry = make(map[string]SimplePairMarketMakerConf)
 var gQuitMarketMakerBot chan struct{}
 
-func initLog(path string) {
-	fmt.Println("Init " + path)
-	file, err := os.OpenFile(path, os.O_CREATE|os.O_TRUNC|os.O_WRONLY, 0666)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	InfoLogger = log.New(file, "INFO: ", log.Ldate|log.Ltime|log.Lshortfile)
-	WarningLogger = log.New(file, "WARNING: ", log.Ldate|log.Ltime|log.Lshortfile)
-	ErrorLogger = log.New(file, "ERROR: ", log.Ldate|log.Ltime|log.Lshortfile)
-}
-
 func init() {
 	_ = os.MkdirAll(filepath.Join(constants.GetAppDataPath(), "logs"), os.ModePerm)
-	initLog(filepath.Join(constants.GetAppDataPath(), "logs", "simple.market.maker.logs"))
 }
 
 func NewMarketMakerConfFromFile(targetPath string) bool {
@@ -70,7 +50,7 @@ func NewMarketMakerConfFromFile(targetPath string) bool {
 			validity := 300.0
 			cur.PriceElapsedValidity = &validity
 			gSimpleMarketMakerRegistry[key] = cur
-			InfoLogger.Printf("Overriding price elapsed validity settings for %s/%s with %.1f - because it's not present in the json configuration\n", cur.Base, cur.Rel, 300.0)
+			glg.Infof("Overriding price elapsed validity settings for %s/%s with %.1f - because it's not present in the json configuration", cur.Base, cur.Rel, 300.0)
 		}
 	}
 	return true
@@ -82,14 +62,16 @@ func updateOrderFromCfg(cfg SimplePairMarketMakerConf, makerOrder http.MakerOrde
 		price := helpers.BigFloatMultiply(cexPrice, cfg.Spread, 8)
 		resp := http.UpdateMakerOrder(makerOrder.Uuid, &price, nil, &cfg.Max, &makerOrder.MinBaseVol, &cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
 		if resp != nil {
-			InfoLogger.Printf("Successfully updated %s/%s order %s - cex_price: [%s] - new_price: [%s] - calculated: [%t] elapsed_since_price: %f seconds - provider: %s\n resp: [%v]",
+			glg.Infof("Successfully updated %s/%s order %s - cex_price: [%s] - new_price: [%s] - calculated: [%t] elapsed_since_price: %f seconds - provider: %s",
 				makerOrder.Base, makerOrder.Rel, makerOrder.Uuid,
-				cexPrice, price, calculated, elapsed, provider, resp)
+				cexPrice, price, calculated, elapsed, provider)
+			glg.Get().EnableJSON().Info(resp)
+			glg.Get().DisableJSON()
 		}
 	} else {
 		cancelResp := http.CancelOrder(makerOrder.Uuid)
 		if cancelResp != nil {
-			WarningLogger.Printf("Cancelled %s/%s order %s - reason: price elapsed > %.1f seconds\n", makerOrder.Base, makerOrder.Rel, makerOrder.Uuid, *cfg.PriceElapsedValidity)
+			glg.Warnf("Cancelled %s/%s order %s - reason: price elapsed > %.1f seconds", makerOrder.Base, makerOrder.Rel, makerOrder.Uuid, *cfg.PriceElapsedValidity)
 		}
 	}
 }
@@ -123,27 +105,29 @@ func createOrderFromConf(cfg SimplePairMarketMakerConf) {
 				resp := http.SetPrice(cfg.Base, cfg.Rel, price, volume, max, true, minVolume,
 					&cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
 				if resp != nil {
-					InfoLogger.Printf("Successfully placed the %s/%s order: %s, calculated: %t cex_price: [%s] - our price: [%s] - elapsed since last price update: %f seconds - provider: %s\n", cfg.Base, cfg.Rel, resp.Result.Uuid, calculated, cexPrice, price, elapsed, provider)
+					glg.Infof("Successfully placed the %s/%s order: %s, calculated: %t cex_price: [%s] - our price: [%s] - elapsed since last price update: %f seconds - provider: %s", cfg.Base, cfg.Rel, resp.Result.Uuid, calculated, cexPrice, price, elapsed, provider)
+					glg.Get().EnableJSON().Info(resp)
+					glg.Get().DisableJSON()
 				} else {
-					ErrorLogger.Printf("Couldn't place the order for %s/%s\n", cfg.Base, cfg.Rel)
+					glg.Errorf("Couldn't place the order for %s/%s", cfg.Base, cfg.Rel)
 				}
 			} else {
-				ErrorLogger.Printf("Cannot retrieve balance of %s - skipping", cfg.Base)
+				glg.Errorf("Cannot retrieve balance of %s - skipping", cfg.Base)
 			}
 		} else {
-			WarningLogger.Printf("Price is 0 for %s/%s - skipping order creation\n", cfg.Base, cfg.Rel)
+			glg.Warnf("Price is 0 for %s/%s - skipping order creation", cfg.Base, cfg.Rel)
 		}
 	} else {
-		WarningLogger.Printf("Last Price update for %s/%s is too far %f seconds, need to be under %.1f seconds to create an order\n", cfg.Base, cfg.Rel, helpers.DateToTimeElapsed(date), *cfg.PriceElapsedValidity)
+		glg.Warnf("Last Price update for %s/%s is too far %f seconds, need to be under %.1f seconds to create an order", cfg.Base, cfg.Rel, helpers.DateToTimeElapsed(date), *cfg.PriceElapsedValidity)
 	}
 }
 
 func marketMakerProcess() {
-	InfoLogger.Println("process market maker")
+	glg.Info("process market maker")
 
 	hitRegistry := make(map[string]bool)
 
-	InfoLogger.Println("Retrieving my orders for the update")
+	glg.Info("Retrieving my orders for the update")
 	//! Need to iterate through existing orders and update them
 	wgUpdate := sync.WaitGroup{}
 	updateFunctor := func(cfg SimplePairMarketMakerConf, makerOrder http.MakerOrderContent, combination string) {
@@ -161,14 +145,14 @@ func marketMakerProcess() {
 		}
 	}
 	wgUpdate.Wait()
-	InfoLogger.Println("Orders updated")
+	glg.Info("Orders updated")
 
-	InfoLogger.Println("Iterating over order that have not been updated and that need a creation")
+	glg.Info("Iterating over order that have not been updated and that need a creation")
 	//! If i didn't visit one of the supported coin i need to create an order
 	wgCreate := sync.WaitGroup{}
 	creatorFunctor := func(cfg SimplePairMarketMakerConf, combination string) {
 		defer wgCreate.Done()
-		InfoLogger.Printf("Need to create order for pair: [%s]\n", combination)
+		glg.Infof("Need to create order for pair: [%s]", combination)
 		createOrderFromConf(cfg)
 	}
 
@@ -179,14 +163,14 @@ func marketMakerProcess() {
 		}
 	}
 	wgCreate.Wait()
-	InfoLogger.Println("Orders created")
+	glg.Info("Orders created")
 }
 
 func startSimpleMarketMakerBotService() {
 	for {
 		select {
 		case <-gQuitMarketMakerBot:
-			InfoLogger.Println("Simple Market Maker Bot service successfully stopped")
+			glg.Info("Simple Market Maker Bot service successfully stopped")
 			constants.GSimpleMarketMakerBotRunning = false
 			close(gQuitMarketMakerBot)
 			constants.GSimpleMarketMakerBotStopping = false
@@ -203,7 +187,7 @@ func StopSimpleMarketMakerBotService() error {
 	if !constants.GSimpleMarketMakerBotStopping && constants.GSimpleMarketMakerBotRunning {
 		constants.GSimpleMarketMakerBotStopping = true
 		//! Also need to cancel all existing orders (Could use by UUID meanwhile this time)
-		InfoLogger.Println("Stopping Simple Market Maker Bot Service - may take up to 30 seconds")
+		glg.Info("Stopping Simple Market Maker Bot Service - may take up to 30 seconds")
 		cancelPendingOrders()
 		go func() {
 			gQuitMarketMakerBot <- struct{}{}
@@ -230,17 +214,14 @@ func cancelPendingOrders() {
 		var outResp []http.CancelOrderAnswer
 		err := json.Unmarshal([]byte(resp), &outResp)
 		if err != nil {
-			WarningLogger.Println("Couldn't cancel all pending orders")
+			glg.Warn("Couldn't cancel all pending orders")
 		} else {
-			InfoLogger.Println("Successfully cancelled all pending orders")
+			glg.Info("Successfully cancelled all pending orders")
 		}
 	}
 }
 
 func StartSimpleMarketMakerBot(path string, appName string) error {
-	if path != constants.GSimpleMarketMakerConf {
-		initLog(filepath.Join(config.GetDesktopPath(appName), "logs", "simple.market.maker.log"))
-	}
 	if constants.GMM2Running {
 		if constants.GSimpleMarketMakerBotRunning {
 			fmt.Println("Simple Market Maker bot is already running (or being stopped) - skipping")
@@ -248,7 +229,7 @@ func StartSimpleMarketMakerBot(path string, appName string) error {
 		} else {
 			if resp := NewMarketMakerConfFromFile(path); resp {
 				cancelPendingOrders()
-				InfoLogger.Printf("Starting simple market maker bot with %d coin(s)\n", len(gSimpleMarketMakerRegistry))
+				glg.Infof("Starting simple market maker bot with %d coin(s)", len(gSimpleMarketMakerRegistry))
 				constants.GSimpleMarketMakerBotRunning = true
 				gQuitMarketMakerBot = make(chan struct{})
 				go startSimpleMarketMakerBotService()

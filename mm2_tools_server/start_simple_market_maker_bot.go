@@ -34,7 +34,10 @@ func internalStartSimpleMarketMakerBot(out *StartSimpleMarketMakerRequest) error
 		res = config.ParseMM2CFGRegistryFromFile(out.Mm2CoinsCfgPath)
 		if res {
 			//! Launch price services
-			services.LaunchServices()
+			if !constants.GPricesServicesRunning {
+				_ = glg.Info("Launch price services")
+				services.LaunchServices()
+			}
 
 			//! Launch the bot afterwards
 			return market_making.StartSimpleMarketMakerBot(out.MarketMakerCfgPath, gAppName)

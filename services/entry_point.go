@@ -1,10 +1,16 @@
 package services
 
+import (
+	"github.com/kpango/glg"
+	"mm2_client/constants"
+)
+
 func LaunchServices() {
-	infoLogger.Println("Starting binance websocket service")
+	glg.Info("Starting binance websocket service")
 	go StartBinanceWebsocketService()
-	infoLogger.Println("Starting coingecko price service")
+	glg.Info("Starting coingecko price service")
 	go StartCoingeckoService()
-	infoLogger.Println("Starting coinpaprika price service")
+	glg.Info("Starting coinpaprika price service")
 	go StartCoinpaprikaService()
+	constants.GPricesServicesRunning = true
 }

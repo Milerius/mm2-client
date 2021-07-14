@@ -3,8 +3,8 @@ package services
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/kpango/glg"
 	"io/ioutil"
-	"log"
 	"mm2_client/config"
 	"mm2_client/helpers"
 	"net/http"
@@ -54,12 +54,6 @@ const gCoingeckoEndpoint = "https://api.coingecko.com/api/v3/coins/markets?vs_cu
 
 var CoingeckoPriceRegistry sync.Map
 
-var (
-	warningLogger *log.Logger
-	infoLogger    *log.Logger
-	errorLogger   *log.Logger
-)
-
 func NewCoingeckoRequest() string {
 	url := gCoingeckoEndpoint
 	for _, cur := range config.GCFGRegistry {
@@ -74,7 +68,7 @@ func NewCoingeckoRequest() string {
 
 func processCoingecko() *[]CoingeckoAnswer {
 	url := NewCoingeckoRequest()
-	infoLogger.Printf("Processing coingecko request: %s\n", url)
+	_ = glg.Infof("Processing coingecko request: %s", url)
 	resp, err := http.Get(url)
 	if err != nil {
 		return nil
@@ -90,7 +84,7 @@ func processCoingecko() *[]CoingeckoAnswer {
 		return answer
 	} else {
 		bodyBytes, _ := ioutil.ReadAll(resp.Body)
-		warningLogger.Printf("Http status not OK: %s\n", bodyBytes)
+		glg.Errorf("Http status not OK: %s", bodyBytes)
 		return nil
 	}
 }
@@ -98,12 +92,12 @@ func processCoingecko() *[]CoingeckoAnswer {
 func StartCoingeckoService() {
 	for {
 		if resp := processCoingecko(); resp != nil {
-			infoLogger.Println("Coingecko request successfully processed")
+			glg.Info("Coingecko request successfully processed")
 			for _, cur := range *resp {
 				CoingeckoPriceRegistry.Store(strings.ToUpper(cur.Symbol), cur)
 			}
 		} else {
-			warningLogger.Println("Something went wrong when processing coingecko request")
+			glg.Error("Something went wrong when processing coingecko request")
 		}
 		time.Sleep(time.Second * 30)
 	}
