@@ -56,3 +56,24 @@ cp assets/simple_market_bot.template.json mm2/simple_market_bot.json
 ## from another terminal
 tail -f  ~/.atomicdex_cli/logs/simple.market.maker.logs
 ```
+
+### How to use the simple market maker bot with an existing atomicdex instance
+
+```
+go build -o mm2_tools_server_bin cmd/mm2_tools_server.go
+./mm2_tools_server_bin
+
+# Assuming your userpass for the session is foobar
+# Starting the simple market maker bot
+curl --location --request POST 'localhost:1313/api/v1/start_simple_market_maker_bot' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+  "desktop_cfg_path": "/Users/milerius/Library/Application Support/AtomicDex Desktop/config/0.5.0-coins.Roman.json",
+  "mm2_coins_cfg_path": "/Users/milerius/Library/Application Support/AtomicDex Desktop/0.5.0/configs/coins.json",
+  "market_maker_cfg_path": "/Users/milerius/GolandProjects/mm2-client/mm2/simple_market_bot.json",
+  "mm2_userpass": "foobar"
+}'
+
+# stopping the bot
+curl --location --request POST 'localhost:1313/api/v1/stop_simple_market_maker_bot'
+```
