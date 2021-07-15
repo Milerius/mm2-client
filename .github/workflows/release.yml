@@ -30,3 +30,4 @@ jobs:
           overwrite: true
           build_flags: cmd/mm2_tools_server.go
           binary_name: mm2-tools-server
+          ldflags: -X main.gitCommit=${{ github.sha }} -X main.gitRef=${{ github.ref }}
