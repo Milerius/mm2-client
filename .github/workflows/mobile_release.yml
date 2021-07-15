@@ -27,6 +27,10 @@ jobs:
         if: matrix.goos == 'ios'
         run: |
           echo "build for ios"
+          go get golang.org/x/mobile/cmd/gomobile
+          go install golang.org/x/mobile/cmd/gobind@latest
+          gomobile -h
+          gobind -h
 
       - name: build for android
         if: matrix.goos == 'android'
