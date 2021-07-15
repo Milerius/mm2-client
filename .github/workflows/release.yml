@@ -19,7 +19,7 @@ jobs:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
 
-      - name: Go Release Binaries
+      - name: Go Release Binaries (server)
         uses: wangyoucao577/go-release-action@v1.17
         with:
           goversion: 1.16
@@ -31,3 +31,18 @@ jobs:
           binary_name: mm2-tools-server
           project_path: cmd_server
           ldflags: -X main.gitCommit=${{ github.sha }} -X main.gitRef=${{ github.ref }}
+          asset_name: "mm2-tools-server-${{ github.sha }}-${{ matrix.goos }}-${{ matrix.goarch }}"
+
+      - name: Go Release Binaries (client)
+        uses: wangyoucao577/go-release-action@v1.17
+        with:
+          goversion: 1.16
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          goos: ${{ matrix.goos }}
+          goarch: ${{ matrix.goarch }}
+          release_tag: dev
+          overwrite: true
+          binary_name: mm2-tools-client
+          project_path: cmd_client
+          ldflags: -X main.gitCommit=${{ github.sha }} -X main.gitRef=${{ github.ref }}
+          asset_name: "mm2-tools-client-${{ github.sha }}-${{ matrix.goos }}-${{ matrix.goarch }}"
