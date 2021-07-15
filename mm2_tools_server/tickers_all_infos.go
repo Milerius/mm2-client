@@ -24,10 +24,8 @@ func TickerAllInfos(ctx *fasthttp.RequestCtx) {
 
 	var out = make(map[string]*TickerInfosAnswer)
 	for _, cur := range config.GCFGRegistry {
-		resp, err := GetTickerInfos(cur.Coin)
-		if err == nil {
-			out[cur.Coin] = resp
-		}
+		resp := GetTickerInfos(cur.Coin)
+		out[cur.Coin] = resp
 	}
 	b, err := json.Marshal(out)
 	if err != nil {

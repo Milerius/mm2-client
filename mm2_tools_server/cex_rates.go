@@ -11,23 +11,21 @@ import (
 	"net/http"
 )
 
-type TickerInfosRequest struct {
-	Ticker string `json:"ticker"`
+type CexRatesRequest struct {
+	Base string `json:"base"`
+	Rel  string `json:"rel"`
 }
 
-type TickerInfosAnswer struct {
-	Ticker      string `json:"ticker"`
+type CexRateAnswer struct {
+	Base        string `json:"base"`
+	Rel         string `json:"rel"`
 	LastPrice   string `json:"last_price"`
 	LastUpdated string `json:"last_updated"`
 	Provider    string `json:"provider"`
+	Calculated  bool   `json:"calculated"`
 }
 
-func GetTickerInfos(ticker string) *TickerInfosAnswer {
-	val, date, provider := services.RetrieveUSDValIfSupported(ticker)
-	return &TickerInfosAnswer{Ticker: ticker, LastPrice: val, LastUpdated: date, Provider: provider}
-}
-
-func (req *TickerInfosAnswer) ToJson() string {
+func (req *CexRateAnswer) ToJson() string {
 	b, err := json.Marshal(req)
 	if err != nil {
 		fmt.Println(err)
@@ -36,7 +34,7 @@ func (req *TickerInfosAnswer) ToJson() string {
 	return string(b)
 }
 
-func TickerInfos(ctx *fasthttp.RequestCtx) {
+func CexRates(ctx *fasthttp.RequestCtx) {
 	if !constants.GPricesServicesRunning {
 		ctx.SetStatusCode(http.StatusBadRequest)
 		ctx.SetBodyString("You need to start price services first")
@@ -48,7 +46,8 @@ func TickerInfos(ctx *fasthttp.RequestCtx) {
 		ctx.SetBodyString("You need to load desktop cfg first (you can do that through start_price_service)")
 		return
 	}
-	out := &TickerInfosRequest{}
+
+	out := &CexRatesRequest{}
 	r := bytes.NewReader(ctx.PostBody())
 	err := json.NewDecoder(r).Decode(out)
 	if err != nil {
@@ -57,7 +56,9 @@ func TickerInfos(ctx *fasthttp.RequestCtx) {
 		ctx.SetBodyString(err.Error())
 		return
 	}
-	resp := GetTickerInfos(out.Ticker)
+
+	val, calculated, date, provider := services.RetrieveCEXRatesFromPair(out.Base, out.Rel)
+	resp := &CexRateAnswer{Base: out.Base, Rel: out.Rel, LastPrice: val, LastUpdated: date, Provider: provider, Calculated: calculated}
 	ctx.SetStatusCode(200)
 	ctx.SetBodyString(resp.ToJson())
 	ctx.SetContentType("application/json")
