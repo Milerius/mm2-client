@@ -20,6 +20,12 @@ jobs:
             goos: windows
 
     steps:
+      - uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+          delete_release: true # default: false
+          tag_name: dev # tag name to delete
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
@@ -31,7 +37,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
-          release_tag: dev-${{ github.sha }}
+          release_tag: dev
           overwrite: true
           binary_name: mm2-tools-server
           project_path: cmd_server
@@ -45,7 +51,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
-          release_tag: dev-${{ github.sha }}
+          release_tag: dev
           overwrite: true
           binary_name: mm2-tools-client
           project_path: cmd_client
