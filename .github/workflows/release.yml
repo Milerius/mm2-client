@@ -5,16 +5,14 @@ on:
     branches: [ main ]
 
 jobs:
-  ci-flow:
-    name: ${{ matrix.name }}
-    runs-on: ${{ matrix.name }}
 
+  build:
+    name: Build
+    runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
-        goos: [linux, windows, darwin, ios]
+        goos: [linux, windows, darwin]
         goarch: [amd64]
-        name: [ubuntu-latest, macos-latest]
 
     steps:
       - name: Check out code into the Go module directory
@@ -22,7 +20,6 @@ jobs:
 
       - name: Go Release Binaries (server)
         uses: wangyoucao577/go-release-action@v1.17
-        if: matrix.goos != 'ios' && matrix.name == 'ubuntu-latest'
         with:
           goversion: 1.16
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -35,24 +32,6 @@ jobs:
           project_path: cmd_server
           ldflags: -X main.gitCommit=${{ github.sha }} -X main.gitRef=${{ github.ref }}
           asset_name: "mm2-tools-server-dev-${{ matrix.goos }}-${{ matrix.goarch }}"
-
-      - name: Go Release Binaries (Ios)
-        uses: wangyoucao577/go-release-action@v1.17
-        if: matrix.goos == 'ios' && matrix.name == 'macos-latest'
-        with:
-          goversion: 1.16
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          goos: ${{ matrix.goos }}
-          goarch: ${{ matrix.goarch }}
-          release_tag: dev
-          overwrite: true
-          md5sum: false
-          pre_command: go get golang.org/x/mobile/cmd/gomobile && gomobile init
-          build_command: gomobile bind -v
-          build_flags: --target=ios .
-          binary_name: Mm2_tools_server.xcframework
-          project_path: mm2_tools_server
-          asset_name: "Mm2_tools_server.xcframework"
 
 #      - name: Go Release Binaries (client)
 #        uses: wangyoucao577/go-release-action@v1.17
