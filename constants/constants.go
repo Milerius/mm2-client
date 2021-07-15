@@ -16,6 +16,7 @@ var (
 	GSimpleMarketMakerBotRunning  = false
 	GSimpleMarketMakerBotStopping = false
 	GPricesServicesRunning        = false
+	GDesktopCfgLoaded             = false
 )
 
 func GetAppDataPath() string {

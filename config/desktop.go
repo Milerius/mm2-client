@@ -101,9 +101,16 @@ func ParseDesktopRegistry(version string) {
 }
 
 func ParseDesktopRegistryFromFile(path string) bool {
+	if constants.GDesktopCfgLoaded {
+		return true
+	}
 	file, _ := ioutil.ReadFile(path)
 	_ = json.Unmarshal([]byte(file), &GCFGRegistry)
-	return len(GCFGRegistry) > 0
+	if len(GCFGRegistry) > 0 {
+		constants.GDesktopCfgLoaded = true
+		return true
+	}
+	return false
 }
 
 func (cfg *DesktopCFG) RetrieveContracts() (string, string) {
