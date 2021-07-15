@@ -28,3 +28,6 @@ jobs:
             Automatic Release
           draft: false
           prerelease: false
+
+      - name: "Post Release creation"
+        run: echo ${{ steps.create_release.outputs.upload_url }}
