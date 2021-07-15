@@ -31,7 +31,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
-          release_tag: dev
+          release_tag: dev-${{ github.sha }}
           overwrite: true
           binary_name: mm2-tools-server
           project_path: cmd_server
@@ -45,7 +45,7 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           goos: ${{ matrix.goos }}
           goarch: ${{ matrix.goarch }}
-          release_tag: dev
+          release_tag: dev-${{ github.sha }}
           overwrite: true
           binary_name: mm2-tools-client
           project_path: cmd_client
