@@ -22,3 +22,13 @@ jobs:
         with:
           go-version: '1.16.6' # The Go version to download (if necessary) and use.
       - run: go version
+
+      - name: build for ios
+        if: matrix.goos == 'ios'
+        run: |
+          echo "build for ios"
+
+      - name: build for android
+        if: matrix.goos == 'android'
+        run: |
+          echo "build for android"
