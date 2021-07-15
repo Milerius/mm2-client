@@ -5,6 +5,9 @@ on:
     branches: [ main ]
 
 jobs:
+  ci-flow:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.name }}
 
   build:
     name: Build
@@ -13,6 +16,7 @@ jobs:
       matrix:
         goos: [linux, windows, darwin, ios]
         goarch: [amd64]
+        name: [ubuntu-latest, macos-latest]
 
     steps:
       - name: Check out code into the Go module directory
@@ -20,7 +24,7 @@ jobs:
 
       - name: Go Release Binaries (server)
         uses: wangyoucao577/go-release-action@v1.17
-        if: matrix.goos != 'ios'
+        if: matrix.goos != 'ios' && matrix.name == 'ubuntu-latest'
         with:
           goversion: 1.16
           github_token: ${{ secrets.GITHUB_TOKEN }}
@@ -36,7 +40,7 @@ jobs:
 
       - name: Go Release Binaries (Ios)
         uses: wangyoucao577/go-release-action@v1.17
-        if: matrix.goos == 'ios'
+        if: matrix.goos == 'ios' && matrix.name == 'macos-latest'
         with:
           goversion: 1.16
           github_token: ${{ secrets.GITHUB_TOKEN }}
