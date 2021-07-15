@@ -34,7 +34,7 @@ jobs:
           binary_name: mm2-tools-server
           project_path: cmd_server
           ldflags: -X main.gitCommit=${{ github.sha }} -X main.gitRef=${{ github.ref }}
-          asset_name: "mm2-tools-server-${{ github.sha }}-${{ matrix.goos }}-${{ matrix.goarch }}"
+          asset_name: "mm2-tools-server-dev-${{ matrix.goos }}-${{ matrix.goarch }}"
 
       - name: Go Release Binaries (client)
         uses: wangyoucao577/go-release-action@v1.17
@@ -48,4 +48,4 @@ jobs:
           binary_name: mm2-tools-client
           project_path: cmd_client
           ldflags: -X main.gitCommit=${{ github.sha }} -X main.gitRef=${{ github.ref }}
-          asset_name: "mm2-tools-client-${{ github.sha }}-${{ matrix.goos }}-${{ matrix.goarch }}"
+          asset_name: "mm2-tools-client-dev-${{ matrix.goos }}-${{ matrix.goarch }}"
