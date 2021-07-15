@@ -77,3 +77,39 @@ curl --location --request POST 'localhost:1313/api/v1/start_simple_market_maker_
 # stopping the bot
 curl --location --request POST 'localhost:1313/api/v1/stop_simple_market_maker_bot'
 ```
+
+### How to use the server on Ios
+
+#### building
+
+```
+gomobile bind -v --target=ios .
+```
+
+#### using in an ios project:
+```obj-c
+//
+//  main.m
+//  FooBar
+//
+//  Created by Sztergbaum Roman on 15/07/2021.
+//
+
+#import <UIKit/UIKit.h>
+#import "AppDelegate.h"
+#import "Mm2_tools_server.h"
+
+int main(int argc, char * argv[]) {
+    NSString * appDelegateClassName;
+    @autoreleasepool {
+        // Setup code that might create autoreleased objects goes here.
+        appDelegateClassName = NSStringFromClass([AppDelegate class]);
+    }
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        Mm2_tools_serverLaunchServer(@"atomic_dex");
+
+    });
+
+    return UIApplicationMain(argc, argv, nil, appDelegateClassName);
+}
+```

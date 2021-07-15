@@ -113,6 +113,18 @@ func ParseDesktopRegistryFromFile(path string) bool {
 	return false
 }
 
+func ParseDesktopRegistryFromString(cfg string) bool {
+	if constants.GDesktopCfgLoaded {
+		return true
+	}
+	_ = json.Unmarshal([]byte(cfg), &GCFGRegistry)
+	if len(GCFGRegistry) > 0 {
+		constants.GDesktopCfgLoaded = true
+		return true
+	}
+	return false
+}
+
 func (cfg *DesktopCFG) RetrieveContracts() (string, string) {
 	switch cfg.Type {
 	case "BEP-20":

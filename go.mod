@@ -17,4 +17,5 @@ require (
 	github.com/tyler-smith/go-bip39 v1.1.0
 	github.com/ulule/limiter/v3 v3.8.0
 	github.com/valyala/fasthttp v1.28.0
+	golang.org/x/mobile v0.0.0-20210710064935-76c259c465ba // indirect
 )

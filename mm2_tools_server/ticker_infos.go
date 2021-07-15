@@ -40,12 +40,14 @@ func TickerInfos(ctx *fasthttp.RequestCtx) {
 	if !constants.GPricesServicesRunning {
 		ctx.SetStatusCode(http.StatusBadRequest)
 		ctx.SetBodyString("You need to start price services first")
+		glg.Warn("You need to start service price first")
 		return
 	}
 
 	if !constants.GDesktopCfgLoaded {
 		ctx.SetStatusCode(http.StatusBadRequest)
 		ctx.SetBodyString("You need to load desktop cfg first (you can do that through start_price_service)")
+		glg.Warn("You need to load desktop cfg first")
 		return
 	}
 	out := &TickerInfosRequest{}

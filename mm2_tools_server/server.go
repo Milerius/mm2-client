@@ -8,11 +8,17 @@ import (
 	"github.com/ulule/limiter/v3/drivers/store/memory"
 	"github.com/valyala/fasthttp"
 	"log"
+	"runtime"
 )
 
 var gAppName = ""
 
 func LaunchServer(appName string) {
+	if runtime.GOOS == "ios" {
+		glg.Get().SetMode(glg.STD)
+		glg.Info("Launch MM2 Tools Server from ios")
+	}
+
 	gAppName = appName
 	router := InitRooter()
 	rate, err := limiter.NewRateFromFormatted("30-M")
