@@ -30,7 +30,7 @@ wget https://golang.org/dl/go1.16.5.linux-amd64.tar.gz
 sudo rm -rf /usr/local/go && sudo tar -C /usr/local -xzf go1.16.5.linux-amd64.tar.gz
 export PATH=$PATH:/usr/local/go/bin
 git clone https://github.com/Milerius/mm2-client
-cd mm2-client && go build cmd/mm2_client.go
+cd mm2-client && go build cmd_client/mm2_client.go
 mkdir -p mm2
 cp assets/simple_market_bot.template.json mm2/simple_market_bot.json
 # edit the cfg if you want and remove the commentary
