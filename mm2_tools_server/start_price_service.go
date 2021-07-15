@@ -12,7 +12,8 @@ import (
 )
 
 type StartPriceRequest struct {
-	DesktopCfgPath string `json:"desktop_cfg_path"`
+	DesktopCfgPath *string `json:"desktop_cfg_path,omitempty"`
+	DesktopRawCfg  *string `json:"desktop_raw_cfg,omitempty"`
 }
 
 func StartPriceService(ctx *fasthttp.RequestCtx) {
@@ -23,13 +24,19 @@ func StartPriceService(ctx *fasthttp.RequestCtx) {
 		out := &StartPriceRequest{}
 		r := bytes.NewReader(ctx.PostBody())
 		err := json.NewDecoder(r).Decode(out)
-		if err != nil {
+		if err != nil || (out.DesktopRawCfg == nil && out.DesktopCfgPath == nil) {
 			_ = glg.Errorf("%v", err)
 			ctx.SetStatusCode(http.StatusBadRequest)
 			ctx.SetBodyString(err.Error())
 			return
 		}
-		if res := config.ParseDesktopRegistryFromFile(out.DesktopCfgPath); res {
+		res := false
+		if out.DesktopRawCfg != nil {
+			res = config.ParseDesktopRegistryFromString(*out.DesktopRawCfg)
+		} else if out.DesktopCfgPath != nil {
+			res = config.ParseDesktopRegistryFromFile(*out.DesktopCfgPath)
+		}
+		if res {
 			_ = glg.Info("Launch price services")
 			services.LaunchServices()
 			ctx.SetStatusCode(200)

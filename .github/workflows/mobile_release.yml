@@ -1,0 +1,19 @@
+name: Mobile Release
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+
+  build:
+    name: Build
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        goos: [ios, android]
+
+
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@v2
