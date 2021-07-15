@@ -18,26 +18,26 @@ jobs:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
 
-      - uses: actions/setup-go@v2
-        with:
-          go-version: '1.16.6' # The Go version to download (if necessary) and use.
-      - run: go version
-
-      - name: build for ios
-        if: matrix.goos == 'ios'
-        run: |
-          echo "build for ios"
-          go get golang.org/x/mobile/cmd/gomobile
-          gomobile init
-          which gobind
-          cd mm2_tools_server
-          gomobile bind -v -o Mm2_tools_server.xcframework --target=ios .
-          ls
-
-      - name: build for android
-        if: matrix.goos == 'android'
-        run: |
-          echo "build for android"
+#      - uses: actions/setup-go@v2
+#        with:
+#          go-version: '1.16.6' # The Go version to download (if necessary) and use.
+#      - run: go version
+#
+#      - name: build for ios
+#        if: matrix.goos == 'ios'
+#        run: |
+#          echo "build for ios"
+#          go get golang.org/x/mobile/cmd/gomobile
+#          gomobile init
+#          which gobind
+#          cd mm2_tools_server
+#          gomobile bind -v -o Mm2_tools_server.xcframework --target=ios .
+#          ls
+#
+#      - name: build for android
+#        if: matrix.goos == 'android'
+#        run: |
+#          echo "build for android"
 
 #      - name: Upload Release Asset (ios)
 #        if: matrix.goos == 'ios'
