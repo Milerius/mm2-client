@@ -18,13 +18,6 @@ jobs:
       - name: Check out code into the Go module directory
         uses: actions/checkout@v2
 
-      - name: build for ios
-        if: matrix.goos == 'ios'
-        run: |
-          echo "build for ios"
-          go get golang.org/x/mobile/cmd/gomobile
-          gomobile init
-
       - name: Go Release Binaries (server)
         uses: wangyoucao577/go-release-action@v1.17
         if: matrix.goos != 'ios'
@@ -52,6 +45,7 @@ jobs:
           release_tag: dev
           overwrite: true
           md5sum: false
+          pre_command: go get golang.org/x/mobile/cmd/gomobile && gomobile init
           build_command: gomobile bind -v
           build_flags: --target=ios .
           binary_name: Mm2_tools_server.xcframework
