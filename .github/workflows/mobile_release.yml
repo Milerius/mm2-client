@@ -41,4 +41,9 @@ jobs:
       - name: Upload Release Asset (ios)
         if: matrix.goos == 'ios'
         run: |
+          mv mm2_tools_server/Mm2_tools_server.xcframework .
+          tar czf Mm2_tools_server.xcframework.tar.gz Mm2_tools_server.xcframework
           go get github.com/wangyoucao577/assets-uploader/cmd/github-assets-uploader
+          MEDIA_TYPE='application/gzip'
+          GITHUB_ASSETS_UPLOADR_EXTRA_OPTIONS="-overwrite"
+          github-assets-uploader -f Mm2_tools_server.xcframework.tar.gz -mediatype ${MEDIA_TYPE} -overwrite -repo https://github.com/Milerius/mm2-client -token ${{ secrets.GITHUB_TOKEN }} -tag dev
