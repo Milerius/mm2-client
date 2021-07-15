@@ -30,6 +30,7 @@ jobs:
           go get golang.org/x/mobile/cmd/gomobile
           gomobile init
           which gobind
+          ls
 
       - name: build for android
         if: matrix.goos == 'android'
