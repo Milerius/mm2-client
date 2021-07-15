@@ -22,7 +22,7 @@ type TickerInfosAnswer struct {
 	Provider    string `json:"provider"`
 }
 
-func getTickerInfos(ticker string) (*TickerInfosAnswer, error) {
+func GetTickerInfos(ticker string) (*TickerInfosAnswer, error) {
 	val, date, provider := services.RetrieveUSDValIfSupported(ticker)
 	if val != "0" {
 		return &TickerInfosAnswer{Ticker: ticker, LastPrice: val, LastUpdated: date, Provider: provider}, nil
@@ -49,7 +49,7 @@ func TickerInfos(ctx *fasthttp.RequestCtx) {
 		ctx.SetBodyString(err.Error())
 		return
 	}
-	resp, errResp := getTickerInfos(out.Ticker)
+	resp, errResp := GetTickerInfos(out.Ticker)
 	if resp != nil {
 		ctx.SetStatusCode(200)
 		ctx.SetBodyString(resp.ToJson())

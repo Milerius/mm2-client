@@ -19,5 +19,6 @@ func InitRooter() *router.Router {
 	r.POST("/api/v1/stop_simple_market_maker_bot", setResponseHeader(StopSimpleMarketMakerBot))
 	r.POST("/api/v1/start_price_service", setResponseHeader(StartPriceService))
 	r.POST("/api/v1/ticker_infos", setResponseHeader(TickerInfos))
+	r.GET("/api/v1/tickers", setResponseHeader(TickerAllInfos))
 	return r
 }
