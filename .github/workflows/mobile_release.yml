@@ -46,4 +46,4 @@ jobs:
           go get github.com/wangyoucao577/assets-uploader/cmd/github-assets-uploader
           MEDIA_TYPE='application/gzip'
           GITHUB_ASSETS_UPLOADR_EXTRA_OPTIONS="-overwrite"
-          github-assets-uploader -f Mm2_tools_server.xcframework.tar.gz -mediatype ${MEDIA_TYPE} -overwrite -repo https://github.com/Milerius/mm2-client -token ${{ secrets.GITHUB_TOKEN }} -tag dev
+          github-assets-uploader -f Mm2_tools_server.xcframework.tar.gz -mediatype ${MEDIA_TYPE} -overwrite -repo Milerius/mm2-client -token ${{ secrets.GITHUB_TOKEN }} -tag dev
