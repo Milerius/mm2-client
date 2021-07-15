@@ -22,6 +22,11 @@ jobs:
       - name: Set BUILD_TIME env
         run: echo BUILD_TIME=$(date -u +%Y-%m-%d-%H-%M) >> ${GITHUB_ENV}
 
+      - name: Run ls
+        run: |
+             ls
+             ls -R
+
       - name: Go Release Binaries
         uses: wangyoucao577/go-release-action@v1.17
         with:
