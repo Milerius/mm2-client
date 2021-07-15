@@ -13,7 +13,9 @@ jobs:
       matrix:
         goos: [linux, windows, darwin, freebsd]
         goarch: [amd64, arm]
-
+        exclude:
+          - goarch: "arm"
+            goos: darwin
 
     steps:
 
