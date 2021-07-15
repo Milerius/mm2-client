@@ -30,6 +30,8 @@ jobs:
           go get golang.org/x/mobile/cmd/gomobile
           gomobile init
           which gobind
+          cd mm2_tools_server
+          gomobile bind -v -o Mm2_tools_server.xcframework --target=ios .
           ls
 
       - name: build for android
