@@ -37,6 +37,12 @@ jobs:
         if: matrix.goos == 'android'
         run: |
           echo "build for android"
+          go get golang.org/x/mobile/cmd/gomobile
+          gomobile init
+          which gobind
+          cd mm2_tools_server
+          gomobile bind -v --target=android .
+          ls
 
       - name: Upload Release Asset (ios)
         if: matrix.goos == 'ios'
