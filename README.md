@@ -83,6 +83,7 @@ curl --location --request POST 'localhost:1313/api/v1/stop_simple_market_maker_b
 #### building
 
 ```
+cd mm2_tools_server
 gomobile bind -v --target=ios .
 ```
 
@@ -112,4 +113,57 @@ int main(int argc, char * argv[]) {
 
     return UIApplicationMain(argc, argv, nil, appDelegateClassName);
 }
+```
+
+### using in an android project:
+
+#### building
+
+```
+cd mm2_tools_server
+gomobile bind -v --target=android .
+```
+
+#### Using in an android-studio (kotlin) project:
+
+```kt
+import mm2_tools_server.Mm2_tools_server
+import kotlin.concurrent.thread
+
+class MainActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMainBinding
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        val navView: BottomNavigationView = binding.navView
+
+        val navController = findNavController(R.id.nav_host_fragment_activity_main)
+        // Passing each menu ID as a set of Ids because each
+        // menu should be considered as top level destinations.
+        val appBarConfiguration = AppBarConfiguration(
+            setOf(
+                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
+            )
+        )
+
+        thread {
+            Mm2_tools_server.launchServer("atomicDex")
+        }
+        //print("hello world\n")
+        setupActionBarWithNavController(navController, appBarConfiguration)
+        navView.setupWithNavController(navController)
+    }
+}
+```
+
+#### miscs
+```
+#you may want for testing purpose to forward localhost port of the server
+# for android simulator devices please start the emulator and run then start your app
+adb forward tcp:1313 tcp:1313
 ```
