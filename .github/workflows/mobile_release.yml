@@ -22,34 +22,34 @@ jobs:
           go-version: '1.16.6' # The Go version to download (if necessary) and use.
       - run: go version
 
-      - name: build for ios
-        if: matrix.goos == 'ios'
-        run: |
-          echo "build for ios"
-          go get golang.org/x/mobile/cmd/gomobile
-          gomobile init
-          which gobind
-          cd mm2_tools_server
-          gomobile bind -v --target=ios .
-          ls
-
-      - name: build for android
-        if: matrix.goos == 'android'
-        run: |
-          echo "build for android"
-          go get golang.org/x/mobile/cmd/gomobile
-          gomobile init
-          which gobind
-          cd mm2_tools_server
-          gomobile bind -v --target=android .
-          ls
-
-      - name: Upload Release Asset (ios)
-        if: matrix.goos == 'ios'
-        run: |
-          mv mm2_tools_server/Mm2_tools_server.xcframework .
-          tar czf mm2-tools-server-dev-ios.tar.gz Mm2_tools_server.xcframework
-          go get github.com/wangyoucao577/assets-uploader/cmd/github-assets-uploader
-          MEDIA_TYPE='application/gzip'
-          GITHUB_ASSETS_UPLOADR_EXTRA_OPTIONS="-overwrite"
-          github-assets-uploader -f mm2-tools-server-dev-ios.tar.gz -mediatype ${MEDIA_TYPE} -overwrite -repo Milerius/mm2-client -token ${{ secrets.GITHUB_TOKEN }} -tag dev
+#      - name: build for ios
+#        if: matrix.goos == 'ios'
+#        run: |
+#          echo "build for ios"
+#          go get golang.org/x/mobile/cmd/gomobile
+#          gomobile init
+#          which gobind
+#          cd mm2_tools_server
+#          gomobile bind -v --target=ios .
+#          ls
+#
+#      - name: build for android
+#        if: matrix.goos == 'android'
+#        run: |
+#          echo "build for android"
+#          go get golang.org/x/mobile/cmd/gomobile
+#          gomobile init
+#          which gobind
+#          cd mm2_tools_server
+#          gomobile bind -v --target=android .
+#          ls
+#
+#      - name: Upload Release Asset (ios)
+#        if: matrix.goos == 'ios'
+#        run: |
+#          mv mm2_tools_server/Mm2_tools_server.xcframework .
+#          tar czf mm2-tools-server-dev-ios.tar.gz Mm2_tools_server.xcframework
+#          go get github.com/wangyoucao577/assets-uploader/cmd/github-assets-uploader
+#          MEDIA_TYPE='application/gzip'
+#          GITHUB_ASSETS_UPLOADR_EXTRA_OPTIONS="-overwrite"
+#          github-assets-uploader -f mm2-tools-server-dev-ios.tar.gz -mediatype ${MEDIA_TYPE} -overwrite -repo Milerius/mm2-client -token ${{ secrets.GITHUB_TOKEN }} -tag dev
