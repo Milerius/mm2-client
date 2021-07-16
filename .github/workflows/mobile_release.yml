@@ -53,3 +53,24 @@ jobs:
 #          MEDIA_TYPE='application/gzip'
 #          GITHUB_ASSETS_UPLOADR_EXTRA_OPTIONS="-overwrite"
 #          github-assets-uploader -f mm2-tools-server-dev-ios.tar.gz -mediatype ${MEDIA_TYPE} -overwrite -repo Milerius/mm2-client -token ${{ secrets.GITHUB_TOKEN }} -tag dev
+
+      - name: Upload Release Asset (ios)
+        if: matrix.goos == 'ios'
+        run: |
+          mv mm2_tools_server/Mm2_tools_server.framework .
+          tar czf mm2-tools-server-dev-ios.tar.gz Mm2_tools_server.framework
+          go get github.com/wangyoucao577/assets-uploader/cmd/github-assets-uploader
+          MEDIA_TYPE='application/gzip'
+          GITHUB_ASSETS_UPLOADR_EXTRA_OPTIONS="-overwrite"
+          github-assets-uploader -f mm2-tools-server-dev-ios.tar.gz -mediatype ${MEDIA_TYPE} -overwrite -repo Milerius/mm2-client -token ${{ secrets.GITHUB_TOKEN }} -tag dev
+
+      - name: Upload Release Asset (android)
+        if: matrix.goos == 'android'
+        run: |
+          mkdir -p android_libs
+          mv mm2_tools_server/*.*ar android_libs
+          tar czf mm2-tools-server-dev-android.tar.gz android_libs
+          go get github.com/wangyoucao577/assets-uploader/cmd/github-assets-uploader
+          MEDIA_TYPE='application/gzip'
+          GITHUB_ASSETS_UPLOADR_EXTRA_OPTIONS="-overwrite"
+          github-assets-uploader -f mm2-tools-server-dev-android.tar.gz -mediatype ${MEDIA_TYPE} -overwrite -repo Milerius/mm2-client -token ${{ secrets.GITHUB_TOKEN }} -tag dev
