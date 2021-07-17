@@ -84,7 +84,7 @@ func createOrderFromConf(cfg SimplePairMarketMakerConf) {
 			var max *bool = nil
 			var volume *string = nil
 			var minVolume *string = nil
-			respBalance := http.MyBalance(cfg.Base)
+			respBalance, err := http.MyBalance(cfg.Base)
 			if respBalance != nil {
 				var maxBalance = respBalance.Balance
 				if cfg.Max {
@@ -112,7 +112,7 @@ func createOrderFromConf(cfg SimplePairMarketMakerConf) {
 					glg.Errorf("Couldn't place the order for %s/%s", cfg.Base, cfg.Rel)
 				}
 			} else {
-				glg.Errorf("Cannot retrieve balance of %s - skipping", cfg.Base)
+				glg.Errorf("Cannot retrieve balance of %s - skipping: %v", cfg.Base, err)
 			}
 		} else {
 			glg.Warnf("Price is 0 for %s/%s - skipping order creation", cfg.Base, cfg.Rel)

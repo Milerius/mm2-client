@@ -8,9 +8,11 @@ import (
 )
 
 func MyBalance(coin string) {
-	resp := http.MyBalance(coin)
+	resp, err := http.MyBalance(coin)
 	if resp != nil {
 		resp.ToTable()
+	} else {
+		fmt.Println(err)
 	}
 }
 

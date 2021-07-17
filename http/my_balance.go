@@ -3,7 +3,9 @@ package http
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"github.com/kpango/glg"
 	"github.com/olekukonko/tablewriter"
 	"io/ioutil"
 	"mm2_client/config"
@@ -111,30 +113,30 @@ func ToSliceEmptyBalance(answers []MyBalanceAnswer, withoutTestCoin bool) []stri
 	return out
 }
 
-func MyBalance(coin string) *MyBalanceAnswer {
+func MyBalance(coin string) (*MyBalanceAnswer, error) {
 	if val, ok := config.GCFGRegistry[coin]; ok {
 		req := NewMyBalanceCoinRequest(val).ToJson()
 		resp, err := http.Post(GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
 		if err != nil {
-			fmt.Printf("Err: %v\n", err)
-			return nil
+			glg.Errorf("Err: %v", err)
+			return nil, err
 		}
 		if resp.StatusCode == http.StatusOK {
 			defer resp.Body.Close()
 			var answer = &MyBalanceAnswer{}
 			decodeErr := json.NewDecoder(resp.Body).Decode(answer)
 			if decodeErr != nil {
-				fmt.Printf("Err: %v\n", err)
-				return nil
+				glg.Errorf("Err: %v", err)
+				return nil, decodeErr
 			}
-			return answer
+			return answer, nil
 		} else {
 			bodyBytes, _ := ioutil.ReadAll(resp.Body)
 			fmt.Printf("Err: %s\n", bodyBytes)
 		}
 	} else {
-		fmt.Printf("coin: %s doesn't exist or is not present in the desktop configuration\n", coin)
-		return nil
+		err := fmt.Sprintf("coin: %s doesn't exist or is not present in the desktop configuration", coin)
+		return nil, errors.New(err)
 	}
-	return nil
+	return nil, errors.New("unknown error")
 }

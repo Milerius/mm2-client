@@ -54,7 +54,12 @@ func askMinVolume(base string, volume *string, max *bool) *string {
 		curVol = *volume
 	}
 	if max != nil && *max {
-		curVol = http.MyBalance(base).Balance
+		resp, err := http.MyBalance(base)
+		if resp != nil {
+			curVol = resp.Balance
+		} else {
+			fmt.Println(err)
+		}
 	}
 	fmt.Println("The minimum amount of base coin available for the order; it must be less or equal than volume param;")
 	curVol = promptMinVol(base, curVol)

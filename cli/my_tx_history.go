@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"fmt"
 	"mm2_client/config"
 	"mm2_client/http"
 	"strconv"
@@ -33,9 +34,11 @@ func processTxHistory(coin string, args []string) (*http.MyTxHistoryAnswer, int,
 				contract = config.RetrieveContractsInfo(val.Coin)
 				toQuery = "bep_tx_history"
 			}
-			if resp := http.MyBalance(val.Coin); resp != nil {
+			if resp, err := http.MyBalance(val.Coin); resp != nil {
 				return http.CustomMyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue,
 					isMax, contract, toQuery, resp.Address, "BEP20"), defaultPage, defaultNbTx, withFiatValue, isMax, true
+			} else {
+				fmt.Println(err)
 			}
 		case "ERC-20":
 			contract := ""
@@ -44,8 +47,10 @@ func processTxHistory(coin string, args []string) (*http.MyTxHistoryAnswer, int,
 				contract = config.RetrieveContractsInfo(val.Coin)
 				toQuery = "erc_tx_history"
 			}
-			if resp := http.MyBalance(val.Coin); resp != nil {
+			if resp, err := http.MyBalance(val.Coin); resp != nil {
 				return http.CustomMyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue, isMax, contract, toQuery, resp.Address, "ERC20"), defaultPage, defaultNbTx, withFiatValue, isMax, true
+			} else {
+				fmt.Println(err)
 			}
 		default:
 			return http.MyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue, isMax), defaultPage, defaultNbTx, withFiatValue, isMax, false

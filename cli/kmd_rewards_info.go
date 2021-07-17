@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"fmt"
 	"github.com/manifoldco/promptui"
 	"mm2_client/http"
 )
@@ -13,8 +14,10 @@ func postKmdRewardsInfo(resp *http.KMDRewardsInfoAnswer) {
 		}
 		_, result, _ := prompt.Run()
 		if result == "Yes" {
-			if respBalance := http.MyBalance("KMD"); respBalance != nil {
+			if respBalance, err := http.MyBalance("KMD"); respBalance != nil {
 				Send("KMD", "max", respBalance.Address, []string{})
+			} else {
+				fmt.Println(err)
 			}
 		}
 	}
