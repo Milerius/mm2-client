@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/kpango/glg"
 	"mm2_client/config"
 	"mm2_client/constants"
+	"mm2_client/mm2_tools_generics"
 	"mm2_client/services"
 	"net/url"
 	"syscall/js"
@@ -61,10 +63,36 @@ func loadDesktopCfgFromUrl() js.Func {
 	return jsfunc
 }
 
+func getTickerInfos() js.Func {
+	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		if !constants.GPricesServicesRunning {
+			_ = glg.Warn("Price service need to run to call this function")
+			return nil
+		}
+		if len(args) != 1 {
+			usage := "invalid nb args"
+			_ = glg.Error(usage)
+			result := map[string]interface{}{
+				"error": usage,
+			}
+			return result
+		}
+		resp := mm2_tools_generics.GetTickerInfos(args[0].String())
+		out := make(map[string]interface{})
+		if resp != nil {
+			_ = json.Unmarshal([]byte(resp.ToJson()), &out)
+			return out
+		}
+		return "nop"
+	})
+	return jsfunc
+}
+
 func main() {
 	glg.Get().SetMode(glg.STD)
 	_ = glg.Info("Hello from webassembly")
 	js.Global().Set("load_desktop_cfg_from_url", loadDesktopCfgFromUrl())
+	js.Global().Set("get_ticker_infos", getTickerInfos())
 	//js.Global().Set("load_desktop_cfg_from_string", startPriceService())
 	//js.Global().Set("load_desktop_cfg_from_file", startPriceService())
 	js.Global().Set("start_price_service", startPriceService())
