@@ -68,6 +68,10 @@ func getTickerInfos() js.Func {
 			_ = glg.Warn("Price service need to run to call this function")
 			return nil
 		}
+		if !constants.GDesktopCfgLoaded {
+			_ = glg.Warn("Desktop cfg need to be loaded to continue")
+			return nil
+		}
 		if len(args) != 1 {
 			usage := "invalid nb args"
 			_ = glg.Error(usage)
@@ -82,11 +86,32 @@ func getTickerInfos() js.Func {
 	return jsfunc
 }
 
+func getAllTickerInfos() js.Func {
+	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		if !constants.GPricesServicesRunning {
+			_ = glg.Warn("Price service need to run to call this function")
+			return nil
+		}
+		if !constants.GDesktopCfgLoaded {
+			_ = glg.Warn("Desktop cfg need to be loaded to continue")
+			return nil
+		}
+		var out = make(map[string]interface{})
+		for _, cur := range config.GCFGRegistry {
+			resp := mm2_tools_generics.GetTickerInfos(cur.Coin).ToWeb()
+			out[cur.Coin] = resp
+		}
+		return out
+	})
+	return jsfunc
+}
+
 func main() {
 	glg.Get().SetMode(glg.STD)
 	_ = glg.Info("Hello from webassembly")
 	js.Global().Set("load_desktop_cfg_from_url", loadDesktopCfgFromUrl())
 	js.Global().Set("get_ticker_infos", getTickerInfos())
+	js.Global().Set("get_all_ticker_infos", getAllTickerInfos())
 	js.Global().Set("start_price_service", startPriceService())
 	//js.Global().Set("load_desktop_cfg_from_string", startPriceService())
 	//js.Global().Set("load_desktop_cfg_from_file", startPriceService())
