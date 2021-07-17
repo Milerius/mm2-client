@@ -8,7 +8,6 @@ import (
 	"io/ioutil"
 	"mm2_client/constants"
 	"mm2_client/helpers"
-	"mm2_client/http"
 	"mm2_client/mm2_tools_generics"
 	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"mm2_client/services"
@@ -208,10 +207,10 @@ func StopSimpleMarketMakerBotService() error {
 }
 
 func cancelPendingOrders() {
-	if resp := http.CancelAllOrders("all", []string{}); resp != nil {
+	if resp, err := mm2_tools_generics.CancelAllOrders("all", []string{}); resp != nil {
 		glg.Info("Successfully cancelled all pending orders")
 	} else {
-		glg.Warn("Couldn't cancel all pending orders")
+		glg.Warnf("Couldn't cancel all pending orders: %v", err)
 	}
 }
 
