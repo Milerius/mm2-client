@@ -61,13 +61,15 @@ func updateOrderFromCfg(cfg SimplePairMarketMakerConf, makerOrder http.MakerOrde
 	cexPrice, calculated, date, provider := services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
 	if elapsed := helpers.DateToTimeElapsed(date); elapsed < *cfg.PriceElapsedValidity {
 		price := helpers.BigFloatMultiply(cexPrice, cfg.Spread, 8)
-		resp := http.UpdateMakerOrder(makerOrder.Uuid, &price, nil, &cfg.Max, &makerOrder.MinBaseVol, &cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
+		resp, err := mm2_tools_generics.UpdateMakerOrder(makerOrder.Uuid, &price, nil, &cfg.Max, &makerOrder.MinBaseVol, &cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
 		if resp != nil {
 			glg.Infof("Successfully updated %s/%s order %s - cex_price: [%s] - new_price: [%s] - calculated: [%t] elapsed_since_price: %f seconds - provider: %s",
 				makerOrder.Base, makerOrder.Rel, makerOrder.Uuid,
 				cexPrice, price, calculated, elapsed, provider)
 			glg.Get().EnableJSON().Info(resp)
 			glg.Get().DisableJSON()
+		} else {
+			glg.Warnf("err update_maker_order: %v", err)
 		}
 	} else {
 		cancelResp, cancelErr := mm2_tools_generics.CancelOrder(makerOrder.Uuid)
