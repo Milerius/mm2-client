@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"mm2_client/config"
 	"mm2_client/http"
+	"mm2_client/mm2_tools_generics/mm2_http_request"
 	"strconv"
 )
 
@@ -34,7 +35,7 @@ func processTxHistory(coin string, args []string) (*http.MyTxHistoryAnswer, int,
 				contract = config.RetrieveContractsInfo(val.Coin)
 				toQuery = "bep_tx_history"
 			}
-			if resp, err := http.MyBalance(val.Coin); resp != nil {
+			if resp, err := mm2_http_request.MyBalance(val.Coin); resp != nil {
 				return http.CustomMyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue,
 					isMax, contract, toQuery, resp.Address, "BEP20"), defaultPage, defaultNbTx, withFiatValue, isMax, true
 			} else {
@@ -47,7 +48,7 @@ func processTxHistory(coin string, args []string) (*http.MyTxHistoryAnswer, int,
 				contract = config.RetrieveContractsInfo(val.Coin)
 				toQuery = "erc_tx_history"
 			}
-			if resp, err := http.MyBalance(val.Coin); resp != nil {
+			if resp, err := mm2_http_request.MyBalance(val.Coin); resp != nil {
 				return http.CustomMyTxHistory(coin, defaultNbTx, defaultPage, withFiatValue, isMax, contract, toQuery, resp.Address, "ERC20"), defaultPage, defaultNbTx, withFiatValue, isMax, true
 			} else {
 				fmt.Println(err)

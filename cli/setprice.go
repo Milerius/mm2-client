@@ -6,6 +6,7 @@ import (
 	"github.com/manifoldco/promptui"
 	"mm2_client/helpers"
 	"mm2_client/http"
+	"mm2_client/mm2_tools_generics/mm2_http_request"
 	"strconv"
 )
 
@@ -54,7 +55,7 @@ func askMinVolume(base string, volume *string, max *bool) *string {
 		curVol = *volume
 	}
 	if max != nil && *max {
-		resp, err := http.MyBalance(base)
+		resp, err := mm2_http_request.MyBalance(base)
 		if resp != nil {
 			curVol = resp.Balance
 		} else {

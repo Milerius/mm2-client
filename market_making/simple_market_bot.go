@@ -9,6 +9,7 @@ import (
 	"mm2_client/constants"
 	"mm2_client/helpers"
 	"mm2_client/http"
+	"mm2_client/mm2_tools_generics"
 	"mm2_client/services"
 	"os"
 	"path/filepath"
@@ -84,7 +85,7 @@ func createOrderFromConf(cfg SimplePairMarketMakerConf) {
 			var max *bool = nil
 			var volume *string = nil
 			var minVolume *string = nil
-			respBalance, err := http.MyBalance(cfg.Base)
+			respBalance, err := mm2_tools_generics.MyBalance(cfg.Base)
 			if respBalance != nil {
 				var maxBalance = respBalance.Balance
 				if cfg.Max {

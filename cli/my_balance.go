@@ -5,10 +5,12 @@ import (
 	"fmt"
 	"mm2_client/config"
 	"mm2_client/http"
+	"mm2_client/mm2_tools_generics/mm2_data_structure"
+	"mm2_client/mm2_tools_generics/mm2_http_request"
 )
 
 func MyBalance(coin string) {
-	resp, err := http.MyBalance(coin)
+	resp, err := mm2_http_request.MyBalance(coin)
 	if resp != nil {
 		resp.ToTable()
 	} else {
@@ -20,7 +22,7 @@ func MyBalanceMultipleCoins(coins []string) {
 	var outBatch []interface{}
 	for _, v := range coins {
 		if val, ok := config.GCFGRegistry[v]; ok {
-			if req := http.NewMyBalanceCoinRequest(val); req != nil {
+			if req := mm2_http_request.NewMyBalanceCoinRequest(val); req != nil {
 				outBatch = append(outBatch, req)
 			}
 		} else {
@@ -30,21 +32,21 @@ func MyBalanceMultipleCoins(coins []string) {
 
 	resp := http.BatchRequest(outBatch)
 	if len(resp) > 0 {
-		var outResp []http.MyBalanceAnswer
+		var outResp []mm2_data_structure.MyBalanceAnswer
 		err := json.Unmarshal([]byte(resp), &outResp)
 		if err != nil {
 			fmt.Printf("Err: %v\n", err)
 		} else {
-			http.ToTableMyBalanceAnswers(outResp)
+			mm2_http_request.ToTableMyBalanceAnswers(outResp)
 		}
 	}
 }
 
-func MyBalanceMultipleCoinsSilent(coins []string) []http.MyBalanceAnswer {
+func MyBalanceMultipleCoinsSilent(coins []string) []mm2_data_structure.MyBalanceAnswer {
 	var outBatch []interface{}
 	for _, v := range coins {
 		if val, ok := config.GCFGRegistry[v]; ok {
-			if req := http.NewMyBalanceCoinRequest(val); req != nil {
+			if req := mm2_http_request.NewMyBalanceCoinRequest(val); req != nil {
 				outBatch = append(outBatch, req)
 			}
 		} else {
@@ -54,7 +56,7 @@ func MyBalanceMultipleCoinsSilent(coins []string) []http.MyBalanceAnswer {
 
 	resp := http.BatchRequest(outBatch)
 	if len(resp) > 0 {
-		var outResp []http.MyBalanceAnswer
+		var outResp []mm2_data_structure.MyBalanceAnswer
 		err := json.Unmarshal([]byte(resp), &outResp)
 		if err != nil {
 			fmt.Printf("Err: %v\n", err)

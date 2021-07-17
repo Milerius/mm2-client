@@ -1,4 +1,4 @@
-package http
+package mm2_http_request
 
 import (
 	"bytes"
@@ -10,6 +10,8 @@ import (
 	"io/ioutil"
 	"mm2_client/config"
 	"mm2_client/helpers"
+	http2 "mm2_client/http"
+	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"mm2_client/services"
 	"net/http"
 	"os"
@@ -17,57 +19,14 @@ import (
 	"strings"
 )
 
-type MyBalanceRequest struct {
-	Userpass string `json:"userpass"`
-	Method   string `json:"method"`
-	Coin     string `json:"coin"`
-}
-
-type MyBalanceAnswer struct {
-	Address            string `json:"address"`
-	Balance            string `json:"balance"`
-	UnspendableBalance string `json:"unspendable_balance"`
-	Coin               string `json:"coin"`
-}
-
-func NewMyBalanceCoinRequest(cfg *config.DesktopCFG) *MyBalanceRequest {
-	genReq := NewGenericRequest("my_balance")
-	req := &MyBalanceRequest{Userpass: genReq.Userpass, Method: genReq.Method}
+func NewMyBalanceCoinRequest(cfg *config.DesktopCFG) *mm2_data_structure.MyBalanceRequest {
+	genReq := http2.NewGenericRequest("my_balance")
+	req := &mm2_data_structure.MyBalanceRequest{Userpass: genReq.Userpass, Method: genReq.Method}
 	req.Coin = cfg.Coin
 	return req
 }
 
-func (req *MyBalanceRequest) ToJson() string {
-	b, err := json.Marshal(req)
-	if err != nil {
-		fmt.Println(err)
-		return ""
-	}
-	return string(b)
-}
-
-func (answer *MyBalanceAnswer) ToTable() {
-	if answer.Coin != "" {
-		val, _, provider := services.RetrieveUSDValIfSupported(answer.Coin)
-		if val != "0" {
-			val = helpers.BigFloatMultiply(answer.Balance, val, 2)
-		}
-
-		data := [][]string{
-			{answer.Coin, answer.Address, answer.Balance, val, answer.UnspendableBalance, provider},
-		}
-
-		table := tablewriter.NewWriter(os.Stdout)
-		table.SetAutoWrapText(false)
-		table.SetHeader([]string{"Coin", "Address", "Balance", "Balance (USD)", "Unspendable", "Price Provider"})
-		table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
-		table.SetCenterSeparator("|")
-		table.AppendBulk(data) // Add Bulk Data
-		table.Render()
-	}
-}
-
-func ToTableMyBalanceAnswers(answers []MyBalanceAnswer) {
+func ToTableMyBalanceAnswers(answers []mm2_data_structure.MyBalanceAnswer) {
 	var data [][]string
 
 	total := "0"
@@ -96,7 +55,7 @@ func ToTableMyBalanceAnswers(answers []MyBalanceAnswer) {
 	table.Render()
 }
 
-func ToSliceEmptyBalance(answers []MyBalanceAnswer, withoutTestCoin bool) []string {
+func ToSliceEmptyBalance(answers []mm2_data_structure.MyBalanceAnswer, withoutTestCoin bool) []string {
 	var out []string
 	for _, cur := range answers {
 		if v, err := strconv.ParseFloat(cur.Balance, 64); err == nil && v <= 0 {
@@ -113,17 +72,17 @@ func ToSliceEmptyBalance(answers []MyBalanceAnswer, withoutTestCoin bool) []stri
 	return out
 }
 
-func MyBalance(coin string) (*MyBalanceAnswer, error) {
+func MyBalance(coin string) (*mm2_data_structure.MyBalanceAnswer, error) {
 	if val, ok := config.GCFGRegistry[coin]; ok {
 		req := NewMyBalanceCoinRequest(val).ToJson()
-		resp, err := http.Post(GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
+		resp, err := http.Post(http2.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
 		if err != nil {
 			glg.Errorf("Err: %v", err)
 			return nil, err
 		}
 		if resp.StatusCode == http.StatusOK {
 			defer resp.Body.Close()
-			var answer = &MyBalanceAnswer{}
+			var answer = &mm2_data_structure.MyBalanceAnswer{}
 			decodeErr := json.NewDecoder(resp.Body).Decode(answer)
 			if decodeErr != nil {
 				glg.Errorf("Err: %v", err)
