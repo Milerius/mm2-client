@@ -1,13 +1,10 @@
-package http
+package mm2_data_structure
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/olekukonko/tablewriter"
-	"io/ioutil"
 	"mm2_client/helpers"
-	"net/http"
 	"os"
 	"strconv"
 )
@@ -60,34 +57,6 @@ func (req *SetPriceRequest) ToJson() string {
 	return string(b)
 }
 
-func NewSetPriceRequest(base string, rel string, price string, volume *string, max *bool, cancelPrevious bool, minVolume *string,
-	baseConfs *int, baseNota *bool, relConfs *int, relNota *bool) *SetPriceRequest {
-	genReq := NewGenericRequest("setprice")
-	req := &SetPriceRequest{Userpass: genReq.Userpass, Method: genReq.Method, Base: base, Rel: rel, Price: price, CancelPrevious: cancelPrevious}
-	if volume != nil {
-		req.Volume = volume
-	}
-	if max != nil {
-		req.Max = max
-	}
-	if minVolume != nil {
-		req.MinVolume = minVolume
-	}
-	if baseConfs != nil {
-		req.BaseConfs = baseConfs
-	}
-	if baseNota != nil {
-		req.BaseNota = baseNota
-	}
-	if relConfs != nil {
-		req.RelConfs = relConfs
-	}
-	if relNota != nil {
-		req.RelNota = relNota
-	}
-	return req
-}
-
 func (answer *SetPriceAnswer) ToTable() {
 
 	baseNota := strconv.FormatBool(answer.Result.ConfSettings.BaseNota)
@@ -107,28 +76,4 @@ func (answer *SetPriceAnswer) ToTable() {
 	table.SetCenterSeparator("|")
 	table.AppendBulk(data) // Add Bulk Data
 	table.Render()
-}
-
-func SetPrice(base string, rel string, price string, volume *string, max *bool, cancelPrevious bool, minVolume *string,
-	baseConfs *int, baseNota *bool, relConfs *int, relNota *bool) *SetPriceAnswer {
-	req := NewSetPriceRequest(base, rel, price, volume, max, cancelPrevious, minVolume, baseConfs, baseNota, relConfs, relNota).ToJson()
-	resp, err := http.Post(GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
-	if err != nil {
-		fmt.Printf("Err: %v\n", err)
-		return nil
-	}
-	if resp.StatusCode == http.StatusOK {
-		defer resp.Body.Close()
-		var answer = &SetPriceAnswer{}
-		decodeErr := json.NewDecoder(resp.Body).Decode(answer)
-		if decodeErr != nil {
-			fmt.Printf("Err: %v\n", err)
-			return nil
-		}
-		return answer
-	} else {
-		bodyBytes, _ := ioutil.ReadAll(resp.Body)
-		fmt.Printf("Err: %s\n", bodyBytes)
-		return nil
-	}
 }

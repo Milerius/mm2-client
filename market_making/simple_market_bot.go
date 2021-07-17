@@ -108,14 +108,14 @@ func createOrderFromConf(cfg SimplePairMarketMakerConf) {
 						minVolume = &minVol
 					}
 				}
-				resp := http.SetPrice(cfg.Base, cfg.Rel, price, volume, max, true, minVolume,
+				resp, setPriceErr := mm2_tools_generics.SetPrice(cfg.Base, cfg.Rel, price, volume, max, true, minVolume,
 					&cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
 				if resp != nil {
 					glg.Infof("Successfully placed the %s/%s order: %s, calculated: %t cex_price: [%s] - our price: [%s] - elapsed since last price update: %f seconds - provider: %s", cfg.Base, cfg.Rel, resp.Result.Uuid, calculated, cexPrice, price, elapsed, provider)
 					glg.Get().EnableJSON().Info(resp)
 					glg.Get().DisableJSON()
 				} else {
-					glg.Errorf("Couldn't place the order for %s/%s", cfg.Base, cfg.Rel)
+					glg.Errorf("Couldn't place the order for %s/%s: %v", cfg.Base, cfg.Rel, setPriceErr)
 				}
 			} else {
 				glg.Errorf("Cannot retrieve balance of %s - skipping: %v", cfg.Base, err)
