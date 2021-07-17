@@ -70,9 +70,11 @@ func updateOrderFromCfg(cfg SimplePairMarketMakerConf, makerOrder http.MakerOrde
 			glg.Get().DisableJSON()
 		}
 	} else {
-		cancelResp := http.CancelOrder(makerOrder.Uuid)
+		cancelResp, cancelErr := mm2_tools_generics.CancelOrder(makerOrder.Uuid)
 		if cancelResp != nil {
 			glg.Warnf("Cancelled %s/%s order %s - reason: price elapsed > %.1f seconds", makerOrder.Base, makerOrder.Rel, makerOrder.Uuid, *cfg.PriceElapsedValidity)
+		} else {
+			glg.Warnf("Error when cancelling order: %v", cancelErr)
 		}
 	}
 }
