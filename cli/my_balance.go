@@ -37,7 +37,7 @@ func MyBalanceMultipleCoins(coins []string) {
 		if err != nil {
 			fmt.Printf("Err: %v\n", err)
 		} else {
-			mm2_http_request.ToTableMyBalanceAnswers(outResp)
+			mm2_data_structure.ToTableMyBalanceAnswers(outResp)
 		}
 	}
 }
