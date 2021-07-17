@@ -3,6 +3,7 @@ package services
 import (
 	"fmt"
 	"github.com/adshao/go-binance/v2"
+	"github.com/kpango/glg"
 	"github.com/kyokomi/emoji/v2"
 	"github.com/olekukonko/tablewriter"
 	"mm2_client/config"
@@ -84,6 +85,7 @@ func startWebsocketForSymbol(cur string) {
 		BinancePriceRegistry.Store(event.Symbol, []string{event.LastPrice, helpers.GetDateFromTimestampStandard(event.Time * int64(time.Millisecond))})
 	}
 	errHandler := func(err error) {
+		glg.Errorf("err: %s", err)
 		if strings.Contains(err.Error(), "websocket: close 1006 (abnormal closure)") {
 			go startWebsocketForSymbol(cur)
 		}
@@ -92,6 +94,7 @@ func startWebsocketForSymbol(cur string) {
 	_, _, err := binance.WsMarketStatServe(cur, wsMarketHandler, errHandler)
 	if err != nil {
 		//fmt.Printf("err for %s: %v\n", cur, err)
+		glg.Errorf("err: %s", err)
 		time.Sleep(1 * time.Second)
 		if strings.Contains(err.Error(), "EOF") {
 			go startWebsocketForSymbol(cur)
