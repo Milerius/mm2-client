@@ -6,6 +6,7 @@ import (
 	"github.com/valyala/fasthttp"
 	"mm2_client/config"
 	"mm2_client/constants"
+	"mm2_client/mm2_tools_generics"
 	"net/http"
 )
 
@@ -22,9 +23,9 @@ func TickerAllInfos(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	var out = make(map[string]*TickerInfosAnswer)
+	var out = make(map[string]*mm2_tools_generics.TickerInfosAnswer)
 	for _, cur := range config.GCFGRegistry {
-		resp := GetTickerInfos(cur.Coin)
+		resp := mm2_tools_generics.GetTickerInfos(cur.Coin)
 		out[cur.Coin] = resp
 	}
 	b, err := json.Marshal(out)
