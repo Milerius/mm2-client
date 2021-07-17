@@ -2,7 +2,9 @@ package config
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"mm2_client/constants"
 	"mm2_client/helpers"
@@ -123,6 +125,31 @@ func ParseDesktopRegistryFromString(cfg string) bool {
 		return true
 	}
 	return false
+}
+
+func ParseDesktopRegistryFromUrl(url string) error {
+	if constants.GDesktopCfgLoaded {
+		return nil
+	}
+
+	resp, err := helpers.CrossGet(url)
+	if err != nil {
+		return err
+	}
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(resp.Body)
+
+	decodeErr := json.NewDecoder(resp.Body).Decode(&GCFGRegistry)
+	if decodeErr != nil {
+		return decodeErr
+	}
+
+	if len(GCFGRegistry) > 0 {
+		constants.GDesktopCfgLoaded = true
+		return nil
+	}
+	return errors.New("unknown error")
 }
 
 func (cfg *DesktopCFG) RetrieveContracts() (string, string) {
