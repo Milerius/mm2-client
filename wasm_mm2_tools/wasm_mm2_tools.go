@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/kpango/glg"
 	"mm2_client/config"
@@ -78,12 +77,7 @@ func getTickerInfos() js.Func {
 			return result
 		}
 		resp := mm2_tools_generics.GetTickerInfos(args[0].String())
-		out := make(map[string]interface{})
-		if resp != nil {
-			_ = json.Unmarshal([]byte(resp.ToJson()), &out)
-			return out
-		}
-		return "nop"
+		return resp.ToWeb()
 	})
 	return jsfunc
 }
@@ -93,8 +87,8 @@ func main() {
 	_ = glg.Info("Hello from webassembly")
 	js.Global().Set("load_desktop_cfg_from_url", loadDesktopCfgFromUrl())
 	js.Global().Set("get_ticker_infos", getTickerInfos())
+	js.Global().Set("start_price_service", startPriceService())
 	//js.Global().Set("load_desktop_cfg_from_string", startPriceService())
 	//js.Global().Set("load_desktop_cfg_from_file", startPriceService())
-	js.Global().Set("start_price_service", startPriceService())
 	<-make(chan bool)
 }

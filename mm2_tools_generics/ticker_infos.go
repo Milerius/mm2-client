@@ -26,6 +26,15 @@ func (req *TickerInfosAnswer) ToJson() string {
 	return string(b)
 }
 
+func (req *TickerInfosAnswer) ToWeb() map[string]interface{} {
+	out := make(map[string]interface{})
+	if req != nil {
+		_ = json.Unmarshal([]byte(req.ToJson()), &out)
+		return out
+	}
+	return nil
+}
+
 func GetTickerInfos(ticker string) *TickerInfosAnswer {
 	val, date, provider := services.RetrieveUSDValIfSupported(ticker)
 	return &TickerInfosAnswer{Ticker: ticker, LastPrice: val, LastUpdated: date, Provider: provider}
