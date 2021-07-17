@@ -10,6 +10,7 @@ import (
 	"mm2_client/helpers"
 	"mm2_client/http"
 	"mm2_client/mm2_tools_generics"
+	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"mm2_client/services"
 	"os"
 	"path/filepath"
@@ -57,7 +58,7 @@ func NewMarketMakerConfFromFile(targetPath string) bool {
 	return true
 }
 
-func updateOrderFromCfg(cfg SimplePairMarketMakerConf, makerOrder http.MakerOrderContent) {
+func updateOrderFromCfg(cfg SimplePairMarketMakerConf, makerOrder mm2_data_structure.MakerOrderContent) {
 	cexPrice, calculated, date, provider := services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
 	if elapsed := helpers.DateToTimeElapsed(date); elapsed < *cfg.PriceElapsedValidity {
 		price := helpers.BigFloatMultiply(cexPrice, cfg.Spread, 8)
@@ -135,11 +136,11 @@ func marketMakerProcess() {
 	glg.Info("Retrieving my orders for the update")
 	//! Need to iterate through existing orders and update them
 	wgUpdate := sync.WaitGroup{}
-	updateFunctor := func(cfg SimplePairMarketMakerConf, makerOrder http.MakerOrderContent, combination string) {
+	updateFunctor := func(cfg SimplePairMarketMakerConf, makerOrder mm2_data_structure.MakerOrderContent, combination string) {
 		defer wgUpdate.Done()
 		updateOrderFromCfg(cfg, makerOrder)
 	}
-	if resp := http.MyOrders(); resp != nil {
+	if resp, err := mm2_tools_generics.MyOrders(); resp != nil {
 		for _, curMakerOrder := range resp.Result.MakerOrders {
 			combination := curMakerOrder.Base + "/" + curMakerOrder.Rel
 			if val, ok := gSimpleMarketMakerRegistry[combination]; ok && val.Enable {
@@ -148,6 +149,8 @@ func marketMakerProcess() {
 				hitRegistry[combination] = true
 			}
 		}
+	} else {
+		glg.Errorf("err on my_orders: %v", err)
 	}
 	wgUpdate.Wait()
 	glg.Info("Orders updated")
