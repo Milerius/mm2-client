@@ -27,6 +27,41 @@ func startPriceService() js.Func {
 	return jsfunc
 }
 
+func loadCoinsCfgFromUrl() js.Func {
+	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		_ = glg.Info("load_coins_cfg_from_url called")
+		if len(args) != 1 {
+			usage := "invalid nb args - usage: load_coins_cfg_from_url(\"my_url_to_coins_cfg\")"
+			_ = glg.Error(usage)
+			result := map[string]interface{}{
+				"error": usage,
+			}
+			return result
+		}
+		inputUrl := args[0].String()
+		_, err := url.ParseRequestURI(inputUrl)
+		if err != nil {
+			errStr := fmt.Sprintf("invalid url: %v\n", err)
+			_ = glg.Errorf("%s", errStr)
+			result := map[string]interface{}{
+				"error": errStr,
+			}
+			return result
+		}
+		_ = glg.Infof("url is: %s", inputUrl)
+		go func() {
+			err = config.ParseMM2CFGFromUrl(inputUrl)
+			if err != nil {
+				errStr := fmt.Sprintf("error when parsing cfg: %v\n", err)
+				_ = glg.Errorf("%s", errStr)
+			}
+			_ = glg.Infof("cfg successfully parsed: %d", len(config.GMM2CFGArray))
+		}()
+		return true
+	})
+	return jsfunc
+}
+
 func loadDesktopCfgFromUrl() js.Func {
 	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		_ = glg.Info("load_desktop_cfg_from_url called")
@@ -106,6 +141,13 @@ func getAllTickerInfos() js.Func {
 	return jsfunc
 }
 
+func StartMM2() js.Func {
+	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		return config.NewMM2ConfigWasm()
+	})
+	return jsfunc
+}
+
 func main() {
 	glg.Get().SetMode(glg.STD)
 	_ = glg.Info("Hello from webassembly")
@@ -113,6 +155,8 @@ func main() {
 	js.Global().Set("get_ticker_infos", getTickerInfos())
 	js.Global().Set("get_all_ticker_infos", getAllTickerInfos())
 	js.Global().Set("start_price_service", startPriceService())
+	js.Global().Set("start_mm2", StartMM2())
+	js.Global().Set("load_coins_cfg_from_url", loadCoinsCfgFromUrl())
 	//js.Global().Set("load_desktop_cfg_from_string", startPriceService())
 	//js.Global().Set("load_desktop_cfg_from_file", startPriceService())
 	<-make(chan bool)

@@ -2,6 +2,9 @@ package config
 
 import (
 	"encoding/json"
+	"errors"
+	"github.com/kpango/glg"
+	"io"
 	"io/ioutil"
 	"mm2_client/constants"
 	"mm2_client/helpers"
@@ -66,6 +69,27 @@ func ParseMM2CFGRegistry() {
 		GMM2CFGRegistry[v.Coin] = v
 	}
 	helpers.PrintCheck("Successfully load MM2 cfg with "+strconv.Itoa(len(GMM2CFGRegistry))+" coins", true)
+}
+
+func ParseMM2CFGFromUrl(url string) error {
+	resp, err := helpers.CrossGet(url)
+	if err != nil {
+		glg.Errorf("err cross-get")
+		return err
+	}
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(resp.Body)
+
+	decodeErr := json.NewDecoder(resp.Body).Decode(&GMM2CFGArray)
+	if decodeErr != nil {
+		return decodeErr
+	}
+
+	if len(GMM2CFGArray) > 0 {
+		return nil
+	}
+	return errors.New("unknown error")
 }
 
 func ParseMM2CFGRegistryFromFile(path string) bool {

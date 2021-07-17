@@ -91,15 +91,17 @@ func startWebsocketForSymbol(cur string) {
 		}
 	}
 	//fmt.Printf("Starting websocket service for symbol: %s\n", cur)
-	_, _, err := binance.WsMarketStatServe(cur, wsMarketHandler, errHandler)
+	doneC, _, err := binance.WsMarketStatServe(cur, wsMarketHandler, errHandler)
 	if err != nil {
-		//fmt.Printf("err for %s: %v\n", cur, err)
 		glg.Errorf("err: %s", err)
 		time.Sleep(1 * time.Second)
 		if strings.Contains(err.Error(), "EOF") {
 			go startWebsocketForSymbol(cur)
 		}
 	}
+	<-doneC
+	glg.Infof("Disconnected, reconnecting now")
+	go startWebsocketForSymbol(cur)
 }
 
 func retrievePossibilities(cur string) []string {
