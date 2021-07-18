@@ -25,6 +25,6 @@ func MyBalance(coin string) (*mm2_data_structure.MyBalanceAnswer, error) {
 			return answer, nil
 		}
 	} else {
-		return nil, errors.New("coin " + val.Coin + " not found in config - skipping")
+		return nil, errors.New("coin " + coin + " not found in config - skipping")
 	}
 }

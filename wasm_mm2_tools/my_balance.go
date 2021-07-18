@@ -1,9 +1,13 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/kpango/glg"
+	"mm2_client/config"
 	"mm2_client/mm2_tools_generics"
+	"mm2_client/mm2_tools_generics/mm2_data_structure"
+	"mm2_client/mm2_tools_generics/mm2_wasm_request"
 	"syscall/js"
 )
 
@@ -13,6 +17,35 @@ func internalMyBalance(coin string) {
 		resp.ToTable()
 	} else {
 		fmt.Println(err)
+	}
+}
+
+func internalMultipleBalance(coins []string) {
+	var outBatch []interface{}
+	for _, v := range coins {
+		if val, ok := config.GCFGRegistry[v]; ok {
+			if req := mm2_data_structure.NewMyBalanceCoinRequest(val); req != nil {
+				outBatch = append(outBatch, req)
+			}
+		} else {
+			fmt.Printf("coin %s doesn't exist - skipping\n", v)
+		}
+	}
+	p, _ := json.Marshal(outBatch)
+	respVal, errVal := mm2_wasm_request.Await(js.Global().Call("rpc_request", string(p)))
+	if respVal != nil {
+		resp := respVal[0].String()
+		if len(resp) > 0 {
+			var outResp []mm2_data_structure.MyBalanceAnswer
+			err := json.Unmarshal([]byte(resp), &outResp)
+			if err != nil {
+				fmt.Printf("Err: %v\n", err)
+			} else {
+				mm2_data_structure.ToTableMyBalanceAnswers(outResp)
+			}
+		}
+	} else {
+		fmt.Println(errVal)
 	}
 }
 
@@ -30,6 +63,11 @@ func MyBalance() js.Func {
 			go internalMyBalance(args[0].String())
 		} else {
 			glg.Infof("Not implemented yet")
+			var coins []string
+			for _, cur := range args {
+				coins = append(coins, cur.String())
+			}
+			go internalMultipleBalance(coins)
 		}
 		return nil
 	})
