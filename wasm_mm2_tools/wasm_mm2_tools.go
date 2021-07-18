@@ -9,6 +9,7 @@ import (
 	"mm2_client/constants"
 	"mm2_client/http"
 	"mm2_client/mm2_tools_generics"
+	"mm2_client/mm2_tools_generics/mm2_wasm_request"
 	"mm2_client/services"
 	"net/url"
 	"syscall/js"
@@ -217,7 +218,7 @@ func enableActiveCoins() js.Func {
 		rawReq := string(p)
 		glg.Infof("req: %s", rawReq)
 		go func() {
-			val, errVal := await(js.Global().Call("rpc_request", rawReq))
+			val, errVal := mm2_wasm_request.Await(js.Global().Call("rpc_request", rawReq))
 			if errVal != nil {
 				glg.Info("not ok")
 			}
@@ -231,14 +232,14 @@ func enableActiveCoins() js.Func {
 func Bootstrap() js.Func {
 	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		go func() {
-			val, errVal := await(js.Global().Call("init_wasm"))
+			val, errVal := mm2_wasm_request.Await(js.Global().Call("init_wasm"))
 			if val != nil {
 				glg.Infof("done from the promise")
-				parseVal, _ := await(js.Global().Call("load_desktop_cfg_from_url", "http://localhost:8080/static/assets/wasm.coins.json"))
+				parseVal, _ := mm2_wasm_request.Await(js.Global().Call("load_desktop_cfg_from_url", "http://localhost:8080/static/assets/wasm.coins.json"))
 				if parseVal != nil {
-					parseMM2Val, _ := await(js.Global().Call("load_coins_cfg_from_url", "http://localhost:8080/static/assets/coins.json"))
+					parseMM2Val, _ := mm2_wasm_request.Await(js.Global().Call("load_coins_cfg_from_url", "http://localhost:8080/static/assets/coins.json"))
 					if parseMM2Val != nil {
-						startVal, _ := await(js.Global().Call("run_mm2", js.Global().Call("start_mm2")))
+						startVal, _ := mm2_wasm_request.Await(js.Global().Call("run_mm2", js.Global().Call("start_mm2")))
 						if startVal != nil {
 							js.Global().Call("enable_active_coins")
 							glg.Info("Bootstrap done !")
@@ -272,5 +273,6 @@ func main() {
 
 	//! CLI API
 	js.Global().Set("bootstrap", Bootstrap())
+	js.Global().Set("my_balance", MyBalance())
 	<-make(chan bool)
 }

@@ -13,16 +13,9 @@ import (
 	"net/http"
 )
 
-func NewMyBalanceCoinRequest(cfg *config.DesktopCFG) *mm2_data_structure.MyBalanceRequest {
-	genReq := http2.NewGenericRequest("my_balance")
-	req := &mm2_data_structure.MyBalanceRequest{Userpass: genReq.Userpass, Method: genReq.Method}
-	req.Coin = cfg.Coin
-	return req
-}
-
 func MyBalance(coin string) (*mm2_data_structure.MyBalanceAnswer, error) {
 	if val, ok := config.GCFGRegistry[coin]; ok {
-		req := NewMyBalanceCoinRequest(val).ToJson()
+		req := mm2_data_structure.NewMyBalanceCoinRequest(val).ToJson()
 		resp, err := http.Post(http2.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
 		if err != nil {
 			glg.Errorf("Err: %v", err)

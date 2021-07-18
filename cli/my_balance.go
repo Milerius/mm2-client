@@ -5,12 +5,13 @@ import (
 	"fmt"
 	"mm2_client/config"
 	"mm2_client/http"
+	"mm2_client/mm2_tools_generics"
 	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"mm2_client/mm2_tools_generics/mm2_http_request"
 )
 
 func MyBalance(coin string) {
-	resp, err := mm2_http_request.MyBalance(coin)
+	resp, err := mm2_tools_generics.MyBalance(coin)
 	if resp != nil {
 		resp.ToTable()
 	} else {

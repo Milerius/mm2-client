@@ -6,6 +6,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"mm2_client/config"
 	"mm2_client/helpers"
+	http2 "mm2_client/http"
 	"mm2_client/services"
 	"os"
 	"strconv"
@@ -23,6 +24,13 @@ type MyBalanceAnswer struct {
 	Balance            string `json:"balance"`
 	UnspendableBalance string `json:"unspendable_balance"`
 	Coin               string `json:"coin"`
+}
+
+func NewMyBalanceCoinRequest(cfg *config.DesktopCFG) *MyBalanceRequest {
+	genReq := http2.NewGenericRequest("my_balance")
+	req := &MyBalanceRequest{Userpass: genReq.Userpass, Method: genReq.Method}
+	req.Coin = cfg.Coin
+	return req
 }
 
 func (req *MyBalanceRequest) ToJson() string {

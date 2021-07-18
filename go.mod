@@ -23,7 +23,6 @@ require (
 	github.com/shurcooL/go v0.0.0-20200502201357-93f07166e636 // indirect
 	github.com/shurcooL/go-goon v0.0.0-20210110234559-7585751d9a17 // indirect
 	github.com/soniah/evaler v2.2.0+incompatible
-	github.com/teamortix/golang-wasm/wasm v0.0.0-20210704024101-285babe68092 // indirect
 	github.com/tyler-smith/go-bip39 v1.1.0
 	github.com/ulule/limiter/v3 v3.8.0
 	github.com/valyala/fasthttp v1.28.0
