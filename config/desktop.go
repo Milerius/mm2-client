@@ -16,6 +16,7 @@ import (
 
 type ElectrumData struct {
 	URL                     string  `json:"url"`
+	WSURL                   *string `json:"ws_url,omitempty"`
 	Protocol                *string `json:"protocol,omitempty"`
 	DisableCertVerification *bool   `json:"disable_cert_verification,omitempty"`
 }
@@ -180,21 +181,36 @@ func (cfg *DesktopCFG) RetrieveContracts() (string, string) {
 }
 
 func (cfg *DesktopCFG) RetrieveElectrums() []ElectrumData {
+
+	functorElectrum := func(in []ElectrumData) []ElectrumData {
+		if runtime.GOARCH != "wasm" {
+			return in
+		}
+		var out []ElectrumData
+		for _, cur := range in {
+			curOut := ElectrumData{URL: cur.URL, WSURL: nil, DisableCertVerification: cur.DisableCertVerification, Protocol: cur.Protocol}
+			if runtime.GOARCH == "wasm" && cur.WSURL != nil {
+				curOut.URL = *cur.WSURL
+			}
+			out = append(out, curOut)
+		}
+		return out
+	}
 	switch cfg.Type {
 	case "QRC-20":
 		if cfg.IsTestNet {
 			if val, ok := GCFGRegistry["tQTUM"]; ok {
-				return val.Electrum
+				return functorElectrum(val.Electrum)
 			}
 		} else {
 			if val, ok := GCFGRegistry["QTUM"]; ok {
-				return val.Electrum
+				return functorElectrum(val.Electrum)
 			}
 		}
 	default:
-		return cfg.Electrum
+		return functorElectrum(cfg.Electrum)
 	}
-	return cfg.Electrum
+	return functorElectrum(cfg.Electrum)
 }
 
 func Update(version string) {
