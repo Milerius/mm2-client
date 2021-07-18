@@ -7,10 +7,6 @@ import (
 	"syscall/js"
 )
 
-func internalMultipleBalance(coins []string) {
-	mm2_tools_generics.MyBalanceMultipleCoinsCLI(coins)
-}
-
 func MyBalance() js.Func {
 	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		if len(args) < 1 {
@@ -29,7 +25,7 @@ func MyBalance() js.Func {
 			for _, cur := range args {
 				coins = append(coins, cur.String())
 			}
-			go internalMultipleBalance(coins)
+			go mm2_tools_generics.MyBalanceMultipleCoinsCLI(coins)
 		}
 		return nil
 	})
@@ -44,7 +40,7 @@ func MyBalanceAll() js.Func {
 				coins = append(coins, cur.Coin)
 			}
 		}
-		go internalMultipleBalance(coins)
+		go mm2_tools_generics.MyBalanceMultipleCoinsCLI(coins)
 		return nil
 	})
 	return jsfunc
