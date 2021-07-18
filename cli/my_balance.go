@@ -7,7 +7,6 @@ import (
 	"mm2_client/http"
 	"mm2_client/mm2_tools_generics"
 	"mm2_client/mm2_tools_generics/mm2_data_structure"
-	"mm2_client/mm2_tools_generics/mm2_http_request"
 )
 
 func MyBalance(coin string) {
@@ -23,7 +22,7 @@ func MyBalanceMultipleCoins(coins []string) {
 	var outBatch []interface{}
 	for _, v := range coins {
 		if val, ok := config.GCFGRegistry[v]; ok {
-			if req := mm2_http_request.NewMyBalanceCoinRequest(val); req != nil {
+			if req := mm2_data_structure.NewMyBalanceCoinRequest(val); req != nil {
 				outBatch = append(outBatch, req)
 			}
 		} else {
@@ -47,7 +46,7 @@ func MyBalanceMultipleCoinsSilent(coins []string) []mm2_data_structure.MyBalance
 	var outBatch []interface{}
 	for _, v := range coins {
 		if val, ok := config.GCFGRegistry[v]; ok {
-			if req := mm2_http_request.NewMyBalanceCoinRequest(val); req != nil {
+			if req := mm2_data_structure.NewMyBalanceCoinRequest(val); req != nil {
 				outBatch = append(outBatch, req)
 			}
 		} else {
