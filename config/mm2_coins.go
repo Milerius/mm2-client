@@ -11,6 +11,16 @@ import (
 	"strconv"
 )
 
+type TProtocolData struct {
+	Platform        string `json:"platform"`
+	ContractAddress string `json:"contract_address"`
+}
+
+type TAddressFormat struct {
+	Format  string `json:"format"`
+	Network string `json:"network"`
+}
+
 type MM2CFG struct {
 	Coin                  string  `json:"coin"`
 	Name                  string  `json:"name,omitempty"`
@@ -21,42 +31,36 @@ type MM2CFG struct {
 	AvgBlocktime          float64 `json:"avg_blocktime,omitempty"`
 	RequiredConfirmations int     `json:"required_confirmations,omitempty"`
 	Protocol              struct {
-		Type         string `json:"type"`
-		ProtocolData struct {
-			Platform        string `json:"platform"`
-			ContractAddress string `json:"contract_address"`
-		} `json:"protocol_data,omitempty"`
+		Type         string         `json:"type"`
+		ProtocolData *TProtocolData `json:"protocol_data,omitempty"`
 	} `json:"protocol"`
-	Decimals             int    `json:"decimals,omitempty"`
-	Pubtype              int    `json:"pubtype,omitempty"`
-	P2Shtype             int    `json:"p2shtype,omitempty"`
-	Wiftype              int    `json:"wiftype,omitempty"`
-	Txfee                int    `json:"txfee,omitempty"`
-	Segwit               bool   `json:"segwit,omitempty"`
-	Bech32Hrp            string `json:"bech32_hrp,omitempty"`
-	Confpath             string `json:"confpath,omitempty"`
-	Asset                string `json:"asset,omitempty"`
-	Txversion            int    `json:"txversion,omitempty"`
-	Overwintered         int    `json:"overwintered,omitempty"`
-	RequiresNotarization bool   `json:"requires_notarization,omitempty"`
-	Dust                 int    `json:"dust,omitempty"`
-	EstimateFeeBlocks    int    `json:"estimate_fee_blocks,omitempty"`
-	ForkId               string `json:"fork_id,omitempty"`
-	AddressFormat        struct {
-		Format  string `json:"format"`
-		Network string `json:"network"`
-	} `json:"address_format,omitempty"`
-	IsPoS               int    `json:"isPoS,omitempty"`
-	MatureConfirmations int    `json:"mature_confirmations,omitempty"`
-	EstimateFeeMode     string `json:"estimate_fee_mode,omitempty"`
-	Taddr               int    `json:"taddr,omitempty"`
-	ForceMinRelayFee    bool   `json:"force_min_relay_fee,omitempty"`
-	P2P                 int    `json:"p2p,omitempty"`
-	Magic               string `json:"magic,omitempty"`
-	NSPV                string `json:"nSPV,omitempty"`
-	VersionGroupId      string `json:"version_group_id,omitempty"`
-	ConsensusBranchId   string `json:"consensus_branch_id,omitempty"`
-	GuiCoin             string `json:"gui_coin,omitempty"`
+	Decimals             int             `json:"decimals,omitempty"`
+	Pubtype              int             `json:"pubtype,omitempty"`
+	P2Shtype             int             `json:"p2shtype,omitempty"`
+	Wiftype              int             `json:"wiftype,omitempty"`
+	Txfee                int             `json:"txfee,omitempty"`
+	Segwit               bool            `json:"segwit,omitempty"`
+	Bech32Hrp            string          `json:"bech32_hrp,omitempty"`
+	Confpath             string          `json:"confpath,omitempty"`
+	Asset                string          `json:"asset,omitempty"`
+	Txversion            int             `json:"txversion,omitempty"`
+	Overwintered         int             `json:"overwintered,omitempty"`
+	RequiresNotarization bool            `json:"requires_notarization,omitempty"`
+	Dust                 int             `json:"dust,omitempty"`
+	EstimateFeeBlocks    int             `json:"estimate_fee_blocks,omitempty"`
+	ForkId               string          `json:"fork_id,omitempty"`
+	AddressFormat        *TAddressFormat `json:"address_format,omitempty"`
+	IsPoS                int             `json:"isPoS,omitempty"`
+	MatureConfirmations  int             `json:"mature_confirmations,omitempty"`
+	EstimateFeeMode      string          `json:"estimate_fee_mode,omitempty"`
+	Taddr                int             `json:"taddr,omitempty"`
+	ForceMinRelayFee     bool            `json:"force_min_relay_fee,omitempty"`
+	P2P                  int             `json:"p2p,omitempty"`
+	Magic                string          `json:"magic,omitempty"`
+	NSPV                 string          `json:"nSPV,omitempty"`
+	VersionGroupId       string          `json:"version_group_id,omitempty"`
+	ConsensusBranchId    string          `json:"consensus_branch_id,omitempty"`
+	GuiCoin              string          `json:"gui_coin,omitempty"`
 }
 
 var GMM2CFGRegistry = make(map[string]*MM2CFG)

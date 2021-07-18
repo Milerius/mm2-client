@@ -1,10 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/kpango/glg"
 	"mm2_client/config"
 	"mm2_client/constants"
+	"mm2_client/http"
 	"mm2_client/mm2_tools_generics"
 	"mm2_client/services"
 	"net/url"
@@ -148,7 +150,55 @@ func StartMM2() js.Func {
 	return jsfunc
 }
 
+func enableActiveCoins() js.Func {
+	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		coins := config.RetrieveActiveCoins()
+		var outBatch []interface{}
+		for _, v := range coins {
+			if val, ok := config.GCFGRegistry[v]; ok {
+				switch val.Type {
+				case "BEP-20", "ERC-20":
+					req := http.NewEnableRequest(val)
+					//fmt.Println(req)
+					outBatch = append(outBatch, req)
+					if !val.Active {
+						val.Active = true
+						config.GCFGRegistry[v] = val
+
+					}
+				case "UTXO", "QRC-20", "Smart Chain":
+					req := http.NewElectrumRequest(val)
+					//fmt.Println(req.ToJson())
+					outBatch = append(outBatch, req)
+					if !val.Active {
+						val.Active = true
+						config.GCFGRegistry[v] = val
+					}
+				default:
+					glg.Warnf("Not supported yet")
+				}
+			} else {
+				glg.Warnf("coin %s doesn't exist - skipping", v)
+			}
+		}
+
+		p, _ := json.Marshal(outBatch)
+		rawReq := string(p)
+		glg.Infof("req: %s", rawReq)
+		go func() {
+			val, ok := await(js.Global().Call("rpc_request", rawReq))
+			if !ok {
+				glg.Info("not ok")
+			}
+			glg.Infof("ok %v", val)
+		}()
+		return "done"
+	})
+	return jsfunc
+}
+
 func main() {
+	http.GRuntimeUserpass = "wasmtest"
 	glg.Get().SetMode(glg.STD)
 	_ = glg.Info("Hello from webassembly")
 	js.Global().Set("load_desktop_cfg_from_url", loadDesktopCfgFromUrl())
@@ -157,6 +207,7 @@ func main() {
 	js.Global().Set("start_price_service", startPriceService())
 	js.Global().Set("start_mm2", StartMM2())
 	js.Global().Set("load_coins_cfg_from_url", loadCoinsCfgFromUrl())
+	js.Global().Set("enable_active_coins", enableActiveCoins())
 	//js.Global().Set("load_desktop_cfg_from_string", startPriceService())
 	//js.Global().Set("load_desktop_cfg_from_file", startPriceService())
 	<-make(chan bool)
