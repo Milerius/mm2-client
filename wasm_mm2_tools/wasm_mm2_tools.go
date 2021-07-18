@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/kpango/glg"
 	"mm2_client/config"
@@ -51,15 +52,30 @@ func loadCoinsCfgFromUrl() js.Func {
 			return result
 		}
 		_ = glg.Infof("url is: %s", inputUrl)
-		go func() {
-			err = config.ParseMM2CFGFromUrl(inputUrl)
-			if err != nil {
-				errStr := fmt.Sprintf("error when parsing cfg: %v\n", err)
-				_ = glg.Errorf("%s", errStr)
-			}
-			_ = glg.Infof("cfg successfully parsed: %d", len(config.GMM2CFGArray))
-		}()
-		return true
+		handler := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+			resolve := args[0]
+			reject := args[1]
+			go func() {
+				err = config.ParseMM2CFGFromUrl(inputUrl)
+				if err != nil {
+					errStr := fmt.Sprintf("error when parsing cfg: %v\n", err)
+					rejectErr := errors.New(errStr)
+					errorConstructor := js.Global().Get("Error")
+					errorObject := errorConstructor.New(rejectErr.Error())
+					reject.Invoke(errorObject)
+					_ = glg.Errorf("%s", errStr)
+				} else {
+					_ = glg.Infof("cfg successfully parsed: %d", len(config.GCFGRegistry))
+					resolve.Invoke(map[string]interface{}{
+						"message": "cfg successfully parsed",
+						"error":   nil,
+					})
+				}
+			}()
+			return nil
+		})
+		promiseConstructor := js.Global().Get("Promise")
+		return promiseConstructor.New(handler)
 	})
 	return jsfunc
 }
@@ -86,15 +102,30 @@ func loadDesktopCfgFromUrl() js.Func {
 			return result
 		}
 		_ = glg.Infof("url is: %s", inputUrl)
-		go func() {
-			err = config.ParseDesktopRegistryFromUrl(inputUrl)
-			if err != nil {
-				errStr := fmt.Sprintf("error when parsing cfg: %v\n", err)
-				_ = glg.Errorf("%s", errStr)
-			}
-			_ = glg.Infof("cfg successfully parsed: %d", len(config.GCFGRegistry))
-		}()
-		return true
+		handler := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+			resolve := args[0]
+			reject := args[1]
+			go func() {
+				err = config.ParseDesktopRegistryFromUrl(inputUrl)
+				if err != nil {
+					errStr := fmt.Sprintf("error when parsing cfg: %v\n", err)
+					rejectErr := errors.New(errStr)
+					errorConstructor := js.Global().Get("Error")
+					errorObject := errorConstructor.New(rejectErr.Error())
+					reject.Invoke(errorObject)
+					_ = glg.Errorf("%s", errStr)
+				} else {
+					_ = glg.Infof("cfg successfully parsed: %d", len(config.GCFGRegistry))
+					resolve.Invoke(map[string]interface{}{
+						"message": "cfg successfully parsed",
+						"error":   nil,
+					})
+				}
+			}()
+			return nil
+		})
+		promiseConstructor := js.Global().Get("Promise")
+		return promiseConstructor.New(handler)
 	})
 	return jsfunc
 }
@@ -186,11 +217,37 @@ func enableActiveCoins() js.Func {
 		rawReq := string(p)
 		glg.Infof("req: %s", rawReq)
 		go func() {
-			val, ok := await(js.Global().Call("rpc_request", rawReq))
-			if !ok {
+			val, errVal := await(js.Global().Call("rpc_request", rawReq))
+			if errVal != nil {
 				glg.Info("not ok")
 			}
 			glg.Infof("ok %v", val)
+		}()
+		return "done"
+	})
+	return jsfunc
+}
+
+func Bootstrap() js.Func {
+	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		go func() {
+			val, errVal := await(js.Global().Call("init_wasm"))
+			if val != nil {
+				glg.Infof("done from the promise")
+				parseVal, _ := await(js.Global().Call("load_desktop_cfg_from_url", "http://localhost:8080/static/assets/wasm.coins.json"))
+				if parseVal != nil {
+					parseMM2Val, _ := await(js.Global().Call("load_coins_cfg_from_url", "http://localhost:8080/static/assets/coins.json"))
+					if parseMM2Val != nil {
+						startVal, _ := await(js.Global().Call("run_mm2", js.Global().Call("start_mm2")))
+						if startVal != nil {
+							js.Global().Call("enable_active_coins")
+							glg.Info("Bootstrap done !")
+						}
+					}
+				}
+			} else {
+				glg.Errorf("bad from the promise: %v", errVal)
+			}
 		}()
 		return "done"
 	})
@@ -202,12 +259,13 @@ func main() {
 	glg.Get().SetMode(glg.STD)
 	_ = glg.Info("Hello from webassembly")
 	js.Global().Set("load_desktop_cfg_from_url", loadDesktopCfgFromUrl())
+	js.Global().Set("load_coins_cfg_from_url", loadCoinsCfgFromUrl())
 	js.Global().Set("get_ticker_infos", getTickerInfos())
 	js.Global().Set("get_all_ticker_infos", getAllTickerInfos())
 	js.Global().Set("start_price_service", startPriceService())
 	js.Global().Set("start_mm2", StartMM2())
-	js.Global().Set("load_coins_cfg_from_url", loadCoinsCfgFromUrl())
 	js.Global().Set("enable_active_coins", enableActiveCoins())
+	js.Global().Set("bootstrap", Bootstrap())
 	//js.Global().Set("load_desktop_cfg_from_string", startPriceService())
 	//js.Global().Set("load_desktop_cfg_from_file", startPriceService())
 	<-make(chan bool)

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/kpango/glg"
 	"io"
 	"io/ioutil"
 	"mm2_client/constants"
@@ -109,8 +110,16 @@ func ParseDesktopRegistryFromFile(path string) bool {
 	if constants.GDesktopCfgLoaded {
 		return true
 	}
-	file, _ := ioutil.ReadFile(path)
-	_ = json.Unmarshal([]byte(file), &GCFGRegistry)
+	file, err := ioutil.ReadFile(path)
+	if err != nil {
+		glg.Errorf("err when parsing: %v", err)
+		return false
+	}
+	unmarshalErr := json.Unmarshal([]byte(file), &GCFGRegistry)
+	if unmarshalErr != nil {
+		glg.Errorf("err when unmarshaling: %v", unmarshalErr)
+		return false
+	}
 	if len(GCFGRegistry) > 0 {
 		constants.GDesktopCfgLoaded = true
 		return true
