@@ -6,6 +6,7 @@ import (
 	"mm2_client/constants"
 	"mm2_client/http"
 	"mm2_client/market_making"
+	"mm2_client/mm2_tools_generics"
 	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"mm2_client/services"
 	"os"
@@ -74,18 +75,18 @@ func Executor(fullCommand string) {
 		if len(command) == 1 {
 			ShowCommandHelp(command[0])
 		} else if len(command) == 2 {
-			MyBalance(command[1])
+			mm2_tools_generics.MyBalanceCLI(command[1])
 		} else {
-			MyBalanceMultipleCoins(command[1:])
+			mm2_tools_generics.MyBalanceMultipleCoinsCLI(command[1:])
 		}
 	case "balance_all":
-		MyBalanceMultipleCoins(config.RetrieveActiveCoins())
+		mm2_tools_generics.MyBalanceMultipleCoinsCLI(config.RetrieveActiveCoins())
 	case "kmd_rewards_info":
 		KmdRewardsInfo()
 	case "disable_enabled_coins":
 		DisableCoins(http.GetEnabledCoins().ToSlice())
 	case "disable_zero_balance":
-		DisableCoins(mm2_data_structure.ToSliceEmptyBalance(MyBalanceMultipleCoinsSilent(http.GetEnabledCoins().ToSlice()), true))
+		DisableCoins(mm2_data_structure.ToSliceEmptyBalance(mm2_tools_generics.MyBalanceMultipleCoinsSilent(http.GetEnabledCoins().ToSlice()), true))
 	case "orderbook":
 		if len(command) != 3 {
 			ShowCommandHelp("orderbook")

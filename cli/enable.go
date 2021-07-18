@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"mm2_client/config"
 	"mm2_client/http"
+	"mm2_client/mm2_tools_generics/mm2_http_request"
 )
 
 func Enable(coin string) {
@@ -63,7 +64,7 @@ func EnableMultipleCoins(coins []string) {
 		go config.Update(http.GetLastDesktopVersion())
 	}
 
-	resp := http.BatchRequest(outBatch)
+	resp := mm2_http_request.BatchRequest(outBatch)
 	if len(resp) > 0 {
 		var outResp []http.GenericEnableAnswer
 		err := json.Unmarshal([]byte(resp), &outResp)

@@ -6,6 +6,7 @@ import (
 	"mm2_client/config"
 	"mm2_client/helpers"
 	"mm2_client/http"
+	"mm2_client/mm2_tools_generics/mm2_http_request"
 )
 
 func DisableCoin(coin string) {
@@ -30,7 +31,7 @@ func DisableCoins(coins []string) {
 	}
 
 	if len(outBatch) > 0 {
-		resp := http.BatchRequest(outBatch)
+		resp := mm2_http_request.BatchRequest(outBatch)
 		if len(resp) > 0 {
 			var outResp []http.DisableCoinAnswer
 			err := json.Unmarshal([]byte(resp), &outResp)
