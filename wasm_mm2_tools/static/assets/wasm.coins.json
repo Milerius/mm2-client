@@ -2592,10 +2592,12 @@
     "coinpaprika_id": "test-coin",
     "electrum": [
       {
-        "url": "electrum3.cipig.net:10017"
+        "url": "electrum3.cipig.net:10017",
+        "ws_url": "electrum3.cipig.net:30017"
       },
       {
-        "url": "electrum2.cipig.net:10017"
+        "url": "electrum2.cipig.net:10017",
+        "ws_url": "electrum2.cipig.net:30017"
       },
       {
         "url": "electrum1.cipig.net:10017",
@@ -2605,7 +2607,7 @@
     "explorer_url": [
       "https://rick.explorer.dexstats.info/"
     ],
-    "active": false,
+    "active": true,
     "currently_enabled": false
   },
   "MORTY": {
@@ -2617,10 +2619,12 @@
     "coinpaprika_id": "test-coin",
     "electrum": [
       {
-        "url": "electrum3.cipig.net:10018"
+        "url": "electrum3.cipig.net:10018",
+        "ws_url": "electrum3.cipig.net:30018"
       },
       {
-        "url": "electrum2.cipig.net:10018"
+        "url": "electrum2.cipig.net:10018",
+        "ws_url": "electrum2.cipig.net:30018"
       },
       {
         "url": "electrum1.cipig.net:10018",
@@ -2630,7 +2634,7 @@
     "explorer_url": [
       "https://morty.explorer.dexstats.info/"
     ],
-    "active": false,
+    "active": true,
     "currently_enabled": false
   },
   "PANGEA": {
