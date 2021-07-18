@@ -257,16 +257,20 @@ func Bootstrap() js.Func {
 func main() {
 	http.GRuntimeUserpass = "wasmtest"
 	glg.Get().SetMode(glg.STD)
-	_ = glg.Info("Hello from webassembly")
+	_ = glg.Info("Hello from webassembly - Slyris tools running")
+
+	//! Internal
 	js.Global().Set("load_desktop_cfg_from_url", loadDesktopCfgFromUrl())
 	js.Global().Set("load_coins_cfg_from_url", loadCoinsCfgFromUrl())
+	js.Global().Set("start_mm2", StartMM2())
+	js.Global().Set("enable_active_coins", enableActiveCoins())
+
+	//! Price API
 	js.Global().Set("get_ticker_infos", getTickerInfos())
 	js.Global().Set("get_all_ticker_infos", getAllTickerInfos())
 	js.Global().Set("start_price_service", startPriceService())
-	js.Global().Set("start_mm2", StartMM2())
-	js.Global().Set("enable_active_coins", enableActiveCoins())
+
+	//! CLI API
 	js.Global().Set("bootstrap", Bootstrap())
-	//js.Global().Set("load_desktop_cfg_from_string", startPriceService())
-	//js.Global().Set("load_desktop_cfg_from_file", startPriceService())
 	<-make(chan bool)
 }
