@@ -73,3 +73,17 @@ func MyBalance() js.Func {
 	})
 	return jsfunc
 }
+
+func MyBalanceAll() js.Func {
+	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		var coins []string
+		for _, cur := range config.GCFGRegistry {
+			if cur.Active {
+				coins = append(coins, cur.Coin)
+			}
+		}
+		go internalMultipleBalance(coins)
+		return nil
+	})
+	return jsfunc
+}

@@ -274,5 +274,6 @@ func main() {
 	//! CLI API
 	js.Global().Set("bootstrap", Bootstrap())
 	js.Global().Set("my_balance", MyBalance())
+	js.Global().Set("balance_all", MyBalanceAll())
 	<-make(chan bool)
 }
