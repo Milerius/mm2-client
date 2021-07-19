@@ -55,14 +55,14 @@ func Executor(fullCommand string) {
 		if len(command) == 1 {
 			ShowCommandHelp(command[0])
 		} else if len(command) == 2 {
-			Enable(command[1])
+			mm2_tools_generics.EnableCLI(command[1])
 		} else {
-			EnableMultipleCoins(command[1:])
+			mm2_tools_generics.EnableMultipleCoins(command[1:])
 		}
 	case "enable_active_coins":
-		EnableMultipleCoins(config.RetrieveActiveCoins())
+		mm2_tools_generics.EnableMultipleCoins(config.RetrieveActiveCoins())
 	case "enable_all_coins":
-		EnableMultipleCoins(config.RetrieveAllCoins())
+		mm2_tools_generics.EnableMultipleCoins(config.RetrieveAllCoins())
 	case "disable_coin":
 		if len(command) == 1 {
 			ShowCommandHelp(command[0])

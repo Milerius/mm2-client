@@ -1,27 +1,37 @@
-package cli
+package mm2_tools_generics
 
 import (
 	"encoding/json"
 	"fmt"
 	"mm2_client/config"
 	"mm2_client/http"
-	"mm2_client/mm2_tools_generics/mm2_http_request"
+	"mm2_client/mm2_tools_generics/mm2_data_structure"
+	"runtime"
 )
 
-func Enable(coin string) {
+func EnableCLI(coin string) {
+	var resp *mm2_data_structure.GenericEnableAnswer = nil
+	var err error = nil
 	if val, ok := config.GCFGRegistry[coin]; ok {
 		switch val.Type {
 		case "BEP-20", "ERC-20":
-			http.Enable(coin)
+			resp, err = Enable(coin)
 		case "UTXO", "QRC-20", "Smart Chain":
-			http.Electrum(coin)
+			resp, err = Electrum(coin)
 		default:
 			fmt.Println("Not supported yet")
 		}
 		if !val.Active {
 			val.Active = true
 			config.GCFGRegistry[coin] = val
-			go config.Update(http.GetLastDesktopVersion())
+			if runtime.GOARCH != "wasm" {
+				go config.Update(http.GetLastDesktopVersion())
+			}
+		}
+		if resp != nil {
+			resp.ToTable()
+		} else if err != nil {
+			fmt.Printf("Err when enabling coin %s: %v\n", coin, err)
 		}
 	} else {
 		fmt.Printf("Cannot enable %s, did you start MM2 with the command <start> ?\n", coin)
@@ -35,7 +45,7 @@ func EnableMultipleCoins(coins []string) {
 		if val, ok := config.GCFGRegistry[v]; ok {
 			switch val.Type {
 			case "BEP-20", "ERC-20":
-				req := http.NewEnableRequest(val)
+				req := mm2_data_structure.NewEnableRequest(val)
 				//fmt.Println(req)
 				outBatch = append(outBatch, req)
 				if !val.Active {
@@ -44,7 +54,7 @@ func EnableMultipleCoins(coins []string) {
 					requireUpdate = true
 				}
 			case "UTXO", "QRC-20", "Smart Chain":
-				req := http.NewElectrumRequest(val)
+				req := mm2_data_structure.NewElectrumRequest(val)
 				//fmt.Println(req.ToJson())
 				outBatch = append(outBatch, req)
 				if !val.Active {
@@ -60,18 +70,18 @@ func EnableMultipleCoins(coins []string) {
 		}
 	}
 
-	if requireUpdate {
+	if requireUpdate && runtime.GOARCH != "wasm" {
 		go config.Update(http.GetLastDesktopVersion())
 	}
 
-	resp := mm2_http_request.BatchRequest(outBatch)
+	resp := BatchRequest(outBatch)
 	if len(resp) > 0 {
-		var outResp []http.GenericEnableAnswer
+		var outResp []mm2_data_structure.GenericEnableAnswer
 		err := json.Unmarshal([]byte(resp), &outResp)
 		if err != nil {
 			fmt.Printf("Err: %v\n", err)
 		} else {
-			http.ToTableGenericEnableAnswers(outResp)
+			mm2_data_structure.ToTableGenericEnableAnswers(outResp)
 		}
 	}
 }

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/kpango/glg"
@@ -184,46 +183,7 @@ func StartMM2() js.Func {
 
 func enableActiveCoins() js.Func {
 	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		coins := config.RetrieveActiveCoins()
-		var outBatch []interface{}
-		for _, v := range coins {
-			if val, ok := config.GCFGRegistry[v]; ok {
-				switch val.Type {
-				case "BEP-20", "ERC-20":
-					req := http.NewEnableRequest(val)
-					//fmt.Println(req)
-					outBatch = append(outBatch, req)
-					if !val.Active {
-						val.Active = true
-						config.GCFGRegistry[v] = val
-
-					}
-				case "UTXO", "QRC-20", "Smart Chain":
-					req := http.NewElectrumRequest(val)
-					//fmt.Println(req.ToJson())
-					outBatch = append(outBatch, req)
-					if !val.Active {
-						val.Active = true
-						config.GCFGRegistry[v] = val
-					}
-				default:
-					glg.Warnf("Not supported yet")
-				}
-			} else {
-				glg.Warnf("coin %s doesn't exist - skipping", v)
-			}
-		}
-
-		p, _ := json.Marshal(outBatch)
-		rawReq := string(p)
-		glg.Infof("req: %s", rawReq)
-		go func() {
-			val, errVal := mm2_wasm_request.Await(js.Global().Call("rpc_request", rawReq))
-			if errVal != nil {
-				glg.Info("not ok")
-			}
-			glg.Infof("ok %v", val)
-		}()
+		go func() { mm2_tools_generics.EnableMultipleCoins(config.RetrieveActiveCoins()) }()
 		return "done"
 	})
 	return jsfunc
