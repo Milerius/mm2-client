@@ -38,11 +38,11 @@ func Electrum(coin string) (*mm2_data_structure.GenericEnableAnswer, error) {
 				return nil, errors.New(errStr)
 			}
 		} else {
-			glg.Errorf("coins: %s have no valid electrum for your servers - skipping", coin)
+			_ = glg.Errorf("coins: %s have no valid electrum for your servers - skipping", coin)
 			return nil, errors.New("coins: " + coin + " have no valid electrum for your servers - skipping")
 		}
 	} else {
-		glg.Errorf("coin: %s doesn't exist or is not present in the desktop configuration", coin)
+		_ = glg.Errorf("coin: %s doesn't exist or is not present in the desktop configuration", coin)
 		return nil, errors.New("coin: " + coin + "doesn't exist or is not present in the desktop configuration")
 	}
 }
