@@ -7,7 +7,7 @@ import (
 	"syscall/js"
 )
 
-func MyBalance() js.Func {
+func myBalance() js.Func {
 	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		if len(args) < 1 {
 			usage := "invalid nb args - usage: my_balance(coin1, coin2, coin3)"
@@ -32,7 +32,7 @@ func MyBalance() js.Func {
 	return jsfunc
 }
 
-func MyBalanceAll() js.Func {
+func myBalanceAll() js.Func {
 	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		var coins []string
 		for _, cur := range config.GCFGRegistry {

@@ -181,15 +181,7 @@ func StartMM2() js.Func {
 	return jsfunc
 }
 
-func enableActiveCoins() js.Func {
-	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		go func() { mm2_tools_generics.EnableMultipleCoins(config.RetrieveActiveCoins()) }()
-		return "done"
-	})
-	return jsfunc
-}
-
-func Bootstrap() js.Func {
+func bootstrap() js.Func {
 	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		go func() {
 			val, errVal := mm2_wasm_request.Await(js.Global().Call("init_wasm"))
@@ -232,8 +224,10 @@ func main() {
 	js.Global().Set("start_price_service", startPriceService())
 
 	//! CLI API
-	js.Global().Set("bootstrap", Bootstrap())
-	js.Global().Set("my_balance", MyBalance())
-	js.Global().Set("balance_all", MyBalanceAll())
+	js.Global().Set("bootstrap", bootstrap())
+	js.Global().Set("my_balance", myBalance())
+	js.Global().Set("balance_all", myBalanceAll())
+	js.Global().Set("enable", enable())
+
 	<-make(chan bool)
 }
