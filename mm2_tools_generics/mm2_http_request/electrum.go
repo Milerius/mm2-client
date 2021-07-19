@@ -31,7 +31,6 @@ func Electrum(coin string) (*mm2_data_structure.GenericEnableAnswer, error) {
 					glg.Errorf("Err: %v", decodeErr)
 					return nil, decodeErr
 				}
-				answer.ToTable()
 				return answer, nil
 			} else {
 				bodyBytes, _ := ioutil.ReadAll(resp.Body)

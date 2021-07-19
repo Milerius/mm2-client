@@ -67,9 +67,9 @@ func Executor(fullCommand string) {
 		if len(command) == 1 {
 			ShowCommandHelp(command[0])
 		} else if len(command) == 2 {
-			DisableCoin(command[1])
+			mm2_tools_generics.DisableCoinCLI(command[1])
 		} else {
-			DisableCoins(command[1:])
+			mm2_tools_generics.DisableCoins(command[1:])
 		}
 	case "my_balance":
 		if len(command) == 1 {
@@ -84,9 +84,9 @@ func Executor(fullCommand string) {
 	case "kmd_rewards_info":
 		KmdRewardsInfo()
 	case "disable_enabled_coins":
-		DisableCoins(http.GetEnabledCoins().ToSlice())
+		mm2_tools_generics.DisableCoins(http.GetEnabledCoins().ToSlice())
 	case "disable_zero_balance":
-		DisableCoins(mm2_data_structure.ToSliceEmptyBalance(mm2_tools_generics.MyBalanceMultipleCoinsSilent(http.GetEnabledCoins().ToSlice()), true))
+		mm2_tools_generics.DisableCoins(mm2_data_structure.ToSliceEmptyBalance(mm2_tools_generics.MyBalanceMultipleCoinsSilent(http.GetEnabledCoins().ToSlice()), true))
 	case "orderbook":
 		if len(command) != 3 {
 			ShowCommandHelp("orderbook")
