@@ -15,26 +15,32 @@ import (
 
 func Electrum(coin string) (*mm2_data_structure.GenericEnableAnswer, error) {
 	if val, ok := config.GCFGRegistry[coin]; ok {
-		req := mm2_data_structure.NewElectrumRequest(val).ToJson()
-		resp, err := http.Post(http2.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
-		if err != nil {
-			glg.Errorf("Err: %v", err)
-			return nil, err
-		}
-		if resp.StatusCode == http.StatusOK {
-			defer resp.Body.Close()
-			var answer = &mm2_data_structure.GenericEnableAnswer{}
-			decodeErr := json.NewDecoder(resp.Body).Decode(answer)
-			if decodeErr != nil {
-				glg.Errorf("Err: %v", decodeErr)
-				return nil, decodeErr
+		reqRaw := mm2_data_structure.NewElectrumRequest(val)
+		if reqRaw != nil {
+			req := reqRaw.ToJson()
+			resp, err := http.Post(http2.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
+			if err != nil {
+				glg.Errorf("Err: %v", err)
+				return nil, err
 			}
-			answer.ToTable()
-			return answer, nil
+			if resp.StatusCode == http.StatusOK {
+				defer resp.Body.Close()
+				var answer = &mm2_data_structure.GenericEnableAnswer{}
+				decodeErr := json.NewDecoder(resp.Body).Decode(answer)
+				if decodeErr != nil {
+					glg.Errorf("Err: %v", decodeErr)
+					return nil, decodeErr
+				}
+				answer.ToTable()
+				return answer, nil
+			} else {
+				bodyBytes, _ := ioutil.ReadAll(resp.Body)
+				errStr := fmt.Sprintf("err: %s", bodyBytes)
+				return nil, errors.New(errStr)
+			}
 		} else {
-			bodyBytes, _ := ioutil.ReadAll(resp.Body)
-			errStr := fmt.Sprintf("err: %s", bodyBytes)
-			return nil, errors.New(errStr)
+			glg.Errorf("coins: %s have no valid electrum for your servers - skipping", coin)
+			return nil, errors.New("coins: " + coin + " have no valid electrum for your servers - skipping")
 		}
 	} else {
 		glg.Errorf("coin: %s doesn't exist or is not present in the desktop configuration", coin)

@@ -55,12 +55,16 @@ func EnableMultipleCoins(coins []string) {
 				}
 			case "UTXO", "QRC-20", "Smart Chain":
 				req := mm2_data_structure.NewElectrumRequest(val)
-				//fmt.Println(req.ToJson())
-				outBatch = append(outBatch, req)
-				if !val.Active {
-					val.Active = true
-					config.GCFGRegistry[v] = val
-					requireUpdate = true
+				if req != nil {
+					//fmt.Println(req.ToJson())
+					outBatch = append(outBatch, req)
+					if !val.Active {
+						val.Active = true
+						config.GCFGRegistry[v] = val
+						requireUpdate = true
+					}
+				} else {
+					fmt.Printf("Skipping for %s - because no available electrum servers for your platform\n", val.Coin)
 				}
 			default:
 				fmt.Println("Not supported yet")

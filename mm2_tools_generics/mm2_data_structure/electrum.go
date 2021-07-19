@@ -23,6 +23,9 @@ func NewElectrumRequest(cfg *config.DesktopCFG) *ElectrumRequest {
 	req.Coin = cfg.Coin
 	req.TxHistory = true
 	req.Servers = cfg.RetrieveElectrums()
+	if len(req.Servers) == 0 {
+		return nil
+	}
 	for i, cur := range req.Servers {
 		if cur.Protocol != nil && *cur.Protocol == "" {
 			req.Servers[i].Protocol = nil

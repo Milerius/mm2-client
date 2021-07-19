@@ -198,10 +198,14 @@ func (cfg *DesktopCFG) RetrieveElectrums() []ElectrumData {
 		var out []ElectrumData
 		for _, cur := range in {
 			curOut := ElectrumData{URL: cur.URL, WSURL: nil, DisableCertVerification: cur.DisableCertVerification, Protocol: cur.Protocol}
-			if runtime.GOARCH == "wasm" && cur.WSURL != nil {
-				curOut.URL = *cur.WSURL
-				protocol := "WSS"
-				curOut.Protocol = &protocol
+			if runtime.GOARCH == "wasm" {
+				if cur.WSURL != nil {
+					curOut.URL = *cur.WSURL
+					protocol := "WSS"
+					curOut.Protocol = &protocol
+				} else {
+					continue
+				}
 			}
 			out = append(out, curOut)
 		}
