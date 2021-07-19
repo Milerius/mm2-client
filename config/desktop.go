@@ -190,7 +190,6 @@ func (cfg *DesktopCFG) RetrieveContracts() (string, string) {
 }
 
 func (cfg *DesktopCFG) RetrieveElectrums() []ElectrumData {
-
 	functorElectrum := func(in []ElectrumData) []ElectrumData {
 		if runtime.GOARCH != "wasm" {
 			return in
@@ -230,16 +229,21 @@ func (cfg *DesktopCFG) RetrieveElectrums() []ElectrumData {
 
 func Update(version string) {
 	//fmt.Println("Updating cfg")
-	var desktopCoinsPath = constants.GMM2Dir + "/" + version + "-coins.json"
-	e := os.Remove(desktopCoinsPath)
-	if e != nil {
-		fmt.Printf("Err: %v", e)
-	} else {
-		file, _ := json.MarshalIndent(GCFGRegistry, "", " ")
-		err := ioutil.WriteFile(desktopCoinsPath, file, 0644)
-		if err != nil {
-			fmt.Println(err)
+	glg.Infof("Updating cfg")
+	if runtime.GOARCH != "wasm" {
+		var desktopCoinsPath = constants.GMM2Dir + "/" + version + "-coins.json"
+		e := os.Remove(desktopCoinsPath)
+		if e != nil {
+			fmt.Printf("Err: %v", e)
+		} else {
+			file, _ := json.MarshalIndent(GCFGRegistry, "", " ")
+			err := ioutil.WriteFile(desktopCoinsPath, file, 0644)
+			if err != nil {
+				fmt.Println(err)
+			}
 		}
+	} else {
+		UpdateWasm()
 	}
 }
 

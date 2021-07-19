@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/kpango/glg"
 	"mm2_client/config"
+	"mm2_client/config/wasm_storage"
 	"mm2_client/constants"
 	"mm2_client/http"
 	"mm2_client/mm2_tools_generics"
@@ -81,51 +82,77 @@ func loadCoinsCfgFromUrl() js.Func {
 }
 
 func loadDesktopCfgFromUrl() js.Func {
+	storageHandler := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		resolve := args[0]
+		reject := args[1]
+		resp := wasm_storage.Retrieve("wasm_coins_cfg")
+		go func() {
+			if config.ParseDesktopRegistryFromString(resp) {
+				resolve.Invoke(map[string]interface{}{
+					"message": "cfg successfully parsed",
+					"error":   nil,
+				})
+			} else {
+				rejectErr := errors.New("error when parsing cfg")
+				errorConstructor := js.Global().Get("Error")
+				errorObject := errorConstructor.New(rejectErr.Error())
+				reject.Invoke(errorObject)
+			}
+		}()
+		return nil
+	})
 	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		_ = glg.Info("load_desktop_cfg_from_url called")
-		if len(args) != 1 {
-			usage := "invalid nb args - usage: load_desktop_cfg_from_url(\"my_url_to_desktop_cfg\")"
-			_ = glg.Error(usage)
-			result := map[string]interface{}{
-				"error": usage,
-			}
-			return result
-		}
-		inputUrl := args[0].String()
-		_, err := url.ParseRequestURI(inputUrl)
-		if err != nil {
-			errStr := fmt.Sprintf("invalid url: %v\n", err)
-			_ = glg.Errorf("%s", errStr)
-			result := map[string]interface{}{
-				"error": errStr,
-			}
-			return result
-		}
-		_ = glg.Infof("url is: %s", inputUrl)
-		handler := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-			resolve := args[0]
-			reject := args[1]
-			go func() {
-				err = config.ParseDesktopRegistryFromUrl(inputUrl)
-				if err != nil {
-					errStr := fmt.Sprintf("error when parsing cfg: %v\n", err)
-					rejectErr := errors.New(errStr)
-					errorConstructor := js.Global().Get("Error")
-					errorObject := errorConstructor.New(rejectErr.Error())
-					reject.Invoke(errorObject)
-					_ = glg.Errorf("%s", errStr)
-				} else {
-					_ = glg.Infof("cfg successfully parsed: %d", len(config.GCFGRegistry))
-					resolve.Invoke(map[string]interface{}{
-						"message": "cfg successfully parsed",
-						"error":   nil,
-					})
+		if resp := wasm_storage.Retrieve("wasm_coins_cfg"); resp != "" {
+			return js.Global().Get("Promise").New(storageHandler)
+		} else {
+			_ = glg.Info("load_desktop_cfg_from_url called")
+			if len(args) != 1 {
+				usage := "invalid nb args - usage: load_desktop_cfg_from_url(\"my_url_to_desktop_cfg\")"
+				_ = glg.Error(usage)
+				result := map[string]interface{}{
+					"error": usage,
 				}
-			}()
-			return nil
-		})
-		promiseConstructor := js.Global().Get("Promise")
-		return promiseConstructor.New(handler)
+				return result
+			}
+			inputUrl := args[0].String()
+			_, err := url.ParseRequestURI(inputUrl)
+			if err != nil {
+				errStr := fmt.Sprintf("invalid url: %v\n", err)
+				_ = glg.Errorf("%s", errStr)
+				result := map[string]interface{}{
+					"error": errStr,
+				}
+				return result
+			}
+			_ = glg.Infof("url is: %s", inputUrl)
+			handler := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+				resolve := args[0]
+				reject := args[1]
+				go func() {
+					err = config.ParseDesktopRegistryFromUrl(inputUrl)
+					if err != nil {
+						errStr := fmt.Sprintf("error when parsing cfg: %v\n", err)
+						rejectErr := errors.New(errStr)
+						errorConstructor := js.Global().Get("Error")
+						errorObject := errorConstructor.New(rejectErr.Error())
+						reject.Invoke(errorObject)
+						_ = glg.Errorf("%s", errStr)
+					} else {
+						_ = glg.Infof("cfg successfully parsed: %d", len(config.GCFGRegistry))
+						resolve.Invoke(map[string]interface{}{
+							"message": "cfg successfully parsed",
+							"error":   nil,
+						})
+						if resp == "" {
+							config.UpdateWasm()
+						}
+					}
+				}()
+				return nil
+			})
+			promiseConstructor := js.Global().Get("Promise")
+			return promiseConstructor.New(handler)
+		}
 	})
 	return jsfunc
 }

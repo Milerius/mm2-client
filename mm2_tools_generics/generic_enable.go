@@ -6,7 +6,6 @@ import (
 	"mm2_client/config"
 	"mm2_client/http"
 	"mm2_client/mm2_tools_generics/mm2_data_structure"
-	"runtime"
 )
 
 func EnableCLI(coin string) {
@@ -24,9 +23,7 @@ func EnableCLI(coin string) {
 		if !val.Active {
 			val.Active = true
 			config.GCFGRegistry[coin] = val
-			if runtime.GOARCH != "wasm" {
-				go config.Update(http.GetLastDesktopVersion())
-			}
+			go config.Update(http.GetLastDesktopVersion())
 		}
 		if resp != nil {
 			resp.ToTable()
@@ -74,7 +71,7 @@ func EnableMultipleCoins(coins []string) {
 		}
 	}
 
-	if requireUpdate && runtime.GOARCH != "wasm" {
+	if requireUpdate {
 		go config.Update(http.GetLastDesktopVersion())
 	}
 
