@@ -21,7 +21,7 @@ func DisableCoin(coin string) (*mm2_data_structure.DisableCoinAnswer, error) {
 }
 
 func DisableCoinCLI(coin string) {
-	resp, err := mm2_http_request.DisableCoin(coin)
+	resp, err := DisableCoin(coin)
 	if resp != nil {
 		config.GCFGRegistry[coin].Active = false
 		go config.Update(http.GetLastDesktopVersion())
@@ -44,7 +44,7 @@ func DisableCoins(coins []string) {
 	}
 
 	if len(outBatch) > 0 {
-		resp := mm2_http_request.BatchRequest(outBatch)
+		resp := BatchRequest(outBatch)
 		if len(resp) > 0 {
 			var outResp []mm2_data_structure.DisableCoinAnswer
 			err := json.Unmarshal([]byte(resp), &outResp)

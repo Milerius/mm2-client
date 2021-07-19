@@ -20,7 +20,7 @@ func EnableCLI(coin string) {
 		default:
 			fmt.Println("Not supported yet")
 		}
-		if !val.Active {
+		if !val.Active && err == nil {
 			val.Active = true
 			config.GCFGRegistry[coin] = val
 			go config.Update(http.GetLastDesktopVersion())
