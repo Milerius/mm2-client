@@ -200,6 +200,8 @@ func (cfg *DesktopCFG) RetrieveElectrums() []ElectrumData {
 			curOut := ElectrumData{URL: cur.URL, WSURL: nil, DisableCertVerification: cur.DisableCertVerification, Protocol: cur.Protocol}
 			if runtime.GOARCH == "wasm" && cur.WSURL != nil {
 				curOut.URL = *cur.WSURL
+				protocol := "WSS"
+				curOut.Protocol = &protocol
 			}
 			out = append(out, curOut)
 		}
