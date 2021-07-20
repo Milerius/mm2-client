@@ -55,7 +55,7 @@ jobs:
           binary_name: mm2-tools.wasm
           project_path: cmd/mm2_cli_wasm
           pre_command: cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" .
-          extra_files: wasm_exec.js cmd/mm2_cli_wasm/index.html cmd/mm2_cli_wasm/static
+          extra_files: wasm_exec.js cmd/mm2_cli_wasm/data/index.html cmd/mm2_cli_wasm/data/static
           asset_name: "mm2-tools-dev-${{ matrix.goos }}-${{ matrix.goarch }}"
 
       - name: Go Release Binaries (client)

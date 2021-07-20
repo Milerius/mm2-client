@@ -17,5 +17,5 @@
 mm2
 cmd/mm2_cli_wasm/data/deps
 cmd/mm2_cli_wasm/data/js
-cmd/mm2_cli_wasm/script.js
-cmd/mm2_cli_wasm/wasm_exec.js
+cmd/mm2_cli_wasm/data/script.js
+cmd/mm2_cli_wasm/data/wasm_exec.js
