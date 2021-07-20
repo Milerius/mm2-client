@@ -203,13 +203,28 @@ func getAllTickerInfos() js.Func {
 
 func StartMM2() js.Func {
 	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		return config.NewMM2ConfigWasm()
+		if len(args) != 2 {
+			usage := "invalid nb args - usage: start_mm2(userpass, passphrase)"
+			_ = glg.Error(usage)
+			result := map[string]interface{}{
+				"error": usage,
+			}
+			return result
+		}
+		return config.NewMM2ConfigWasm(args[0].String(), args[1].String())
 	})
 	return jsfunc
 }
 
 func bootstrap() js.Func {
 	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		userpass := "wasmtest"
+		passphrase := "hardcoded_password"
+		if len(args) == 2 {
+			userpass = args[0].String()
+			passphrase = args[1].String()
+		}
+		http.GRuntimeUserpass = userpass
 		go func() {
 			val, errVal := mm2_wasm_request.Await(js.Global().Call("init_wasm"))
 			if val != nil {
@@ -218,7 +233,7 @@ func bootstrap() js.Func {
 				if parseVal != nil {
 					parseMM2Val, _ := mm2_wasm_request.Await(js.Global().Call("load_coins_cfg_from_url", "http://localhost:8080/static/assets/coins.json"))
 					if parseMM2Val != nil {
-						startVal, _ := mm2_wasm_request.Await(js.Global().Call("run_mm2", js.Global().Call("start_mm2")))
+						startVal, _ := mm2_wasm_request.Await(js.Global().Call("run_mm2", js.Global().Call("start_mm2", userpass, passphrase)))
 						if startVal != nil {
 							js.Global().Call("enable_active_coins")
 							glg.Info("Bootstrap done !")

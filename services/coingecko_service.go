@@ -129,3 +129,16 @@ func CoingeckoRetrieveCEXRatesFromPair(base string, rel string) (string, bool, s
 	}
 	return price, calculated, date, "coingecko"
 }
+
+func CoingeckoGetTotalVolume(coin string) (string, string, string) {
+	coin = helpers.RetrieveMainTicker(coin)
+	val, ok := CoingeckoPriceRegistry.Load(coin)
+	totalVolumeStr := "0"
+	dateStr := helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
+	if ok {
+		resp := val.(CoingeckoAnswer)
+		totalVolumeStr = fmt.Sprintf("%f", resp.TotalVolume)
+		dateStr = resp.LastUpdated
+	}
+	return totalVolumeStr, dateStr, "coingecko"
+}

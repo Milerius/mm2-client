@@ -39,14 +39,14 @@ func NewMM2Config() *MM2Config {
 		Userhome:    &userhome}
 }
 
-func NewMM2ConfigWasm() string {
+func NewMM2ConfigWasm(userpass string, passphrase string) string {
 	mm2 := 1
 	cfg := &MM2Config{
 		MM2:         &mm2,
 		Gui:         "AtomicDEX Client CLI",
 		Netid:       7777,
-		Passphrase:  "hardcoded_password",
-		RPCPassword: "wasmtest",
+		Passphrase:  passphrase,
+		RPCPassword: userpass,
 		Coins:       &GMM2CFGArray}
 	return cfg.ToJson()
 }

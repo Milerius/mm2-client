@@ -43,3 +43,15 @@ func RetrieveCEXRatesFromPair(base string, rel string) (string, bool, string, st
 		return val, calculated, date, "unknown"
 	}
 }
+
+func RetrieveVolume24h(coin string) (string, string, string) {
+	volume, date, provider := CoingeckoGetTotalVolume(coin)
+	if volume == "0" {
+		volume, date, provider = CoinpaprikaTotalVolume(coin)
+	}
+	if volume != "0" {
+		return volume, date, provider
+	} else {
+		return volume, date, "unknown"
+	}
+}

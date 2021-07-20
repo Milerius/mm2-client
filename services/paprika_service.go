@@ -121,3 +121,16 @@ func CoinpaprikaRetrieveCEXRatesFromPair(base string, rel string) (string, bool,
 	}
 	return price, true, date, "coinpaprika"
 }
+
+func CoinpaprikaTotalVolume(coin string) (string, string, string) {
+	coin = helpers.RetrieveMainTicker(coin)
+	val, ok := CoinpaprikaRegistry.Load(coin)
+	totalVolumeStr := "0"
+	dateStr := helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
+	if ok {
+		resp := val.(CoinpaprikaAnswer)
+		totalVolumeStr = fmt.Sprintf("%f", resp.Quotes.USD.Volume24H)
+		dateStr = resp.LastUpdated
+	}
+	return totalVolumeStr, dateStr, "coinpaprika"
+}
