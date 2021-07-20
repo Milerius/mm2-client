@@ -37,7 +37,7 @@ jobs:
           overwrite: true
           md5sum: false
           binary_name: mm2-tools-server
-          project_path: cmd_server
+          project_path: cmd/mm2_tools_server
           ldflags: -X main.gitCommit=${{ github.sha }} -X main.gitRef=${{ github.ref }}
           asset_name: "mm2-tools-server-dev-${{ matrix.goos }}-${{ matrix.goarch }}"
 
@@ -53,7 +53,7 @@ jobs:
           overwrite: true
           md5sum: false
           binary_name: mm2-tools.wasm
-          project_path: wasm_mm2_tools
+          project_path: cmd/mm2_cli_wasm
           pre_command: cp "$(go env GOROOT)/misc/wasm/wasm_exec.js" .
           extra_files: wasm_exec.js wasm_mm2_tools/index.html wasm_mm2_tools/static
           asset_name: "mm2-tools-dev-${{ matrix.goos }}-${{ matrix.goarch }}"
@@ -70,6 +70,6 @@ jobs:
           overwrite: true
           md5sum: false
           binary_name: mm2-tools-client
-          project_path: cmd_client
+          project_path: cmd/mm2_cli_native
           ldflags: -X main.gitCommit=${{ github.sha }} -X main.gitRef=${{ github.ref }}
           asset_name: "mm2-tools-client-dev-${{ matrix.goos }}-${{ matrix.goarch }}"
