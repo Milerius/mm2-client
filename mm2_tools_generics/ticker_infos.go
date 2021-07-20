@@ -14,6 +14,7 @@ type TickerInfosAnswer struct {
 	Ticker      string `json:"ticker"`
 	LastPrice   string `json:"last_price"`
 	LastUpdated string `json:"last_updated"`
+	Volume24h   string `json:"volume24h"`
 	Provider    string `json:"provider"`
 }
 
@@ -37,5 +38,6 @@ func (req *TickerInfosAnswer) ToWeb() map[string]interface{} {
 
 func GetTickerInfos(ticker string) *TickerInfosAnswer {
 	val, date, provider := services.RetrieveUSDValIfSupported(ticker)
-	return &TickerInfosAnswer{Ticker: ticker, LastPrice: val, LastUpdated: date, Provider: provider}
+	volume, _, _ := services.RetrieveVolume24h(ticker)
+	return &TickerInfosAnswer{Ticker: ticker, LastPrice: val, LastUpdated: date, Provider: provider, Volume24h: volume}
 }

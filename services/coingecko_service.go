@@ -31,7 +31,7 @@ type CoingeckoAnswer struct {
 	MarketCapChangePercentage24H *float64  `json:"market_cap_change_percentage_24h"`
 	CirculatingSupply            float64   `json:"circulating_supply"`
 	TotalSupply                  *float64  `json:"total_supply"`
-	MaxSupply                    *float64  `json:"max_supply"`
+	MaxSupply                    *float64  `json:"max_supply,omitempty"`
 	Ath                          float64   `json:"ath"`
 	AthChangePercentage          float64   `json:"ath_change_percentage"`
 	AthDate                      time.Time `json:"ath_date"`
@@ -94,7 +94,7 @@ func StartCoingeckoService() {
 		if resp := processCoingecko(); resp != nil {
 			glg.Info("Coingecko request successfully processed")
 			for _, cur := range *resp {
-				CoingeckoPriceRegistry.Store(strings.ToUpper(cur.Symbol), cur)
+				CoingeckoPriceRegistry.Store(cur.Id, cur)
 			}
 		} else {
 			glg.Error("Something went wrong when processing coingecko request")
@@ -104,41 +104,44 @@ func StartCoingeckoService() {
 }
 
 func CoingeckoRetrieveUSDValIfSupported(coin string) (string, string, string) {
-	coin = helpers.RetrieveMainTicker(coin)
-	val, ok := CoingeckoPriceRegistry.Load(coin)
-	valStr := "0"
 	dateStr := helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
-	if ok {
-		resp := val.(CoingeckoAnswer)
-		valStr = fmt.Sprintf("%f", resp.CurrentPrice)
-		dateStr = resp.LastUpdated
+	valStr := "0"
+	if cfg, cfgOk := config.GCFGRegistry[coin]; cfgOk {
+		val, ok := CoingeckoPriceRegistry.Load(cfg.CoingeckoID)
+		if ok {
+			resp := val.(CoingeckoAnswer)
+			valStr = fmt.Sprintf("%f", resp.CurrentPrice)
+			dateStr = resp.LastUpdated
+		}
+		return valStr, dateStr, "coingecko"
 	}
-	return valStr, dateStr, "coingecko"
+	return valStr, dateStr, "unknown"
 }
 
 func CoingeckoRetrieveCEXRatesFromPair(base string, rel string) (string, bool, string, string) {
 	basePrice, baseDate, _ := CoingeckoRetrieveUSDValIfSupported(base)
 	relPrice, relDate, _ := CoingeckoRetrieveUSDValIfSupported(rel)
 	price := helpers.BigFloatDivide(basePrice, relPrice, 8)
-	calculated := true
 	date := helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
 	if helpers.RFC3339ToTimestamp(baseDate) <= helpers.RFC3339ToTimestamp(relDate) {
 		date = baseDate
 	} else {
 		date = relDate
 	}
-	return price, calculated, date, "coingecko"
+	return price, true, date, "coingecko"
 }
 
 func CoingeckoGetTotalVolume(coin string) (string, string, string) {
-	coin = helpers.RetrieveMainTicker(coin)
-	val, ok := CoingeckoPriceRegistry.Load(coin)
 	totalVolumeStr := "0"
 	dateStr := helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
-	if ok {
-		resp := val.(CoingeckoAnswer)
-		totalVolumeStr = fmt.Sprintf("%f", resp.TotalVolume)
-		dateStr = resp.LastUpdated
+	if cfg, cfgOk := config.GCFGRegistry[coin]; cfgOk {
+		val, ok := CoingeckoPriceRegistry.Load(cfg.CoingeckoID)
+		if ok {
+			resp := val.(CoingeckoAnswer)
+			totalVolumeStr = fmt.Sprintf("%f", resp.TotalVolume)
+			dateStr = resp.LastUpdated
+		}
+		return totalVolumeStr, dateStr, "coingecko"
 	}
-	return totalVolumeStr, dateStr, "coingecko"
+	return totalVolumeStr, dateStr, "unknown"
 }
