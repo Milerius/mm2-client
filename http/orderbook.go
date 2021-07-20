@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"mm2_client/config"
 	"mm2_client/helpers"
+	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"net/http"
 	"os"
 	"strconv"
@@ -123,7 +124,7 @@ type OrderbookAnswer struct {
 }
 
 func NewOrderbookRequest(base string, rel string) *OrderbookRequest {
-	genReq := NewGenericRequest("orderbook")
+	genReq := mm2_data_structure.NewGenericRequest("orderbook")
 	req := &OrderbookRequest{Userpass: genReq.Userpass, Method: genReq.Method, Base: base, Rel: rel}
 	return req
 }
@@ -187,7 +188,7 @@ func Orderbook(base string, rel string) *OrderbookAnswer {
 	_, relOk := config.GCFGRegistry[rel]
 	if relOk && baseOk {
 		req := NewOrderbookRequest(base, rel).ToJson()
-		resp, err := http.Post(GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
+		resp, err := http.Post(mm2_data_structure.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
 		if err != nil {
 			fmt.Printf("Err: %v\n", err)
 			return nil

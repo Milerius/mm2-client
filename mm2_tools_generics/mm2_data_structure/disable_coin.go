@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"mm2_client/config"
-	http2 "mm2_client/http"
 )
 
 type DisableCoinRequest struct {
@@ -22,7 +21,7 @@ type DisableCoinAnswer struct {
 }
 
 func NewDisableCoinRequest(cfg *config.DesktopCFG) *DisableCoinRequest {
-	genReq := http2.NewGenericRequest("disable_coin")
+	genReq := NewGenericRequest("disable_coin")
 	req := &DisableCoinRequest{Userpass: genReq.Userpass, Method: genReq.Method}
 	req.Coin = cfg.Coin
 	return req

@@ -7,8 +7,8 @@ import (
 	"mm2_client/config"
 	"mm2_client/config/wasm_storage"
 	"mm2_client/constants"
-	"mm2_client/http"
 	"mm2_client/mm2_tools_generics"
+	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"mm2_client/mm2_tools_generics/mm2_wasm_request"
 	"mm2_client/services"
 	"net/url"
@@ -224,7 +224,7 @@ func bootstrap() js.Func {
 			userpass = args[0].String()
 			passphrase = args[1].String()
 		}
-		http.GRuntimeUserpass = userpass
+		mm2_data_structure.GRuntimeUserpass = userpass
 		go func() {
 			val, errVal := mm2_wasm_request.Await(js.Global().Call("init_wasm"))
 			if val != nil {
@@ -250,7 +250,7 @@ func bootstrap() js.Func {
 }
 
 func main() {
-	http.GRuntimeUserpass = "wasmtest"
+	mm2_data_structure.GRuntimeUserpass = "wasmtest"
 	glg.Get().SetMode(glg.STD)
 	_ = glg.Info("Hello from webassembly - Slyris tools running")
 
@@ -271,6 +271,7 @@ func main() {
 	js.Global().Set("balance_all", myBalanceAll())
 	js.Global().Set("enable", enable())
 	js.Global().Set("disable_coin", disableCoin())
+	js.Global().Set("get_enabled_coins", getEnabledCoins())
 
 	<-make(chan bool)
 }

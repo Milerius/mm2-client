@@ -7,14 +7,13 @@ import (
 	"fmt"
 	"github.com/kpango/glg"
 	"io/ioutil"
-	http2 "mm2_client/http"
 	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"net/http"
 )
 
 func NewSetPriceRequest(base string, rel string, price string, volume *string, max *bool, cancelPrevious bool, minVolume *string,
 	baseConfs *int, baseNota *bool, relConfs *int, relNota *bool) *mm2_data_structure.SetPriceRequest {
-	genReq := http2.NewGenericRequest("setprice")
+	genReq := mm2_data_structure.NewGenericRequest("setprice")
 	req := &mm2_data_structure.SetPriceRequest{Userpass: genReq.Userpass, Method: genReq.Method, Base: base, Rel: rel, Price: price, CancelPrevious: cancelPrevious}
 	if volume != nil {
 		req.Volume = volume
@@ -43,7 +42,7 @@ func NewSetPriceRequest(base string, rel string, price string, volume *string, m
 func SetPrice(base string, rel string, price string, volume *string, max *bool, cancelPrevious bool, minVolume *string,
 	baseConfs *int, baseNota *bool, relConfs *int, relNota *bool) (*mm2_data_structure.SetPriceAnswer, error) {
 	req := NewSetPriceRequest(base, rel, price, volume, max, cancelPrevious, minVolume, baseConfs, baseNota, relConfs, relNota).ToJson()
-	resp, err := http.Post(http2.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
+	resp, err := http.Post(mm2_data_structure.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
 	if err != nil {
 		glg.Errorf("Err: %v", err)
 		return nil, err

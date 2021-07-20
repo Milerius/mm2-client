@@ -3,11 +3,10 @@ package cli
 import (
 	"fmt"
 	"github.com/manifoldco/promptui"
-	"mm2_client/http"
 	"mm2_client/mm2_tools_generics/mm2_http_request"
 )
 
-func postKmdRewardsInfo(resp *http.KMDRewardsInfoAnswer) {
+func postKmdRewardsInfo(resp *mm2_http_request.KMDRewardsInfoAnswer) {
 	if resp.ToTable() {
 		prompt := promptui.Select{
 			Label: "Do you want to claim your rewards ?",
@@ -25,7 +24,7 @@ func postKmdRewardsInfo(resp *http.KMDRewardsInfoAnswer) {
 }
 
 func KmdRewardsInfo() {
-	if resp := http.KmdRewardsInfo(); resp != nil {
+	if resp := mm2_http_request.KmdRewardsInfo(); resp != nil {
 
 		postKmdRewardsInfo(resp)
 	}

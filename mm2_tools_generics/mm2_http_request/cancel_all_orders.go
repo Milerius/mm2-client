@@ -7,13 +7,12 @@ import (
 	"fmt"
 	"github.com/kpango/glg"
 	"io/ioutil"
-	http2 "mm2_client/http"
 	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"net/http"
 )
 
 func NewCancelAllOrdersRequest(kind string, args []string) *mm2_data_structure.CancelAllOrdersRequest {
-	genReq := http2.NewGenericRequest("cancel_all_orders")
+	genReq := mm2_data_structure.NewGenericRequest("cancel_all_orders")
 	req := &mm2_data_structure.CancelAllOrdersRequest{Userpass: genReq.Userpass, Method: genReq.Method}
 	switch kind {
 	case "all":
@@ -30,7 +29,7 @@ func NewCancelAllOrdersRequest(kind string, args []string) *mm2_data_structure.C
 
 func CancelAllOrders(kind string, args []string) (*mm2_data_structure.CancelAllOrdersAnswer, error) {
 	req := NewCancelAllOrdersRequest(kind, args).ToJson()
-	resp, err := http.Post(http2.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
+	resp, err := http.Post(mm2_data_structure.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
 	if err != nil {
 		glg.Errorf("Err: %v", err)
 		return nil, err

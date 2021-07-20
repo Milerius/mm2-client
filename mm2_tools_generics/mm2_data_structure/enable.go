@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"mm2_client/config"
-	http2 "mm2_client/http"
 )
 
 type EnableRequest struct {
@@ -18,7 +17,7 @@ type EnableRequest struct {
 }
 
 func NewEnableRequest(cfg *config.DesktopCFG) *EnableRequest {
-	genReq := http2.NewGenericRequest("enable")
+	genReq := NewGenericRequest("enable")
 	req := &EnableRequest{Userpass: genReq.Userpass, Method: genReq.Method}
 	req.Coin = cfg.Coin
 	req.TxHistory = false

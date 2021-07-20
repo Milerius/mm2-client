@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"mm2_client/config"
 	"mm2_client/constants"
-	"mm2_client/http"
 	"mm2_client/market_making"
 	"mm2_client/mm2_tools_generics"
 	"mm2_client/mm2_tools_generics/mm2_data_structure"
+	"mm2_client/mm2_tools_generics/mm2_http_request"
 	"mm2_client/services"
 	"os"
 	"strconv"
@@ -84,9 +84,11 @@ func Executor(fullCommand string) {
 	case "kmd_rewards_info":
 		KmdRewardsInfo()
 	case "disable_enabled_coins":
-		mm2_tools_generics.DisableCoins(http.GetEnabledCoins().ToSlice())
+		val, _ := mm2_http_request.GetEnabledCoins()
+		mm2_tools_generics.DisableCoins(val.ToSlice())
 	case "disable_zero_balance":
-		mm2_tools_generics.DisableCoins(mm2_data_structure.ToSliceEmptyBalance(mm2_tools_generics.MyBalanceMultipleCoinsSilent(http.GetEnabledCoins().ToSlice()), true))
+		val, _ := mm2_http_request.GetEnabledCoins()
+		mm2_tools_generics.DisableCoins(mm2_data_structure.ToSliceEmptyBalance(mm2_tools_generics.MyBalanceMultipleCoinsSilent(val.ToSlice()), true))
 	case "orderbook":
 		if len(command) != 3 {
 			ShowCommandHelp("orderbook")
@@ -115,7 +117,7 @@ func Executor(fullCommand string) {
 		if len(command) > 1 {
 			ShowCommandHelp("get_enabled_coins")
 		} else {
-			GetEnabledCoins()
+			mm2_tools_generics.GetEnabledCoinsCLI()
 		}
 	case "withdraw":
 		if len(command) < 4 {

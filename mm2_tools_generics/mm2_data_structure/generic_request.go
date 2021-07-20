@@ -1,4 +1,4 @@
-package http
+package mm2_data_structure
 
 import (
 	"encoding/json"

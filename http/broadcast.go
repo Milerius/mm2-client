@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"mm2_client/config"
+	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"net/http"
 )
 
@@ -22,7 +23,7 @@ type BroadcastAnswer struct {
 }
 
 func NewBroadcastRequest(coin string, txHex string) *BroadcastRequest {
-	genReq := NewGenericRequest("send_raw_transaction")
+	genReq := mm2_data_structure.NewGenericRequest("send_raw_transaction")
 	req := &BroadcastRequest{Userpass: genReq.Userpass, Method: genReq.Method, Coin: coin, TxHex: txHex}
 	return req
 }
@@ -39,7 +40,7 @@ func (req *BroadcastRequest) ToJson() string {
 func Broadcast(coin string, txHex string) *BroadcastAnswer {
 	if val, ok := config.GCFGRegistry[coin]; ok {
 		req := NewBroadcastRequest(coin, txHex).ToJson()
-		resp, err := http.Post(GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
+		resp, err := http.Post(mm2_data_structure.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
 		if err != nil {
 			fmt.Printf("Err: %v\n", err)
 			return nil

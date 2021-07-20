@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"mm2_client/config"
 	"mm2_client/helpers"
+	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"mm2_client/services"
 	"net/http"
 	"os"
@@ -63,7 +64,7 @@ type MyTxHistoryRequest struct {
 }
 
 func NewMyTxHistoryRequest(coin string, defaultNbTx int, defaultPage int, max bool) *MyTxHistoryRequest {
-	genReq := NewGenericRequest("my_tx_history")
+	genReq := mm2_data_structure.NewGenericRequest("my_tx_history")
 	req := &MyTxHistoryRequest{Userpass: genReq.Userpass, Method: genReq.Method, Coin: coin, Limit: defaultNbTx, PageNumber: defaultPage, Max: max}
 	return req
 }
@@ -159,7 +160,7 @@ const customTxEndpoint = "https://komodo.live:3334/api/"
 func MyTxHistory(coin string, defaultNbTx int, defaultPage int, withFiatValue bool, isMax bool) *MyTxHistoryAnswer {
 	if _, ok := config.GCFGRegistry[coin]; ok {
 		req := NewMyTxHistoryRequest(coin, defaultNbTx, defaultPage, isMax).ToJson()
-		resp, err := http.Post(GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
+		resp, err := http.Post(mm2_data_structure.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
 		if err != nil {
 			fmt.Printf("Err: %v\n", err)
 			return nil

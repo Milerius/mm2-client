@@ -8,7 +8,6 @@ import (
 	"github.com/kpango/glg"
 	"io/ioutil"
 	"mm2_client/config"
-	http2 "mm2_client/http"
 	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"net/http"
 )
@@ -16,7 +15,7 @@ import (
 func DisableCoin(coin string) (*mm2_data_structure.DisableCoinAnswer, error) {
 	if val, ok := config.GCFGRegistry[coin]; ok {
 		req := mm2_data_structure.NewDisableCoinRequest(val).ToJson()
-		resp, err := http.Post(http2.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
+		resp, err := http.Post(mm2_data_structure.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
 		if err != nil {
 			_ = glg.Errorf("Err: %v", err)
 			return nil, err

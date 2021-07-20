@@ -8,8 +8,8 @@ import (
 	"github.com/valyala/fasthttp"
 	"mm2_client/config"
 	"mm2_client/constants"
-	mm2_http "mm2_client/http"
 	"mm2_client/market_making"
+	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"mm2_client/services"
 	"net/http"
 )
@@ -25,7 +25,7 @@ func internalStartSimpleMarketMakerBot(out *StartSimpleMarketMakerRequest) error
 	//! We assume mm2 is already running
 	constants.GMM2Running = true
 	if out.Mm2Userpass != "" {
-		mm2_http.GRuntimeUserpass = out.Mm2Userpass
+		mm2_data_structure.GRuntimeUserpass = out.Mm2Userpass
 	} else {
 		return errors.New("mm2 userpass cannot be empty")
 	}

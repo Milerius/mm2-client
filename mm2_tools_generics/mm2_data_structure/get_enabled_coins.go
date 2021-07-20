@@ -1,11 +1,7 @@
-package http
+package mm2_data_structure
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
 	"github.com/olekukonko/tablewriter"
-	"net/http"
 	"os"
 )
 
@@ -57,24 +53,4 @@ func (receiver *GetEnabledCoinsAnswer) ToTable() {
 	table.SetCenterSeparator("|")
 	table.AppendBulk(data) // Add Bulk Data
 	table.Render()
-}
-
-func GetEnabledCoins() *GetEnabledCoinsAnswer {
-	req := NewGenericRequest("get_enabled_coins").ToJson()
-	resp, err := http.Post(GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
-	if err != nil {
-		fmt.Printf("Err: %v\n", err)
-		return nil
-	}
-	if resp.StatusCode == http.StatusOK {
-		defer resp.Body.Close()
-		res := &GetEnabledCoinsAnswer{}
-		decodeErr := json.NewDecoder(resp.Body).Decode(res)
-		if decodeErr != nil {
-			fmt.Printf("Err: %v\n", err)
-			return nil
-		}
-		return res
-	}
-	return nil
 }

@@ -1,4 +1,4 @@
-package http
+package mm2_http_request
 
 import (
 	"bytes"
@@ -8,6 +8,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"io/ioutil"
 	"mm2_client/helpers"
+	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"mm2_client/services"
 	"net/http"
 	"os"
@@ -64,10 +65,10 @@ func (answer *KMDRewardsInfoAnswer) ToTable() bool {
 }
 
 func KmdRewardsInfo() *KMDRewardsInfoAnswer {
-	answerEnabled := GetEnabledCoins()
+	answerEnabled, _ := GetEnabledCoins()
 	if answerEnabled != nil && answerEnabled.Contains("KMD") {
-		req := NewGenericRequest("kmd_rewards_info").ToJson()
-		resp, err := http.Post(GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
+		req := mm2_data_structure.NewGenericRequest("kmd_rewards_info").ToJson()
+		resp, err := http.Post(mm2_data_structure.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
 		if err != nil {
 			fmt.Printf("Err: %v\n", err)
 			return nil

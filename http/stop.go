@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"net/http"
 )
 
@@ -12,8 +13,8 @@ type StopAnswer struct {
 }
 
 func Stop() bool {
-	req := NewGenericRequest("stop").ToJson()
-	resp, err := http.Post(GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
+	req := mm2_data_structure.NewGenericRequest("stop").ToJson()
+	resp, err := http.Post(mm2_data_structure.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
 	if err != nil {
 		fmt.Printf("Err: %v\n", err)
 		return false
@@ -26,7 +27,7 @@ func Stop() bool {
 			fmt.Printf("Err: %v\n", err)
 			return false
 		}
-		GRuntimeUserpass = ""
+		mm2_data_structure.GRuntimeUserpass = ""
 		return answer.Result == "success"
 	}
 	return true

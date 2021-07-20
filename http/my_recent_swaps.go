@@ -7,6 +7,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"io/ioutil"
 	"mm2_client/helpers"
+	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"net/http"
 	"os"
 	"strconv"
@@ -110,7 +111,7 @@ func (receiver *SwapContent) getLastStatus() string {
 }
 
 func NewMyRecentSwapsRequest(limit string, pageNumber string, baseCoin string, relCoin string, from string, to string) *MyRecentSwapsRequest {
-	genReq := NewGenericRequest("my_recent_swaps")
+	genReq := mm2_data_structure.NewGenericRequest("my_recent_swaps")
 	limitNb, err := strconv.Atoi(limit)
 	if err != nil {
 		limitNb = 50
@@ -171,7 +172,7 @@ func (answer *MyRecentSwapsAnswer) ToTable() {
 
 func ProcessMyRecentSwaps(limit string, pageNumber string, baseCoin string, relCoin string, from string, to string) *MyRecentSwapsAnswer {
 	req := NewMyRecentSwapsRequest(limit, pageNumber, baseCoin, relCoin, from, to).ToJson()
-	resp, err := http.Post(GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
+	resp, err := http.Post(mm2_data_structure.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
 	if err != nil {
 		fmt.Printf("Err: %v\n", err)
 		return nil

@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"mm2_client/config"
-	http2 "mm2_client/http"
 )
 
 type ElectrumRequest struct {
@@ -18,7 +17,7 @@ type ElectrumRequest struct {
 }
 
 func NewElectrumRequest(cfg *config.DesktopCFG) *ElectrumRequest {
-	genReq := http2.NewGenericRequest("electrum")
+	genReq := NewGenericRequest("electrum")
 	req := &ElectrumRequest{Userpass: genReq.Userpass, Method: genReq.Method}
 	req.Coin = cfg.Coin
 	req.TxHistory = true
