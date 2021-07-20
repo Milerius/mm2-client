@@ -15,3 +15,7 @@
 # vendor/
 
 mm2
+wasm_mm2_tools/data/deps
+wasm_mm2_tools/data/js
+wasm_mm2_tools/data/script.js
+wasm_mm2_tools/data/wasm_exec.js
