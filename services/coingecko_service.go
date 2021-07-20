@@ -13,6 +13,10 @@ import (
 	"time"
 )
 
+type CoingeckoSparkLineData struct {
+	Price *[]float64 `json:"price,omitempty"`
+}
+
 type CoingeckoAnswer struct {
 	Id                           string    `json:"id"`
 	Symbol                       string    `json:"symbol"`
@@ -43,11 +47,9 @@ type CoingeckoAnswer struct {
 		Currency   string  `json:"currency"`
 		Percentage float64 `json:"percentage"`
 	} `json:"roi"`
-	LastUpdated   string `json:"last_updated"`
-	SparklineIn7D struct {
-		Price []float64 `json:"price"`
-	} `json:"sparkline_in_7d"`
-	PriceChangePercentage24HInCurrency *float64 `json:"price_change_percentage_24h_in_currency"`
+	LastUpdated                        string                  `json:"last_updated"`
+	SparklineIn7D                      *CoingeckoSparkLineData `json:"sparkline_in_7d,omitempty"`
+	PriceChangePercentage24HInCurrency *float64                `json:"price_change_percentage_24h_in_currency"`
 }
 
 const gCoingeckoEndpoint = "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids="
@@ -62,7 +64,7 @@ func NewCoingeckoRequest() string {
 		}
 	}
 	url = strings.TrimSuffix(url, ",")
-	url += "&order=market_cap_desc&price_change_percentage=24h"
+	url += "&order=market_cap_desc&price_change_percentage=24h&sparkline=true"
 	return url
 }
 
@@ -144,4 +146,38 @@ func CoingeckoGetTotalVolume(coin string) (string, string, string) {
 		return totalVolumeStr, dateStr, "coingecko"
 	}
 	return totalVolumeStr, dateStr, "unknown"
+}
+
+func CoingeckoGetSparkline7D(coin string) (*[]float64, string, string) {
+	var out *[]float64
+	dateStr := helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
+	if cfg, cfgOk := config.GCFGRegistry[coin]; cfgOk {
+		val, ok := CoingeckoPriceRegistry.Load(cfg.CoingeckoID)
+		if ok {
+			resp := val.(CoingeckoAnswer)
+			if resp.SparklineIn7D != nil && resp.SparklineIn7D.Price != nil {
+				out = resp.SparklineIn7D.Price
+			}
+			dateStr = resp.LastUpdated
+		}
+		return out, dateStr, "coingecko"
+	}
+	return out, dateStr, "unknown"
+}
+
+func CoingeckoGetChange24h(coin string) (string, string, string) {
+	changePercent24h := "0"
+	dateStr := helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
+	if cfg, cfgOk := config.GCFGRegistry[coin]; cfgOk {
+		val, ok := CoingeckoPriceRegistry.Load(cfg.CoingeckoID)
+		if ok {
+			resp := val.(CoingeckoAnswer)
+			if resp.PriceChangePercentage24H != nil {
+				changePercent24h = fmt.Sprintf("%f", *resp.PriceChangePercentage24HInCurrency)
+			}
+			dateStr = resp.LastUpdated
+		}
+		return changePercent24h, dateStr, "coingecko"
+	}
+	return changePercent24h, dateStr, "unknown"
 }

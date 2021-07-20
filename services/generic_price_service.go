@@ -2,7 +2,7 @@ package services
 
 func RetrieveUSDValIfSupported(coin string) (string, string, string) {
 	//! Binance
-	val, date, provider := BinanceRetrieveUSDValIfSupported(coin)
+	val, date, _, provider := BinanceRetrieveUSDValIfSupported(coin)
 
 	//! Gecko
 	if val == "0" {
@@ -53,5 +53,28 @@ func RetrieveVolume24h(coin string) (string, string, string) {
 		return volume, date, provider
 	} else {
 		return volume, date, "unknown"
+	}
+}
+
+func RetrieveSparkline7D(coin string) (*[]float64, string, string) {
+	sparklineData, date, provider := CoingeckoGetSparkline7D(coin)
+	if sparklineData == nil {
+		return sparklineData, date, "unknown"
+	}
+	return sparklineData, date, provider
+}
+
+func RetrievePercentChange24h(coin string) (string, string, string) {
+	_, date, change24h, provider := BinanceRetrieveUSDValIfSupported(coin)
+	if change24h == "0" {
+		change24h, date, provider = CoingeckoGetChange24h(coin)
+	}
+	if change24h == "0" {
+		change24h, date, provider = CoinpaprikaGetChange24h(coin)
+	}
+	if change24h != "0" {
+		return change24h, date, provider
+	} else {
+		return change24h, date, "unknown"
 	}
 }

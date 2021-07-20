@@ -19,33 +19,35 @@ var BinanceSupportedTickers = make(map[string]bool)
 
 //! <symbol>@ticker
 
-func contains(coin string, stablecoin string) (string, string, bool) {
+func contains(coin string, stablecoin string) (string, string, string, bool) {
 	val, ok := BinancePriceRegistry.Load(helpers.RetrieveMainTicker(coin) + stablecoin)
 	valStr := "0"
 	dateStr := helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
+	priceChangePercent := "0"
 	if ok {
 		valStr = val.([]string)[0]
 		dateStr = val.([]string)[1]
+		priceChangePercent = val.([]string)[2]
 	}
-	return valStr, dateStr, ok
+	return valStr, dateStr, priceChangePercent, ok
 }
 
-func BinanceRetrieveUSDValIfSupported(coin string) (string, string, string) {
+func BinanceRetrieveUSDValIfSupported(coin string) (string, string, string, string) {
 	coin = helpers.RetrieveMainTicker(coin)
-	if valUSD, dateUSD, okUSD := contains(coin, "USD"); okUSD {
-		return valUSD, dateUSD, "binance"
-	} else if valUSDT, dateUSDT, okUSDT := contains(coin, "USDT"); okUSDT {
-		return valUSDT, dateUSDT, "binance"
-	} else if valBUSD, dateBUSD, okBUSD := contains(coin, "BUSD"); okBUSD {
-		return valBUSD, dateBUSD, "binance"
-	} else if valUSDC, dateUSDC, okUSDC := contains(coin, "USDC"); okUSDC {
-		return valUSDC, dateUSDC, "binance"
-	} else if valDAI, dateDAI, okDAI := contains(coin, "DAI"); okDAI {
-		return valDAI, dateDAI, "binance"
+	if valUSD, dateUSD, priceChangePercentUSD, okUSD := contains(coin, "USD"); okUSD {
+		return valUSD, dateUSD, priceChangePercentUSD, "binance"
+	} else if valUSDT, dateUSDT, priceChangePercentUSDT, okUSDT := contains(coin, "USDT"); okUSDT {
+		return valUSDT, dateUSDT, priceChangePercentUSDT, "binance"
+	} else if valBUSD, dateBUSD, priceChangePercentBUSD, okBUSD := contains(coin, "BUSD"); okBUSD {
+		return valBUSD, dateBUSD, priceChangePercentBUSD, "binance"
+	} else if valUSDC, dateUSDC, priceChangePercentUSDC, okUSDC := contains(coin, "USDC"); okUSDC {
+		return valUSDC, dateUSDC, priceChangePercentUSDC, "binance"
+	} else if valDAI, dateDAI, priceChangePercentDAI, okDAI := contains(coin, "DAI"); okDAI {
+		return valDAI, dateDAI, priceChangePercentDAI, "binance"
 	} else if helpers.IsAStableCoin(coin) {
-		return "1", helpers.GetDateFromTimestampStandard(time.Now().UnixNano()), "binance"
+		return "1", helpers.GetDateFromTimestampStandard(time.Now().UnixNano()), "0", "binance"
 	}
-	return "0", helpers.GetDateFromTimestampStandard(time.Now().UnixNano()), "binance"
+	return "0", helpers.GetDateFromTimestampStandard(time.Now().UnixNano()), "0", "binance"
 }
 
 func StartBinanceWebsocketService() {
@@ -82,7 +84,7 @@ func StartBinanceWebsocketService() {
 func startWebsocketForSymbol(cur string) {
 	wsMarketHandler := func(event *binance.WsMarketStatEvent) {
 		//fmt.Println(event.Time)
-		BinancePriceRegistry.Store(event.Symbol, []string{event.LastPrice, helpers.GetDateFromTimestampStandard(event.Time * int64(time.Millisecond))})
+		BinancePriceRegistry.Store(event.Symbol, []string{event.LastPrice, helpers.GetDateFromTimestampStandard(event.Time * int64(time.Millisecond)), event.PriceChangePercent})
 	}
 	errHandler := func(err error) {
 		glg.Errorf("err: %s", err)
@@ -162,8 +164,8 @@ func GetBinanceSupportedPairs(ticker string) []string {
 			continue
 		}
 		rel := splitted[1]
-		basePrice, dateBase, _ := BinanceRetrieveUSDValIfSupported(base)
-		relPrice, dateRel, _ := BinanceRetrieveUSDValIfSupported(rel)
+		basePrice, dateBase, _, _ := BinanceRetrieveUSDValIfSupported(base)
+		relPrice, dateRel, _, _ := BinanceRetrieveUSDValIfSupported(rel)
 		combined := helpers.RetrieveMainTicker(base) + helpers.RetrieveMainTicker(rel)
 		price := helpers.BigFloatDivide(basePrice, relPrice, 8)
 		calculated := true
@@ -195,8 +197,8 @@ func GetBinanceSupportedPairs(ticker string) []string {
 }
 
 func BinanceRetrieveCEXRatesFromPair(base string, rel string) (string, bool, string, string) {
-	basePrice, baseDate, _ := BinanceRetrieveUSDValIfSupported(base)
-	relPrice, relDate, _ := BinanceRetrieveUSDValIfSupported(rel)
+	basePrice, baseDate, _, _ := BinanceRetrieveUSDValIfSupported(base)
+	relPrice, relDate, _, _ := BinanceRetrieveUSDValIfSupported(rel)
 	combined := helpers.RetrieveMainTicker(base) + helpers.RetrieveMainTicker(rel)
 	price := helpers.BigFloatDivide(basePrice, relPrice, 8)
 	calculated := true
@@ -215,3 +217,7 @@ func BinanceRetrieveCEXRatesFromPair(base string, rel string) (string, bool, str
 	}
 	return price, calculated, date, "binance"
 }
+
+/*func BinanceGetChange24h(coin string) (string, string, string) {
+
+}*/

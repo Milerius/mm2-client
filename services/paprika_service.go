@@ -134,3 +134,18 @@ func CoinpaprikaTotalVolume(coin string) (string, string, string) {
 	}
 	return totalVolumeStr, dateStr, "coinpaprika"
 }
+
+func CoinpaprikaGetChange24h(coin string) (string, string, string) {
+	changePercent24h := "0"
+	dateStr := helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
+	if _, cfgOk := config.GCFGRegistry[coin]; cfgOk {
+		val, ok := CoinpaprikaRegistry.Load(coin)
+		if ok {
+			resp := val.(CoinpaprikaAnswer)
+			changePercent24h = fmt.Sprintf("%f", resp.Quotes.USD.PercentChange24H)
+			dateStr = resp.LastUpdated
+		}
+		return changePercent24h, dateStr, "coinpaprika"
+	}
+	return changePercent24h, dateStr, "unknown"
+}
