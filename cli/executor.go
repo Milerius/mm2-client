@@ -7,7 +7,6 @@ import (
 	"mm2_client/market_making"
 	"mm2_client/mm2_tools_generics"
 	"mm2_client/mm2_tools_generics/mm2_data_structure"
-	"mm2_client/mm2_tools_generics/mm2_http_request"
 	"mm2_client/services"
 	"os"
 	"strconv"
@@ -87,7 +86,7 @@ func Executor(fullCommand string) {
 		val, _ := mm2_tools_generics.GetEnabledCoins()
 		mm2_tools_generics.DisableCoins(val.ToSlice())
 	case "disable_zero_balance":
-		val, _ := mm2_http_request.GetEnabledCoins()
+		val, _ := mm2_tools_generics.GetEnabledCoins()
 		mm2_tools_generics.DisableCoins(mm2_data_structure.ToSliceEmptyBalance(mm2_tools_generics.MyBalanceMultipleCoinsSilent(val.ToSlice()), true))
 	case "orderbook":
 		if len(command) != 3 {

@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/kpango/glg"
 	"mm2_client/mm2_tools_generics"
+	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"syscall/js"
 )
 
@@ -35,6 +36,17 @@ func disableEnabledCoins() js.Func {
 		go func() {
 			val, _ := mm2_tools_generics.GetEnabledCoins()
 			mm2_tools_generics.DisableCoins(val.ToSlice())
+		}()
+		return "done"
+	})
+	return jsfunc
+}
+
+func disableZeroBalance() js.Func {
+	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		go func() {
+			val, _ := mm2_tools_generics.GetEnabledCoins()
+			mm2_tools_generics.DisableCoins(mm2_data_structure.ToSliceEmptyBalance(mm2_tools_generics.MyBalanceMultipleCoinsSilent(val.ToSlice()), true))
 		}()
 		return "done"
 	})

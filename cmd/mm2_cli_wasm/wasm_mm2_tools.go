@@ -272,6 +272,7 @@ func main() {
 	js.Global().Set("enable", enable())
 	js.Global().Set("disable_coin", disableCoin())
 	js.Global().Set("disable_enabled_coins", disableEnabledCoins())
+	js.Global().Set("disable_zero_balance", disableZeroBalance())
 	js.Global().Set("get_enabled_coins", getEnabledCoins())
 
 	<-make(chan bool)
