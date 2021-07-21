@@ -1,6 +1,8 @@
 package main
 
 import (
+	"bytes"
+	"encoding/gob"
 	"errors"
 	"fmt"
 	"github.com/kpango/glg"
@@ -12,6 +14,7 @@ import (
 	"mm2_client/mm2_tools_generics/mm2_wasm_request"
 	"mm2_client/services"
 	"net/url"
+	"strconv"
 	"syscall/js"
 )
 
@@ -89,7 +92,8 @@ func loadDesktopCfgFromUrl() js.Func {
 		go func() {
 			if config.ParseDesktopRegistryFromString(resp) {
 				resolve.Invoke(map[string]interface{}{
-					"message": "cfg successfully parsed",
+					"message": "desktop cfg successfully parsed",
+					"len":     strconv.Itoa(len(config.GCFGRegistry)),
 					"error":   nil,
 				})
 			} else {
@@ -203,7 +207,7 @@ func getAllTickerInfos() js.Func {
 
 func StartMM2() js.Func {
 	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
-		if len(args) != 2 {
+		if len(args) < 2 {
 			usage := "invalid nb args - usage: start_mm2(userpass, passphrase)"
 			_ = glg.Error(usage)
 			result := map[string]interface{}{
@@ -211,7 +215,21 @@ func StartMM2() js.Func {
 			}
 			return result
 		}
-		return config.NewMM2ConfigWasm(args[0].String(), args[1].String())
+		var out []string
+		if len(args) > 2 {
+			raw := valueToBytes(args[2])
+			extraArgs := []string{}
+			buf := bytes.NewBuffer(raw)
+			if buf != nil {
+				gob.NewDecoder(buf).Decode(&extraArgs)
+				for _, cur := range extraArgs {
+					out = append(out, cur)
+				}
+			} else {
+				glg.Error("err decode")
+			}
+		}
+		return config.NewMM2ConfigWasm(args[0].String(), args[1].String(), out)
 	})
 	return jsfunc
 }
@@ -220,7 +238,7 @@ func bootstrap() js.Func {
 	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		userpass := "wasmtest"
 		passphrase := "hardcoded_password"
-		if len(args) == 2 {
+		if len(args) >= 2 {
 			userpass = args[0].String()
 			passphrase = args[1].String()
 		}
@@ -233,7 +251,19 @@ func bootstrap() js.Func {
 				if parseVal != nil {
 					parseMM2Val, _ := mm2_wasm_request.Await(js.Global().Call("load_coins_cfg_from_url", "http://localhost:8080/static/assets/coins.json"))
 					if parseMM2Val != nil {
-						startVal, _ := mm2_wasm_request.Await(js.Global().Call("run_mm2", js.Global().Call("start_mm2", userpass, passphrase)))
+						var startVal []js.Value
+						if len(args) <= 2 {
+							startVal, _ = mm2_wasm_request.Await(js.Global().Call("run_mm2", js.Global().Call("start_mm2", userpass, passphrase)))
+						} else {
+							var anotherSlice []string
+							for _, cur := range args[2:] {
+								anotherSlice = append(anotherSlice, cur.String())
+							}
+							buf := &bytes.Buffer{}
+							gob.NewEncoder(buf).Encode(anotherSlice)
+							extraArgs := bytesToValue(buf.Bytes())
+							startVal, _ = mm2_wasm_request.Await(js.Global().Call("run_mm2", js.Global().Call("start_mm2", userpass, passphrase, extraArgs)))
+						}
 						constants.GMM2Running = true
 						if startVal != nil {
 							js.Global().Call("enable_active_coins")

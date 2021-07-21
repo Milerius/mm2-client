@@ -3,9 +3,11 @@ package config
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/kpango/glg"
 	"io/ioutil"
 	"mm2_client/helpers"
 	"os"
+	"strconv"
 )
 
 type MM2Config struct {
@@ -18,6 +20,7 @@ type MM2Config struct {
 	Userhome    *string    `json:"userhome,omitempty"`
 	IMASeed     bool       `json:"im_a_seed,omitempty"`
 	Coins       *[]*MM2CFG `json:"coins,omitempty"`
+	SeedNodes   *[]string  `json:"seednodes,omitempty"`
 }
 
 func NewMM2ConfigFromFile(targetPath string) *MM2Config {
@@ -39,7 +42,7 @@ func NewMM2Config() *MM2Config {
 		Userhome:    &userhome}
 }
 
-func NewMM2ConfigWasm(userpass string, passphrase string) string {
+func NewMM2ConfigWasm(userpass string, passphrase string, extraArgs []string) string {
 	mm2 := 1
 	cfg := &MM2Config{
 		MM2:         &mm2,
@@ -48,6 +51,24 @@ func NewMM2ConfigWasm(userpass string, passphrase string) string {
 		Passphrase:  passphrase,
 		RPCPassword: userpass,
 		Coins:       &GMM2CFGArray}
+	if len(extraArgs) > 0 {
+		value, err := strconv.Atoi(extraArgs[0])
+		if err == nil {
+			cfg.Netid = value
+		} else {
+			glg.Errorf("err atoi: %v", err)
+		}
+		if len(extraArgs) > 1 {
+			var seednodes []string = extraArgs[1:]
+			cfg.SeedNodes = &seednodes
+		}
+	}
+	cfgCopy := *cfg
+	cfgCopy.Coins = nil
+	cfgCopy.Passphrase = "*******"
+	cfgCopy.RPCPassword = "*******"
+	glg.Infof("extraArgs: %s", extraArgs)
+	glg.Infof("cfg: %s", cfgCopy.ToJson())
 	return cfg.ToJson()
 }
 
