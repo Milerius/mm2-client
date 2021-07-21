@@ -1,4 +1,4 @@
-package cli
+package mm2_tools_generics
 
 import (
 	"fmt"

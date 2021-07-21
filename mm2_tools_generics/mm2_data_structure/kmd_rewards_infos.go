@@ -1,16 +1,10 @@
-package mm2_http_request
+package mm2_data_structure
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
 	"github.com/kyokomi/emoji/v2"
 	"github.com/olekukonko/tablewriter"
-	"io/ioutil"
 	"mm2_client/helpers"
-	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"mm2_client/services"
-	"net/http"
 	"os"
 )
 
@@ -62,33 +56,4 @@ func (answer *KMDRewardsInfoAnswer) ToTable() bool {
 	table.AppendBulk(data) // Add Bulk Data
 	table.Render()
 	return valid
-}
-
-func KmdRewardsInfo() *KMDRewardsInfoAnswer {
-	answerEnabled, _ := GetEnabledCoins()
-	if answerEnabled != nil && answerEnabled.Contains("KMD") {
-		req := mm2_data_structure.NewGenericRequest("kmd_rewards_info").ToJson()
-		resp, err := http.Post(mm2_data_structure.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
-		if err != nil {
-			fmt.Printf("Err: %v\n", err)
-			return nil
-		}
-		if resp.StatusCode == http.StatusOK {
-			defer resp.Body.Close()
-			var answer = &KMDRewardsInfoAnswer{}
-			decodeErr := json.NewDecoder(resp.Body).Decode(answer)
-			if decodeErr != nil {
-				fmt.Printf("Err: %v\n", err)
-				return nil
-			}
-			return answer
-		} else {
-			bodyBytes, _ := ioutil.ReadAll(resp.Body)
-			fmt.Printf("Err: %s\n", bodyBytes)
-			return nil
-		}
-	} else {
-		fmt.Println("KMD need to be enabled in order to call KmdRewardsInfo")
-	}
-	return nil
 }

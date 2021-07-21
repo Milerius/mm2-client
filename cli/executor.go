@@ -19,13 +19,13 @@ func Executor(fullCommand string) {
 	switch command[0] {
 	case "setprice":
 		if len(command) != 5 {
-			ShowCommandHelp(command[0])
+			mm2_tools_generics.ShowCommandHelp(command[0])
 		} else {
 			SetPrice(command[1], command[2], command[3], command[4])
 		}
 	case "cancel_order":
 		if len(command) != 2 {
-			ShowCommandHelp(command[0])
+			mm2_tools_generics.ShowCommandHelp(command[0])
 		} else {
 			CancelOrder(command[1])
 		}
@@ -33,9 +33,9 @@ func Executor(fullCommand string) {
 		InitMM2()
 	case "help":
 		if len(command) == 1 {
-			ShowGlobalHelp()
+			mm2_tools_generics.ShowGlobalHelp()
 		} else if len(command) > 1 {
-			ShowCommandHelp(command[1])
+			mm2_tools_generics.ShowCommandHelp(command[1])
 		}
 	case "start":
 		if len(command) == 1 {
@@ -52,7 +52,7 @@ func Executor(fullCommand string) {
 		StopMM2()
 	case "enable":
 		if len(command) == 1 {
-			ShowCommandHelp(command[0])
+			mm2_tools_generics.ShowCommandHelp(command[0])
 		} else if len(command) == 2 {
 			mm2_tools_generics.EnableCLI(command[1])
 		} else {
@@ -64,7 +64,7 @@ func Executor(fullCommand string) {
 		mm2_tools_generics.EnableMultipleCoins(config.RetrieveAllCoins())
 	case "disable_coin":
 		if len(command) == 1 {
-			ShowCommandHelp(command[0])
+			mm2_tools_generics.ShowCommandHelp(command[0])
 		} else if len(command) == 2 {
 			mm2_tools_generics.DisableCoinCLI(command[1])
 		} else {
@@ -72,7 +72,7 @@ func Executor(fullCommand string) {
 		}
 	case "my_balance":
 		if len(command) == 1 {
-			ShowCommandHelp(command[0])
+			mm2_tools_generics.ShowCommandHelp(command[0])
 		} else if len(command) == 2 {
 			mm2_tools_generics.MyBalanceCLI(command[1])
 		} else {
@@ -81,7 +81,9 @@ func Executor(fullCommand string) {
 	case "balance_all":
 		mm2_tools_generics.MyBalanceMultipleCoinsCLI(config.RetrieveActiveCoins())
 	case "kmd_rewards_info":
-		KmdRewardsInfo()
+		if mm2_tools_generics.KmdRewardsInfoCLI() {
+			postKmdRewardsInfo()
+		}
 	case "disable_enabled_coins":
 		val, _ := mm2_tools_generics.GetEnabledCoins()
 		mm2_tools_generics.DisableCoins(val.ToSlice())
@@ -90,13 +92,13 @@ func Executor(fullCommand string) {
 		mm2_tools_generics.DisableCoins(mm2_data_structure.ToSliceEmptyBalance(mm2_tools_generics.MyBalanceMultipleCoinsSilent(val.ToSlice()), true))
 	case "orderbook":
 		if len(command) != 3 {
-			ShowCommandHelp("orderbook")
+			mm2_tools_generics.ShowCommandHelp("orderbook")
 		} else {
 			Orderbook(command[1], command[2])
 		}
 	case "my_tx_history":
 		if len(command) == 1 {
-			ShowCommandHelp("my_tx_history")
+			mm2_tools_generics.ShowCommandHelp("my_tx_history")
 		} else {
 			MyTxHistory(command[1], command[2:])
 		}
@@ -114,25 +116,30 @@ func Executor(fullCommand string) {
 		}
 	case "get_enabled_coins":
 		if len(command) > 1 {
-			ShowCommandHelp("get_enabled_coins")
+			mm2_tools_generics.ShowCommandHelp("get_enabled_coins")
 		} else {
 			mm2_tools_generics.GetEnabledCoinsCLI()
 		}
 	case "withdraw":
 		if len(command) < 4 {
-			ShowCommandHelp("withdraw")
+			mm2_tools_generics.ShowCommandHelp("withdraw")
 		} else {
-			PostWithdraw(Withdraw(command[1], command[2], command[3], command[4:]))
+			resp, err := mm2_tools_generics.WithdrawCLI(command[1], command[2], command[3], command[4:])
+			if err != nil {
+				PostWithdraw(resp)
+			} else {
+				fmt.Println(err)
+			}
 		}
 	case "send":
 		if len(command) < 4 {
-			ShowCommandHelp("send")
+			mm2_tools_generics.ShowCommandHelp("send")
 		} else {
-			Send(command[1], command[2], command[3], command[4:])
+			mm2_tools_generics.Send(command[1], command[2], command[3], command[4:])
 		}
 	case "broadcast":
 		if len(command) != 3 {
-			ShowCommandHelp("broadcast")
+			mm2_tools_generics.ShowCommandHelp("broadcast")
 		} else {
 			Broadcast(command[1], command[2])
 		}

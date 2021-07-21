@@ -59,7 +59,7 @@ func NewMM2ConfigWasm(userpass string, passphrase string, extraArgs []string) st
 			glg.Errorf("err atoi: %v", err)
 		}
 		if len(extraArgs) > 1 {
-			var seednodes []string = extraArgs[1:]
+			var seednodes = extraArgs[1:]
 			cfg.SeedNodes = &seednodes
 		}
 	}

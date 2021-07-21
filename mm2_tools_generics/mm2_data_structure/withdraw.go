@@ -1,14 +1,9 @@
-package http
+package mm2_data_structure
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/olekukonko/tablewriter"
-	"io/ioutil"
-	"mm2_client/config"
-	"mm2_client/mm2_tools_generics/mm2_data_structure"
-	"net/http"
 	"os"
 	"strconv"
 )
@@ -60,7 +55,7 @@ type WithdrawAnswer struct {
 }
 
 func NewWithdrawRequest(coin string, amount string, address string, fees []string, coinType string) *WithdrawRequest {
-	genReq := mm2_data_structure.NewGenericRequest("withdraw")
+	genReq := NewGenericRequest("withdraw")
 	req := &WithdrawRequest{Userpass: genReq.Userpass, Method: genReq.Method, Coin: coin, To: address}
 	if amount == "max" {
 		req.Max = true
@@ -126,34 +121,4 @@ func (receiver *WithdrawAnswer) ToTable() {
 	table.AppendBulk(data) // Add Bulk Data
 	table.Render()
 	fmt.Printf("\ntx_hex: %s\n", receiver.TxHex)
-}
-
-func Withdraw(coin string, amount string, address string, fees []string, coinType string) *WithdrawAnswer {
-	//NewWithdrawRequest(coin, address, amount, fees, coinType)
-	if _, ok := config.GCFGRegistry[coin]; ok {
-		req := NewWithdrawRequest(coin, amount, address, fees, coinType).ToJson()
-		//fmt.Println(req)
-		resp, err := http.Post(mm2_data_structure.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
-		if err != nil {
-			fmt.Printf("Err: %v\n", err)
-			return nil
-		}
-		if resp.StatusCode == http.StatusOK {
-			defer resp.Body.Close()
-			var answer = &WithdrawAnswer{}
-			decodeErr := json.NewDecoder(resp.Body).Decode(answer)
-			if decodeErr != nil {
-				fmt.Printf("Err: %v\n", err)
-				return nil
-			}
-			return answer
-		} else {
-			bodyBytes, _ := ioutil.ReadAll(resp.Body)
-			fmt.Printf("Err: %s\n", bodyBytes)
-		}
-	} else {
-		fmt.Printf("coin: %s doesn't exist or is not present in the desktop configuration\n", coin)
-		return nil
-	}
-	return nil
 }
