@@ -27,6 +27,22 @@ type CancelAllOrdersAnswer struct {
 	} `json:"result"`
 }
 
+func NewCancelAllOrdersRequest(kind string, args []string) *CancelAllOrdersRequest {
+	genReq := NewGenericRequest("cancel_all_orders")
+	req := &CancelAllOrdersRequest{Userpass: genReq.Userpass, Method: genReq.Method}
+	switch kind {
+	case "all":
+		req.CancelBy.Type = "All"
+	case "by_pair":
+		req.CancelBy.Type = "Pair"
+		req.CancelBy.Data = &DataCancel{Base: &args[0], Rel: &args[1]}
+	case "by_coin":
+		req.CancelBy.Type = "Coin"
+		req.CancelBy.Data = &DataCancel{Ticker: &args[0]}
+	}
+	return req
+}
+
 func (req *CancelAllOrdersRequest) ToJson() string {
 	b, err := json.Marshal(req)
 	if err != nil {

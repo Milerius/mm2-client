@@ -40,7 +40,7 @@ func internalStartSimpleMarketMakerBot(out *StartSimpleMarketMakerRequest) error
 			}
 
 			//! Launch the bot afterwards
-			return market_making.StartSimpleMarketMakerBot(out.MarketMakerCfgPath, gAppName)
+			return market_making.StartSimpleMarketMakerBot(out.MarketMakerCfgPath, "file")
 		} else {
 			return errors.New("couldn't parse MM2 coins file")
 		}

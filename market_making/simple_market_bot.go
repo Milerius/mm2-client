@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/kpango/glg"
+	"io"
 	"io/ioutil"
 	"mm2_client/constants"
 	"mm2_client/helpers"
@@ -44,6 +45,30 @@ func NewMarketMakerConfFromFile(targetPath string) bool {
 	err := json.Unmarshal(file, &gSimpleMarketMakerRegistry)
 	if err != nil {
 		fmt.Println("Couldn't parse cfg file - aborting")
+		return false
+	}
+	for key, cur := range gSimpleMarketMakerRegistry {
+		if cur.PriceElapsedValidity == nil {
+			validity := 300.0
+			cur.PriceElapsedValidity = &validity
+			gSimpleMarketMakerRegistry[key] = cur
+			glg.Infof("Overriding price elapsed validity settings for %s/%s with %.1f - because it's not present in the json configuration", cur.Base, cur.Rel, 300.0)
+		}
+	}
+	return true
+}
+
+func NewMarketMakerConfFromURL(targetURL string) bool {
+	resp, err := helpers.CrossGet(targetURL)
+	if err != nil {
+		return false
+	}
+	defer func(Body io.ReadCloser) {
+		_ = Body.Close()
+	}(resp.Body)
+	err = json.NewDecoder(resp.Body).Decode(&gSimpleMarketMakerRegistry)
+	if err != nil {
+		fmt.Println("Couldn't parse market maker cfg file - aborting")
 		return false
 	}
 	for key, cur := range gSimpleMarketMakerRegistry {
@@ -214,13 +239,25 @@ func cancelPendingOrders() {
 	}
 }
 
-func StartSimpleMarketMakerBot(path string, appName string) error {
+func StartSimpleMarketMakerBot(target string, targetType string) error {
 	if constants.GMM2Running {
 		if constants.GSimpleMarketMakerBotRunning {
 			fmt.Println("Simple Market Maker bot is already running (or being stopped) - skipping")
 			return errors.New("simple Market Maker bot is already running (or being stopped) - skipping")
 		} else {
-			if resp := NewMarketMakerConfFromFile(path); resp {
+			resp := false
+			switch targetType {
+			case "file":
+				resp = NewMarketMakerConfFromFile(target)
+			case "url":
+				resp = NewMarketMakerConfFromURL(target)
+			case "raw":
+				fmt.Println("Not supported yet")
+				resp = false
+			default:
+				resp = false
+			}
+			if resp {
 				cancelPendingOrders()
 				glg.Infof("Starting simple market maker bot with %d coin(s)", len(gSimpleMarketMakerRegistry))
 				constants.GSimpleMarketMakerBotRunning = true

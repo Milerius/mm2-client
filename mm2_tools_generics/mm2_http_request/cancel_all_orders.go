@@ -11,24 +11,8 @@ import (
 	"net/http"
 )
 
-func NewCancelAllOrdersRequest(kind string, args []string) *mm2_data_structure.CancelAllOrdersRequest {
-	genReq := mm2_data_structure.NewGenericRequest("cancel_all_orders")
-	req := &mm2_data_structure.CancelAllOrdersRequest{Userpass: genReq.Userpass, Method: genReq.Method}
-	switch kind {
-	case "all":
-		req.CancelBy.Type = "All"
-	case "by_pair":
-		req.CancelBy.Type = "Pair"
-		req.CancelBy.Data = &mm2_data_structure.DataCancel{Base: &args[0], Rel: &args[1]}
-	case "by_coin":
-		req.CancelBy.Type = "Coin"
-		req.CancelBy.Data = &mm2_data_structure.DataCancel{Ticker: &args[0]}
-	}
-	return req
-}
-
 func CancelAllOrders(kind string, args []string) (*mm2_data_structure.CancelAllOrdersAnswer, error) {
-	req := NewCancelAllOrdersRequest(kind, args).ToJson()
+	req := mm2_data_structure.NewCancelAllOrdersRequest(kind, args).ToJson()
 	resp, err := http.Post(mm2_data_structure.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
 	if err != nil {
 		glg.Errorf("Err: %v", err)

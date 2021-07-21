@@ -48,6 +48,34 @@ type SetPriceAnswer struct {
 	} `json:"result"`
 }
 
+func NewSetPriceRequest(base string, rel string, price string, volume *string, max *bool, cancelPrevious bool, minVolume *string,
+	baseConfs *int, baseNota *bool, relConfs *int, relNota *bool) *SetPriceRequest {
+	genReq := NewGenericRequest("setprice")
+	req := &SetPriceRequest{Userpass: genReq.Userpass, Method: genReq.Method, Base: base, Rel: rel, Price: price, CancelPrevious: cancelPrevious}
+	if volume != nil {
+		req.Volume = volume
+	}
+	if max != nil {
+		req.Max = max
+	}
+	if minVolume != nil {
+		req.MinVolume = minVolume
+	}
+	if baseConfs != nil {
+		req.BaseConfs = baseConfs
+	}
+	if baseNota != nil {
+		req.BaseNota = baseNota
+	}
+	if relConfs != nil {
+		req.RelConfs = relConfs
+	}
+	if relNota != nil {
+		req.RelNota = relNota
+	}
+	return req
+}
+
 func (req *SetPriceRequest) ToJson() string {
 	b, err := json.Marshal(req)
 	if err != nil {

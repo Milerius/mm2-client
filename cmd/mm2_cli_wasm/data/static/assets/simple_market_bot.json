@@ -1,0 +1,40 @@
+{
+  "KMD/BCH": {
+    "base": "KMD",
+    "rel": "BCH",
+    "max": true,
+    "min_volume": "0.25",
+    "spread": "1.025",
+    "base_confs": 3,
+    "base_nota": false,
+    "rel_confs": 1,
+    "rel_nota": false,
+    "enable": true
+  },
+  "KMD/DASH": {
+    "base": "KMD",
+    "rel": "DASH",
+    "max": true,
+    "min_volume": "0.25",
+    "spread": "1.05",
+    "base_confs": 3,
+    "base_nota": false,
+    "rel_confs": 1,
+    "rel_nota": false,
+    "enable": true,
+    "price_elapsed_validity": 10
+  },
+  "KMD/MCL": {
+    "base": "KMD",
+    "rel": "MCL",
+    "max": true,
+    "min_volume": "0.25",
+    "spread": "1.05",
+    "base_confs": 3,
+    "base_nota": false,
+    "rel_confs": 1,
+    "rel_nota": false,
+    "enable": true,
+    "price_elapsed_validity": 300
+  }
+}

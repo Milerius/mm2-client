@@ -234,6 +234,7 @@ func bootstrap() js.Func {
 					parseMM2Val, _ := mm2_wasm_request.Await(js.Global().Call("load_coins_cfg_from_url", "http://localhost:8080/static/assets/coins.json"))
 					if parseMM2Val != nil {
 						startVal, _ := mm2_wasm_request.Await(js.Global().Call("run_mm2", js.Global().Call("start_mm2", userpass, passphrase)))
+						constants.GMM2Running = true
 						if startVal != nil {
 							js.Global().Call("enable_active_coins")
 							glg.Info("Bootstrap done !")
@@ -274,6 +275,9 @@ func main() {
 	js.Global().Set("disable_enabled_coins", disableEnabledCoins())
 	js.Global().Set("disable_zero_balance", disableZeroBalance())
 	js.Global().Set("get_enabled_coins", getEnabledCoins())
+	js.Global().Set("my_orders", myOrders())
+	js.Global().Set("start_simple_market_maker_bot", startSimpleMarketMakerBot())
+	js.Global().Set("stop_simple_market_maker_bot", stopSimpleMarketMakerBot())
 
 	<-make(chan bool)
 }

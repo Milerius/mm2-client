@@ -1,6 +1,7 @@
 package mm2_tools_generics
 
 import (
+	"fmt"
 	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"mm2_client/mm2_tools_generics/mm2_http_request"
 	"mm2_client/mm2_tools_generics/mm2_wasm_request"
@@ -12,5 +13,13 @@ func MyOrders() (*mm2_data_structure.MyOrdersAnswer, error) {
 		return mm2_wasm_request.MyOrders()
 	} else {
 		return mm2_http_request.MyOrders()
+	}
+}
+
+func MyOrdersCLI() {
+	if resp, err := MyOrders(); resp != nil {
+		resp.ToTable()
+	} else {
+		fmt.Println(err)
 	}
 }

@@ -43,6 +43,38 @@ type UpdateMakerOrderAnswer struct {
 	} `json:"result"`
 }
 
+func NewUpdateMakerRequest(uuid string, newPrice *string, volumeDelta *string, max *bool, minVolume *string,
+	baseConfs *int, baseNota *bool, relConfs *int, relNota *bool) *UpdateMakerOrderRequest {
+	genReq := NewGenericRequest("update_maker_order" +
+		"")
+	req := &UpdateMakerOrderRequest{Userpass: genReq.Userpass, Method: genReq.Method, Uuid: uuid}
+	if newPrice != nil {
+		req.NewPrice = newPrice
+	}
+	if volumeDelta != nil {
+		req.VolumeDelta = volumeDelta
+	}
+	if max != nil {
+		req.Max = max
+	}
+	if minVolume != nil {
+		req.MinVolume = minVolume
+	}
+	if baseConfs != nil {
+		req.BaseConfs = baseConfs
+	}
+	if baseNota != nil {
+		req.BaseNota = baseNota
+	}
+	if relConfs != nil {
+		req.RelConfs = relConfs
+	}
+	if relNota != nil {
+		req.RelNota = relNota
+	}
+	return req
+}
+
 func (req *UpdateMakerOrderRequest) ToJson() string {
 	b, err := json.Marshal(req)
 	if err != nil {

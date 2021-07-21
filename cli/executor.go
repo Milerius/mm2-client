@@ -101,7 +101,7 @@ func Executor(fullCommand string) {
 			MyTxHistory(command[1], command[2:])
 		}
 	case "my_orders":
-		MyOrders()
+		mm2_tools_generics.MyOrdersCLI()
 	case "my_recent_swaps":
 		if len(command) == 1 {
 			MyRecentSwaps("50", "1", []string{})
@@ -143,7 +143,7 @@ func Executor(fullCommand string) {
 			services.GetBinanceSupportedPairs(command[1])
 		}
 	case "start_simple_market_maker_bot":
-		_ = market_making.StartSimpleMarketMakerBot(constants.GSimpleMarketMakerConf, "standard")
+		_ = market_making.StartSimpleMarketMakerBot(constants.GSimpleMarketMakerConf, "file")
 	case "stop_simple_market_maker_bot":
 		_ = market_making.StopSimpleMarketMakerBotService()
 	case "exit":
