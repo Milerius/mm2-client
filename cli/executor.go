@@ -84,7 +84,7 @@ func Executor(fullCommand string) {
 	case "kmd_rewards_info":
 		KmdRewardsInfo()
 	case "disable_enabled_coins":
-		val, _ := mm2_http_request.GetEnabledCoins()
+		val, _ := mm2_tools_generics.GetEnabledCoins()
 		mm2_tools_generics.DisableCoins(val.ToSlice())
 	case "disable_zero_balance":
 		val, _ := mm2_http_request.GetEnabledCoins()

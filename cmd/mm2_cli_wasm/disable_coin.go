@@ -29,3 +29,14 @@ func disableCoin() js.Func {
 	})
 	return jsfunc
 }
+
+func disableEnabledCoins() js.Func {
+	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
+		go func() {
+			val, _ := mm2_tools_generics.GetEnabledCoins()
+			mm2_tools_generics.DisableCoins(val.ToSlice())
+		}()
+		return "done"
+	})
+	return jsfunc
+}
