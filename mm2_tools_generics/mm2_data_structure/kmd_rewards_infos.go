@@ -43,13 +43,13 @@ func (answer *KMDRewardsInfoAnswer) ToTable() bool {
 		toInsert := []string{
 			cur.Amount, accrued, val,
 			helpers.GetDateFromTimestamp(cur.AccrueStartAt, true),
-			helpers.GetDateFromTimestamp(cur.AccrueStopAt, true), provider}
+			helpers.GetDateFromTimestamp(cur.AccrueStopAt, true), provider, helpers.TransformBool(valid)}
 		data = append(data, toInsert)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetAutoWrapText(false)
-	headers := []string{"Amount", "Accrued", "Accrued (USD)", "Start at", "Stop At", "Price Provider"}
+	headers := []string{"Amount", "Accrued", "Accrued (USD)", "Start at", "Stop At", "Price Provider", "Claimable"}
 	table.SetHeader(headers)
 	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	table.SetCenterSeparator("|")

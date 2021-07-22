@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/kyokomi/emoji/v2"
 	"github.com/olekukonko/tablewriter"
 	"io/ioutil"
 	"mm2_client/config"
@@ -138,19 +137,11 @@ func (req *OrderbookRequest) ToJson() string {
 	return string(b)
 }
 
-func transformIsMine(isMine bool) string {
-	if isMine {
-		return emoji.Sprintf(":white_check_mark:")
-	} else {
-		return emoji.Sprintf(":x:")
-	}
-}
-
 func renderTable(contents []OrderbookContent, base string, rel string, depth int, size int, isAsks bool) {
 	var data [][]string
 
 	for _, cur := range contents {
-		var out = []string{helpers.ResizeNb(cur.Price), helpers.ResizeNb(cur.BaseMaxVolume), helpers.ResizeNb(cur.RelMaxVolume), transformIsMine(cur.IsMine)}
+		var out = []string{helpers.ResizeNb(cur.Price), helpers.ResizeNb(cur.BaseMaxVolume), helpers.ResizeNb(cur.RelMaxVolume), helpers.TransformBool(cur.IsMine)}
 		data = append(data, out)
 	}
 

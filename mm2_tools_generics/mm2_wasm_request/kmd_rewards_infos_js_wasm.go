@@ -12,12 +12,13 @@ import (
 func KmdRewardsInfo() (*mm2_data_structure.KMDRewardsInfoAnswer, error) {
 	answerEnabled, _ := GetEnabledCoins()
 	if answerEnabled != nil && answerEnabled.Contains("KMD") {
-		req := mm2_data_structure.NewGenericRequest("get_enabled_coins").ToJson()
+		req := mm2_data_structure.NewGenericRequest("kmd_rewards_info").ToJson()
 		balVal, errVal := Await(js.Global().Call("rpc_request", req))
 		if errVal != nil {
 			return nil, errors.New(errVal[0].String())
 		} else {
 			var answer = &mm2_data_structure.KMDRewardsInfoAnswer{}
+			//glg.Infof("%s", balVal[0].String())
 			decodeErr := json.Unmarshal([]byte(balVal[0].String()), answer)
 			if decodeErr != nil {
 				_ = glg.Errorf("err: %v", decodeErr)

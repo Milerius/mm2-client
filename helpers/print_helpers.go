@@ -9,3 +9,11 @@ func PrintCheck(str string, isCompleted bool) {
 		_, _ = emoji.Println(str + " :x:")
 	}
 }
+
+func TransformBool(val bool) string {
+	if val {
+		return emoji.Sprintf(":white_check_mark:")
+	} else {
+		return emoji.Sprintf(":x:")
+	}
+}
