@@ -8,7 +8,7 @@ require (
 	github.com/andybalholm/brotli v1.0.3 // indirect
 	github.com/c-bata/go-prompt v0.2.6
 	github.com/dustin/go-humanize v1.0.0
-	github.com/fasthttp/router v1.4.0
+	github.com/fasthttp/router v1.4.1
 	github.com/fatih/color v1.12.0 // indirect
 	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/juju/ansiterm v0.0.0-20210706145210-9283cdf370b5 // indirect
