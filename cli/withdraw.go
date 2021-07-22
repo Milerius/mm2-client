@@ -2,6 +2,7 @@ package cli
 
 import (
 	"github.com/manifoldco/promptui"
+	"mm2_client/mm2_tools_generics"
 	"mm2_client/mm2_tools_generics/mm2_data_structure"
 )
 
@@ -14,7 +15,7 @@ func PostWithdraw(answer *mm2_data_structure.WithdrawAnswer) {
 		}
 		_, result, _ := prompt.Run()
 		if result == "Yes" {
-			Broadcast(answer.Coin, answer.TxHex)
+			mm2_tools_generics.BroadcastCLI(answer.Coin, answer.TxHex)
 		}
 	}
 }

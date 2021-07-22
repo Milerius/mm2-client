@@ -72,8 +72,8 @@ eg: my_recent_swaps 50 1 KMD
 eg: my_recent_swaps 50 1 KMD LTC
 eg: my_recent_swaps 50 1 KMD LTC 01-02-2021
 eg: my_recent_swaps 50 1 KMD LTC 01-02-2021 01-03-2021`
-	withdrawHelp  = `Prepare a transaction to send`
-	withdrawUsage = `withdraw <coin> amount|max <address> fees...
+	WithdrawHelp  = `Prepare a transaction to send`
+	WithdrawUsage = `withdraw <coin> amount|max <address> fees...
 eg: withdraw KMD 1 RWaZ8yDea2j5peA6J5ftC1huPywxK66X2s
 eg: withdraw KMD max RWaZ8yDea2j5peA6J5ftC1huPywxK66X2s
 eg: withdraw KMD 1 RWaZ8yDea2j5peA6J5ftC1huPywxK66X2s utxo_fixed 0.1
@@ -101,7 +101,7 @@ func ShowGlobalHelp() {
 		{"balance_all", "", balanceAllHelp, balanceAllUsage},
 		{"kmd_rewards_info", "", kmdRewardsInfoHelp, kmdRewardsInfoUsage},
 		{"broadcast", "<coin> <tx_hex>", BroadcastHelp, BroadcastUsage},
-		{"withdraw", "", withdrawHelp, withdrawUsage},
+		{"withdraw", "", WithdrawHelp, WithdrawUsage},
 		{"my_tx_history", "", MyTxHistoryHelp, MyTxHistoryUsage},
 		{"my_recent_swaps", "", MyRecentSwapsHelp, MyRecentSwapsUsage},
 		{"my_orders", "", MyOrdersHelp, MyOrdersUsage},
@@ -165,8 +165,8 @@ func ShowCommandHelp(command string) {
 		fmt.Println(kmdRewardsInfoHelp)
 		fmt.Printf("usage: %s\n", kmdRewardsInfoUsage)
 	case "withdraw":
-		fmt.Println(withdrawHelp)
-		fmt.Printf("usage: %s\n", withdrawUsage)
+		fmt.Println(WithdrawHelp)
+		fmt.Printf("usage: %s\n", WithdrawUsage)
 	case "broadcast":
 		fmt.Println(BroadcastHelp)
 		fmt.Printf("usage: %s\n", BroadcastUsage)
