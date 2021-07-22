@@ -141,7 +141,7 @@ func Executor(fullCommand string) {
 		if len(command) != 3 {
 			mm2_tools_generics.ShowCommandHelp("broadcast")
 		} else {
-			Broadcast(command[1], command[2])
+			mm2_tools_generics.BroadcastCLI(command[1], command[2])
 		}
 	case "get_binance_supported_pairs":
 		if len(command) == 1 {
