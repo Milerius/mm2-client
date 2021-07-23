@@ -20,8 +20,6 @@ require (
 	github.com/manifoldco/promptui v0.8.0
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/schollz/progressbar/v3 v3.8.2
-	github.com/shurcooL/go v0.0.0-20200502201357-93f07166e636 // indirect
-	github.com/shurcooL/go-goon v0.0.0-20210110234559-7585751d9a17 // indirect
 	github.com/soniah/evaler v2.2.0+incompatible
 	github.com/tyler-smith/go-bip39 v1.1.0
 	github.com/ulule/limiter/v3 v3.8.0

@@ -30,12 +30,16 @@ func withdraw() js.Func {
 			if err != nil {
 				_ = glg.Errorf("%v", err)
 			} else {
-				resp.ToTable()
-				res := js.Global().Call("confirm", "Do you want to broadcast the transaction")
-				if res.Bool() {
-					mm2_tools_generics.BroadcastCLI(resp.Coin, resp.TxHex)
+				if resp.Result != nil {
+					resp.ToTable()
+					res := js.Global().Call("confirm", "Do you want to broadcast the transaction")
+					if res.Bool() {
+						mm2_tools_generics.BroadcastCLI(resp.Result.Coin, resp.Result.TxHex)
+					} else {
+						fmt.Println(err)
+					}
 				} else {
-					fmt.Println(err)
+					fmt.Println(resp.Error)
 				}
 			}
 		}()

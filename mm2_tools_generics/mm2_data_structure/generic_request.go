@@ -8,8 +8,9 @@ import (
 )
 
 type MM2GenericRequest struct {
-	Method   string `json:"method"`
-	Userpass string `json:"userpass"`
+	Method   string  `json:"method"`
+	Userpass string  `json:"userpass"`
+	MMRpc    *string `json:"mmrpc,omitempty"`
 }
 
 var GRuntimeUserpass = ""
@@ -21,6 +22,13 @@ func NewGenericRequest(method string) *MM2GenericRequest {
 		GRuntimeUserpass = config.NewMM2ConfigFromFile(constants.GMM2ConfPath).RPCPassword
 	}
 	return &MM2GenericRequest{Method: method, Userpass: GRuntimeUserpass}
+}
+
+func NewGenericRequestV2(method string) *MM2GenericRequest {
+	resp := NewGenericRequest(method)
+	mmrpc := "2.0"
+	resp.MMRpc = &mmrpc
+	return resp
 }
 
 func (req MM2GenericRequest) ToJson() string {

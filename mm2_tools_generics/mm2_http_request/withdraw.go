@@ -17,7 +17,7 @@ func Withdraw(coin string, amount string, address string, fees []string, coinTyp
 		req := mm2_data_structure.NewWithdrawRequest(coin, amount, address, fees, coinType).ToJson()
 		resp, err := http.Post(mm2_data_structure.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
 		if err != nil {
-			fmt.Printf("Err: %v\n", err)
+			_ = glg.Errorf("%v", err)
 			return nil, err
 		}
 		if resp.StatusCode == http.StatusOK {
@@ -25,7 +25,7 @@ func Withdraw(coin string, amount string, address string, fees []string, coinTyp
 			var answer = &mm2_data_structure.WithdrawAnswer{}
 			decodeErr := json.NewDecoder(resp.Body).Decode(answer)
 			if decodeErr != nil {
-				fmt.Printf("Err: %v\n", err)
+				_ = glg.Errorf("decode err: %v", err)
 				return nil, decodeErr
 			}
 			return answer, nil

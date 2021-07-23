@@ -16,17 +16,22 @@ type Fee struct {
 	GasLimit int    `json:"gas_limit,omitempty"`
 }
 
-type WithdrawRequest struct {
-	Method   string `json:"method"`
-	Userpass string `json:"userpass"`
-	Coin     string `json:"coin"`
-	To       string `json:"to"`
-	Amount   string `json:"amount,omitempty"`
-	Max      bool   `json:"max,omitempty"`
-	Fee      *Fee   `json:"fee,omitempty"`
+type WithdrawRequestParams struct {
+	Coin   string `json:"coin"`
+	To     string `json:"to"`
+	Amount string `json:"amount,omitempty"`
+	Max    bool   `json:"max,omitempty"`
+	Fee    *Fee   `json:"fee,omitempty"`
 }
 
-type WithdrawAnswer struct {
+type WithdrawRequest struct {
+	Method                string                `json:"method"`
+	Userpass              string                `json:"userpass"`
+	MMRpc                 *string               `json:"mmrpc,omitempty"`
+	WithdrawRequestParams WithdrawRequestParams `json:"params"`
+}
+
+type WithdrawAnswerSuccess struct {
 	BlockHeight int    `json:"block_height"`
 	Coin        string `json:"coin"`
 	FeeDetails  *struct {
@@ -51,38 +56,46 @@ type WithdrawAnswer struct {
 		Amount      string `json:"amount"`
 		ClaimedByMy bool   `json:"claimed_by_my"`
 	} `json:"kmd_rewards,omitempty"`
-	Error string `json:"error,omitempty"`
+}
+
+type WithdrawAnswer struct {
+	Mmrpc  string                 `json:"mmrpc"`
+	Error  string                 `json:"error,omitempty"`
+	Id     int                    `json:"id"`
+	Result *WithdrawAnswerSuccess `json:"result,omitempty"`
 }
 
 func NewWithdrawRequest(coin string, amount string, address string, fees []string, coinType string) *WithdrawRequest {
-	genReq := NewGenericRequest("withdraw")
-	req := &WithdrawRequest{Userpass: genReq.Userpass, Method: genReq.Method, Coin: coin, To: address}
+	genReq := NewGenericRequestV2("withdraw")
+	params := WithdrawRequestParams{Coin: coin, To: address}
+	req := &WithdrawRequest{Userpass: genReq.Userpass, Method: genReq.Method, WithdrawRequestParams: params, MMRpc: genReq.MMRpc}
 	if amount == "max" {
-		req.Max = true
+		req.WithdrawRequestParams.Max = true
 	} else {
-		req.Amount = amount
+		req.WithdrawRequestParams.Amount = amount
 	}
 	if len(fees) > 0 {
-		req.Fee = &Fee{}
+		req.WithdrawRequestParams.Fee = &Fee{}
 		switch coinType {
 		case "ERC-20", "BEP-20":
-			req.Fee.Type = "EthGas"
-			req.Fee.GasPrice = fees[1]
-			req.Fee.Gas, _ = strconv.Atoi(fees[2])
+			req.WithdrawRequestParams.Fee.Type = "EthGas"
+			req.WithdrawRequestParams.Fee.GasPrice = fees[1]
+			req.WithdrawRequestParams.Fee.Gas, _ = strconv.Atoi(fees[2])
 		case "QRC-20":
-			req.Fee.Type = "Qrc20Gas"
-			req.Fee.GasPrice = fees[1]
-			req.Fee.GasLimit, _ = strconv.Atoi(fees[2])
+			req.WithdrawRequestParams.Fee.Type = "Qrc20Gas"
+			req.WithdrawRequestParams.Fee.GasPrice = fees[1]
+			req.WithdrawRequestParams.Fee.GasLimit, _ = strconv.Atoi(fees[2])
 		case "UTXO", "Smart Chain":
 			switch fees[0] {
 			case "utxo_fixed":
-				req.Fee.Type = "UtxoFixed"
+				req.WithdrawRequestParams.Fee.Type = "UtxoFixed"
 			case "utxo_per_kbyte":
-				req.Fee.Type = "UtxoPerKbyte"
+				req.WithdrawRequestParams.Fee.Type = "UtxoPerKbyte"
 			}
-			req.Fee.Amount = fees[1]
+			req.WithdrawRequestParams.Fee.Amount = fees[1]
 		}
 	}
+
 	return req
 }
 
@@ -96,29 +109,32 @@ func (req *WithdrawRequest) ToJson() string {
 }
 
 func (receiver *WithdrawAnswer) RetrieveTotalFee() string {
-	if receiver.FeeDetails.Amount != "" {
-		return receiver.FeeDetails.Amount
-	} else {
-		return receiver.FeeDetails.TotalFee
+	if receiver.Result != nil {
+		if receiver.Result.FeeDetails.Amount != "" {
+			return receiver.Result.FeeDetails.Amount
+		} else {
+			return receiver.Result.FeeDetails.TotalFee
+		}
 	}
+	return "0"
 }
 
 func (receiver *WithdrawAnswer) ToTable() {
 	data := [][]string{
-		{receiver.From[0], receiver.To[0], receiver.TotalAmount, receiver.MyBalanceChange, receiver.RetrieveTotalFee()},
+		{receiver.Result.From[0], receiver.Result.To[0], receiver.Result.TotalAmount, receiver.Result.MyBalanceChange, receiver.RetrieveTotalFee()},
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetAutoWrapText(false)
 	headers := []string{"From", "To", "Amount", "Balance Change", "Fee"}
-	if receiver.KmdRewards != nil {
+	if receiver.Result.KmdRewards != nil {
 		headers = append(headers, "KMD Rewards")
-		data[0] = append(data[0], receiver.KmdRewards.Amount)
+		data[0] = append(data[0], receiver.Result.KmdRewards.Amount)
 	}
 	table.SetHeader(headers)
 	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	table.SetCenterSeparator("|")
 	table.AppendBulk(data) // Add Bulk Data
 	table.Render()
-	fmt.Printf("\ntx_hex: %s\n", receiver.TxHex)
+	fmt.Printf("\ntx_hex: %s\n", receiver.Result.TxHex)
 }
