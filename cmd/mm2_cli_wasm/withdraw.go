@@ -10,7 +10,6 @@ import (
 func withdraw() js.Func {
 	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		//! withdraw("KMD", 1, address)
-		glg.Infof("len args: %d", len(args))
 		if len(args) < 3 {
 			result := map[string]interface{}{
 				"help":  mm2_tools_generics.WithdrawHelp,

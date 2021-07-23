@@ -310,6 +310,8 @@ func main() {
 	js.Global().Set("stop_simple_market_maker_bot", stopSimpleMarketMakerBot())
 	js.Global().Set("kmd_rewards_infos", kmdRewardsInfos())
 	js.Global().Set("withdraw", withdraw())
+	js.Global().Set("send", send())
+	js.Global().Set("broadcast", broadcast())
 
 	<-make(chan bool)
 }
