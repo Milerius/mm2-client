@@ -100,7 +100,7 @@ func Executor(fullCommand string) {
 		if len(command) == 1 {
 			mm2_tools_generics.ShowCommandHelp("my_tx_history")
 		} else {
-			MyTxHistory(command[1], command[2:])
+			mm2_tools_generics.MyTxHistoryCLI(command[1], command[2:])
 		}
 	case "my_orders":
 		mm2_tools_generics.MyOrdersCLI()

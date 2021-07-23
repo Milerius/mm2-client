@@ -1,16 +1,13 @@
-package http
+package mm2_data_structure
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/olekukonko/tablewriter"
-	"io/ioutil"
 	"mm2_client/config"
 	"mm2_client/helpers"
-	"mm2_client/mm2_tools_generics/mm2_data_structure"
+	"mm2_client/mm2_tools_generics/common"
 	"mm2_client/services"
-	"net/http"
 	"os"
 	"strconv"
 	"sync"
@@ -64,7 +61,7 @@ type MyTxHistoryRequest struct {
 }
 
 func NewMyTxHistoryRequest(coin string, defaultNbTx int, defaultPage int, max bool) *MyTxHistoryRequest {
-	genReq := mm2_data_structure.NewGenericRequest("my_tx_history")
+	genReq := NewGenericRequest("my_tx_history")
 	req := &MyTxHistoryRequest{Userpass: genReq.Userpass, Method: genReq.Method, Coin: coin, Limit: defaultNbTx, PageNumber: defaultPage, Max: max}
 	return req
 }
@@ -84,7 +81,7 @@ func (answer *MyTxHistoryAnswer) ToTable(coinReq string, page int, tx int, withO
 
 	functor := func(timestamp int64, geckoID string, wg *sync.WaitGroup) {
 		defer wg.Done()
-		HandleGeckoPrice(timestamp, geckoID)
+		common.HandleGeckoPrice(timestamp, geckoID)
 	}
 
 	if withOriginalFiatValue {
@@ -92,8 +89,8 @@ func (answer *MyTxHistoryAnswer) ToTable(coinReq string, page int, tx int, withO
 		visited := make(map[string]bool)
 		for _, curAnswer := range answer.Result.Transactions {
 			if cfgExist {
-				if !ExistInGeckoRegistry(curAnswer.Timestamp, cfg.CoingeckoID) {
-					key := cfg.CoingeckoID + "-" + TimestampToGeckoDate(curAnswer.Timestamp)
+				if !common.ExistInGeckoRegistry(curAnswer.Timestamp, cfg.CoingeckoID) {
+					key := cfg.CoingeckoID + "-" + common.TimestampToGeckoDate(curAnswer.Timestamp)
 					if _, ok := visited[key]; !ok {
 						//fmt.Printf("key %s don't exist processing\n", key)
 						wg.Add(1)
@@ -116,7 +113,7 @@ func (answer *MyTxHistoryAnswer) ToTable(coinReq string, page int, tx int, withO
 				}
 			} else {
 				if cfgExist {
-					val = helpers.BigFloatMultiply(curAnswer.MyBalanceChange, GetFromRegistry(curAnswer.Timestamp, cfg.CoingeckoID), 2)
+					val = helpers.BigFloatMultiply(curAnswer.MyBalanceChange, common.GetFromRegistry(curAnswer.Timestamp, cfg.CoingeckoID), 2)
 				}
 			}
 
@@ -153,57 +150,4 @@ func (answer *MyTxHistoryAnswer) ToTable(coinReq string, page int, tx int, withO
 	table.SetCenterSeparator("|")
 	table.AppendBulk(data) // Add Bulk Data
 	table.Render()
-}
-
-const customTxEndpoint = "https://komodo.live:3334/api/"
-
-func MyTxHistory(coin string, defaultNbTx int, defaultPage int, withFiatValue bool, isMax bool) *MyTxHistoryAnswer {
-	if _, ok := config.GCFGRegistry[coin]; ok {
-		req := NewMyTxHistoryRequest(coin, defaultNbTx, defaultPage, isMax).ToJson()
-		resp, err := http.Post(mm2_data_structure.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
-		if err != nil {
-			fmt.Printf("Err: %v\n", err)
-			return nil
-		}
-		if resp.StatusCode == http.StatusOK {
-			defer resp.Body.Close()
-			var answer = &MyTxHistoryAnswer{}
-			decodeErr := json.NewDecoder(resp.Body).Decode(answer)
-			if decodeErr != nil {
-				fmt.Printf("Err: %v\n", err)
-				return nil
-			}
-			return answer
-		} else {
-			bodyBytes, _ := ioutil.ReadAll(resp.Body)
-			fmt.Printf("Err: %s\n", bodyBytes)
-		}
-	} else {
-		fmt.Printf("coin: %s doesn't exist or is not present in the desktop configuration\n", coin)
-		return nil
-	}
-	return nil
-}
-
-func CustomMyTxHistory(coin string, defaultNbTx int, defaultPage int, withFiatValue bool, isMax bool, contract string,
-	query string, address string, coinType string) *MyTxHistoryAnswer {
-	endpoint := customTxEndpoint
-	if contract != "" {
-		endpoint = endpoint + "v2/" + query + "/" + contract + "/" + address
-	} else {
-		endpoint = endpoint + "v1/" + query + "/" + address
-	}
-	resp, err := http.Get(endpoint)
-	if err != nil {
-		fmt.Printf("Error occured: %v\n", err)
-		return nil
-	}
-	defer resp.Body.Close()
-	var cResp = new(MyTxHistoryAnswer)
-	if decodeErr := json.NewDecoder(resp.Body).Decode(cResp); decodeErr != nil {
-		fmt.Printf("Error occured: %v\n", decodeErr)
-		return nil
-	}
-	cResp.CoinType = coinType
-	return cResp
 }

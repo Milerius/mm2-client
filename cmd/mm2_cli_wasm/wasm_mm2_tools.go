@@ -312,6 +312,7 @@ func main() {
 	js.Global().Set("withdraw", withdraw())
 	js.Global().Set("send", send())
 	js.Global().Set("broadcast", broadcast())
+	js.Global().Set("my_tx_history", myTxHistory())
 
 	<-make(chan bool)
 }
