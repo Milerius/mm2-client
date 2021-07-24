@@ -285,35 +285,37 @@ func main() {
 	glg.Get().SetMode(glg.STD)
 	_ = glg.Info("Hello from webassembly - Slyris tools running")
 
-	//! Internal
+	//! Internal please do not use if you are beginners
 	js.Global().Set("load_desktop_cfg_from_url", loadDesktopCfgFromUrl())
 	js.Global().Set("load_coins_cfg_from_url", loadCoinsCfgFromUrl())
 	js.Global().Set("start_mm2", StartMM2())
 	js.Global().Set("enable_active_coins", enableActiveCoins())
 
 	//! Price API
-	js.Global().Set("get_ticker_infos", getTickerInfos())
-	js.Global().Set("get_all_ticker_infos", getAllTickerInfos())
-	js.Global().Set("start_price_service", startPriceService())
+	js.Global().Set("get_ticker_infos", getTickerInfos())        ///< Get ticker infos for a single coin
+	js.Global().Set("get_all_ticker_infos", getAllTickerInfos()) ///< Get all tickers infos at once
+	js.Global().Set("start_price_service", startPriceService())  ///< start the price service - cannot be stopped
+
+	//! Trading bot API
+	js.Global().Set("start_simple_market_maker_bot", startSimpleMarketMakerBot()) ///< start the simple trading bot
+	js.Global().Set("stop_simple_market_maker_bot", stopSimpleMarketMakerBot())   ///< stop the simple trading bot
 
 	//! CLI API
-	js.Global().Set("bootstrap", bootstrap())
-	js.Global().Set("my_balance", myBalance())
-	js.Global().Set("balance_all", myBalanceAll())
-	js.Global().Set("enable", enable())
-	js.Global().Set("disable_coin", disableCoin())
-	js.Global().Set("disable_enabled_coins", disableEnabledCoins())
-	js.Global().Set("disable_zero_balance", disableZeroBalance())
-	js.Global().Set("get_enabled_coins", getEnabledCoins())
-	js.Global().Set("my_orders", myOrders())
-	js.Global().Set("start_simple_market_maker_bot", startSimpleMarketMakerBot())
-	js.Global().Set("stop_simple_market_maker_bot", stopSimpleMarketMakerBot())
-	js.Global().Set("kmd_rewards_infos", kmdRewardsInfos())
-	js.Global().Set("withdraw", withdraw())
-	js.Global().Set("send", send())
-	js.Global().Set("broadcast", broadcast())
-	js.Global().Set("my_tx_history", myTxHistory())
-	js.Global().Set("orderbook", orderbook())
+	js.Global().Set("bootstrap", bootstrap())                       ///< Sugar init_wasm + load_cfg() + run_mm2 + mm2conf + enable active coins
+	js.Global().Set("my_balance", myBalance())                      ///< my_balance implementation, args can be variadic
+	js.Global().Set("balance_all", myBalanceAll())                  ///< sugar syntax to call my balance on every activated coins
+	js.Global().Set("enable", enable())                             ///< sugar around electrum + enable, args can be variadic
+	js.Global().Set("disable_coin", disableCoin())                  ///< disable_coin implementation, args can be variadic
+	js.Global().Set("disable_enabled_coins", disableEnabledCoins()) ///< sugar syntax to disable all active coins
+	js.Global().Set("disable_zero_balance", disableZeroBalance())   ///< sugar syntax to disable non zero balance
+	js.Global().Set("get_enabled_coins", getEnabledCoins())         ///< get list of enabled coins as a table
+	js.Global().Set("my_orders", myOrders())                        ///< my_orders implementation
+	js.Global().Set("kmd_rewards_infos", kmdRewardsInfos())         ///< kmd rewards implementation + possibility to claim
+	js.Global().Set("withdraw", withdraw())                         ///< withdraw implem + possibility to broadcast at the end
+	js.Global().Set("broadcast", broadcast())                       ///< broadcast implem
+	js.Global().Set("send", send())                                 ///< sugar withdraw + broadcast
+	js.Global().Set("my_tx_history", myTxHistory())                 ///< my_tx_history implem
+	js.Global().Set("orderbook", orderbook())                       ///< orderbook implem
 
 	<-make(chan bool)
 }
