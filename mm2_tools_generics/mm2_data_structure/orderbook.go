@@ -6,6 +6,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"mm2_client/helpers"
 	"os"
+	"runtime"
 	"strconv"
 )
 
@@ -143,18 +144,20 @@ func renderTable(contents []OrderbookContent, base string, rel string, depth int
 	table := tablewriter.NewWriter(os.Stdout)
 	table.SetAutoWrapText(false)
 	table.SetHeader([]string{"Price (" + rel + ")", "Qty (" + base + ")", "Total (" + rel + ")", "Is Mine"})
-	if isAsks {
-		table.SetHeaderColor(
-			tablewriter.Colors{tablewriter.FgHiRedColor, tablewriter.Bold, tablewriter.BgBlackColor},
-			tablewriter.Colors{tablewriter.FgHiRedColor, tablewriter.Bold, tablewriter.BgBlackColor},
-			tablewriter.Colors{tablewriter.FgHiRedColor, tablewriter.Bold, tablewriter.BgBlackColor},
-			tablewriter.Colors{tablewriter.FgHiRedColor, tablewriter.Bold, tablewriter.BgBlackColor})
-	} else {
-		table.SetHeaderColor(
-			tablewriter.Colors{tablewriter.FgHiGreenColor, tablewriter.Bold, tablewriter.BgBlackColor},
-			tablewriter.Colors{tablewriter.FgHiGreenColor, tablewriter.Bold, tablewriter.BgBlackColor},
-			tablewriter.Colors{tablewriter.FgHiGreenColor, tablewriter.Bold, tablewriter.BgBlackColor},
-			tablewriter.Colors{tablewriter.FgHiGreenColor, tablewriter.Bold, tablewriter.BgBlackColor})
+	if runtime.GOARCH != "wasm" {
+		if isAsks {
+			table.SetHeaderColor(
+				tablewriter.Colors{tablewriter.FgHiRedColor, tablewriter.Bold, tablewriter.BgBlackColor},
+				tablewriter.Colors{tablewriter.FgHiRedColor, tablewriter.Bold, tablewriter.BgBlackColor},
+				tablewriter.Colors{tablewriter.FgHiRedColor, tablewriter.Bold, tablewriter.BgBlackColor},
+				tablewriter.Colors{tablewriter.FgHiRedColor, tablewriter.Bold, tablewriter.BgBlackColor})
+		} else {
+			table.SetHeaderColor(
+				tablewriter.Colors{tablewriter.FgHiGreenColor, tablewriter.Bold, tablewriter.BgBlackColor},
+				tablewriter.Colors{tablewriter.FgHiGreenColor, tablewriter.Bold, tablewriter.BgBlackColor},
+				tablewriter.Colors{tablewriter.FgHiGreenColor, tablewriter.Bold, tablewriter.BgBlackColor},
+				tablewriter.Colors{tablewriter.FgHiGreenColor, tablewriter.Bold, tablewriter.BgBlackColor})
+		}
 	}
 	table.SetFooter([]string{"", "Depth: " + strconv.Itoa(depth), "NbOrders: " + strconv.Itoa(size), ""})
 	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})

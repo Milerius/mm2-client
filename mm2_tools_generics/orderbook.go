@@ -17,7 +17,7 @@ func Orderbook(base string, rel string) (*mm2_data_structure.OrderbookAnswer, er
 }
 
 func OrderbookCLI(base string, rel string) {
-	if resp, err := mm2_http_request.Orderbook(base, rel); resp != nil {
+	if resp, err := Orderbook(base, rel); resp != nil {
 		resp.ToTable(base, rel)
 	} else {
 		fmt.Println(err)

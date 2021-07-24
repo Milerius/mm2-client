@@ -313,6 +313,7 @@ func main() {
 	js.Global().Set("send", send())
 	js.Global().Set("broadcast", broadcast())
 	js.Global().Set("my_tx_history", myTxHistory())
+	js.Global().Set("orderbook", orderbook())
 
 	<-make(chan bool)
 }
