@@ -1,15 +1,10 @@
-package http
+package mm2_data_structure
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/olekukonko/tablewriter"
-	"io/ioutil"
-	"mm2_client/config"
 	"mm2_client/helpers"
-	"mm2_client/mm2_tools_generics/mm2_data_structure"
-	"net/http"
 	"os"
 	"strconv"
 )
@@ -123,7 +118,7 @@ type OrderbookAnswer struct {
 }
 
 func NewOrderbookRequest(base string, rel string) *OrderbookRequest {
-	genReq := mm2_data_structure.NewGenericRequest("orderbook")
+	genReq := NewGenericRequest("orderbook")
 	req := &OrderbookRequest{Userpass: genReq.Userpass, Method: genReq.Method, Base: base, Rel: rel}
 	return req
 }
@@ -172,34 +167,4 @@ func (answer *OrderbookAnswer) ToTable(base string, rel string) {
 	renderTable(answer.Asks, base, rel, answer.Askdepth, answer.Numasks, true)
 	fmt.Println()
 	renderTable(answer.Bids, base, rel, answer.Biddepth, answer.Numbids, false)
-}
-
-func Orderbook(base string, rel string) *OrderbookAnswer {
-	_, baseOk := config.GCFGRegistry[base]
-	_, relOk := config.GCFGRegistry[rel]
-	if relOk && baseOk {
-		req := NewOrderbookRequest(base, rel).ToJson()
-		resp, err := http.Post(mm2_data_structure.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
-		if err != nil {
-			fmt.Printf("Err: %v\n", err)
-			return nil
-		}
-		if resp.StatusCode == http.StatusOK {
-			defer resp.Body.Close()
-			var answer = &OrderbookAnswer{}
-			decodeErr := json.NewDecoder(resp.Body).Decode(answer)
-			if decodeErr != nil {
-				fmt.Printf("Err: %v\n", err)
-				return nil
-			}
-			return answer
-		} else {
-			bodyBytes, _ := ioutil.ReadAll(resp.Body)
-			fmt.Printf("Err: %s\n", bodyBytes)
-		}
-	} else {
-		fmt.Printf("coin: %s or %s doesn't exist or is not present in the desktop configuration\n", base, rel)
-		return nil
-	}
-	return nil
 }

@@ -94,7 +94,7 @@ func Executor(fullCommand string) {
 		if len(command) != 3 {
 			mm2_tools_generics.ShowCommandHelp("orderbook")
 		} else {
-			Orderbook(command[1], command[2])
+			mm2_tools_generics.OrderbookCLI(command[1], command[2])
 		}
 	case "my_tx_history":
 		if len(command) == 1 {
