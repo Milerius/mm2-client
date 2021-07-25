@@ -34,6 +34,7 @@
     "rel_confs": 1, //< number of rel transactions before the swap could be confirmed
     "rel_nota": false, //< if you want to wait for notarization (works only if you're rel coin support nota)
     "enable": true, //< the bot will ignore this entry if this value is set to false
-    "price_elapsed_validity": 30.0 ///< will cancel / not create order if price_last_update > price_elapsed_validity (optional fields - default 5min)
+    "price_elapsed_validity": 30.0, ///< will cancel / not create order if price_last_update > price_elapsed_validity (optional fields - default 5min)
+    "check_last_bidirectional_trade_thresh_hold": true ///< will readjust the calculated cex price if a precedent trade exist for the reversed pair - true by default.
   }
 }
