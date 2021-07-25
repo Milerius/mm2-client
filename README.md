@@ -54,7 +54,7 @@ cp assets/simple_market_bot.template.json mm2/simple_market_bot.json
 > exit
 
 ## from another terminal
-tail -f  ~/.atomicdex_cli/logs/simple.market.maker.logs
+tail -f ~/.atomicdex_cli/logs/mm2.client.log
 ```
 
 ### How to use the simple market maker bot with an existing atomicdex instance
