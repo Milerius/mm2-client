@@ -106,13 +106,13 @@ func Executor(fullCommand string) {
 		mm2_tools_generics.MyOrdersCLI()
 	case "my_recent_swaps":
 		if len(command) == 1 {
-			MyRecentSwaps("50", "1", []string{})
+			mm2_tools_generics.MyRecentSwapsCLI("50", "1", []string{})
 		} else if len(command) == 2 {
-			MyRecentSwaps(command[1], "1", []string{})
+			mm2_tools_generics.MyRecentSwapsCLI(command[1], "1", []string{})
 		} else if len(command) == 3 {
-			MyRecentSwaps(command[1], command[2], []string{})
+			mm2_tools_generics.MyRecentSwapsCLI(command[1], command[2], []string{})
 		} else {
-			MyRecentSwaps(command[1], command[2], command[3:])
+			mm2_tools_generics.MyRecentSwapsCLI(command[1], command[2], command[3:])
 		}
 	case "get_enabled_coins":
 		if len(command) > 1 {

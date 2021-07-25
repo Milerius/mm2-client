@@ -1,14 +1,10 @@
-package http
+package mm2_data_structure
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"github.com/olekukonko/tablewriter"
-	"io/ioutil"
 	"mm2_client/helpers"
-	"mm2_client/mm2_tools_generics/mm2_data_structure"
-	"net/http"
 	"os"
 	"strconv"
 )
@@ -111,7 +107,7 @@ func (receiver *SwapContent) getLastStatus() string {
 }
 
 func NewMyRecentSwapsRequest(limit string, pageNumber string, baseCoin string, relCoin string, from string, to string) *MyRecentSwapsRequest {
-	genReq := mm2_data_structure.NewGenericRequest("my_recent_swaps")
+	genReq := NewGenericRequest("my_recent_swaps")
 	limitNb, err := strconv.Atoi(limit)
 	if err != nil {
 		limitNb = 50
@@ -168,27 +164,4 @@ func (answer *MyRecentSwapsAnswer) ToTable() {
 	table.SetCenterSeparator("|")
 	table.AppendBulk(data) // Add Bulk Data
 	table.Render()
-}
-
-func ProcessMyRecentSwaps(limit string, pageNumber string, baseCoin string, relCoin string, from string, to string) *MyRecentSwapsAnswer {
-	req := NewMyRecentSwapsRequest(limit, pageNumber, baseCoin, relCoin, from, to).ToJson()
-	resp, err := http.Post(mm2_data_structure.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
-	if err != nil {
-		fmt.Printf("Err: %v\n", err)
-		return nil
-	}
-	if resp.StatusCode == http.StatusOK {
-		defer resp.Body.Close()
-		var answer = &MyRecentSwapsAnswer{}
-		decodeErr := json.NewDecoder(resp.Body).Decode(answer)
-		if decodeErr != nil {
-			fmt.Printf("Err: %v\n", err)
-			return nil
-		}
-		return answer
-	} else {
-		bodyBytes, _ := ioutil.ReadAll(resp.Body)
-		fmt.Printf("Err: %s\n", bodyBytes)
-	}
-	return nil
 }
