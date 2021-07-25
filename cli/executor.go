@@ -27,7 +27,7 @@ func Executor(fullCommand string) {
 		if len(command) != 2 {
 			mm2_tools_generics.ShowCommandHelp(command[0])
 		} else {
-			CancelOrder(command[1])
+			mm2_tools_generics.CancelOrderCLI(command[1])
 		}
 	case "init":
 		InitMM2()
