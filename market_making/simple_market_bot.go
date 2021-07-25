@@ -19,18 +19,19 @@ import (
 )
 
 type SimplePairMarketMakerConf struct {
-	Base                 string   `json:"base"`
-	Rel                  string   `json:"rel"`
-	Max                  bool     `json:"max,omitempty"`
-	BalancePercent       string   `json:"balance_percent,omitempty"`
-	MinVolume            *string  `json:"min_volume,omitempty"`
-	Spread               string   `json:"spread"`
-	BaseConfs            int      `json:"base_confs"`
-	BaseNota             bool     `json:"base_nota"`
-	RelConfs             int      `json:"rel_confs"`
-	RelNota              bool     `json:"rel_nota"`
-	Enable               bool     `json:"enable"`
-	PriceElapsedValidity *float64 `json:"price_elapsed_validity,omitempty"`
+	Base                                  string   `json:"base"`
+	Rel                                   string   `json:"rel"`
+	Max                                   bool     `json:"max,omitempty"`
+	BalancePercent                        string   `json:"balance_percent,omitempty"`
+	MinVolume                             *string  `json:"min_volume,omitempty"`
+	Spread                                string   `json:"spread"`
+	BaseConfs                             int      `json:"base_confs"`
+	BaseNota                              bool     `json:"base_nota"`
+	RelConfs                              int      `json:"rel_confs"`
+	RelNota                               bool     `json:"rel_nota"`
+	Enable                                bool     `json:"enable"`
+	PriceElapsedValidity                  *float64 `json:"price_elapsed_validity,omitempty"`
+	CheckLastBidirectionalTradeThreshHold *bool    `json:"check_last_bidirectional_trade_thresh_hold,omitempty"`
 }
 
 var gSimpleMarketMakerRegistry = make(map[string]SimplePairMarketMakerConf)
@@ -53,6 +54,10 @@ func NewMarketMakerConfFromFile(targetPath string) bool {
 			cur.PriceElapsedValidity = &validity
 			gSimpleMarketMakerRegistry[key] = cur
 			glg.Infof("Overriding price elapsed validity settings for %s/%s with %.1f - because it's not present in the json configuration", cur.Base, cur.Rel, 300.0)
+		}
+		if cur.CheckLastBidirectionalTradeThreshHold == nil {
+			glg.Infof("Overriding settings check_last_bidirectional_trade_thresh_hold for %s/%s with true since it's not present in the json configuration", cur.Base, cur.Rel)
+			cur.CheckLastBidirectionalTradeThreshHold = helpers.BoolAddr(true)
 		}
 	}
 	return true
@@ -86,6 +91,9 @@ func updateOrderFromCfg(cfg SimplePairMarketMakerConf, makerOrder mm2_data_struc
 	cexPrice, calculated, date, provider := services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
 	if elapsed := helpers.DateToTimeElapsed(date); elapsed < *cfg.PriceElapsedValidity {
 		price := helpers.BigFloatMultiply(cexPrice, cfg.Spread, 8)
+		if cfg.CheckLastBidirectionalTradeThreshHold == nil || (cfg.CheckLastBidirectionalTradeThreshHold != nil && *cfg.CheckLastBidirectionalTradeThreshHold) {
+			price = recalculateThreshHoldFromLastTrade(cfg, price)
+		}
 		resp, err := mm2_tools_generics.UpdateMakerOrder(makerOrder.Uuid, &price, nil, &cfg.Max, &makerOrder.MinBaseVol, &cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
 		if resp != nil {
 			glg.Infof("Successfully updated %s/%s order %s - cex_price: [%s] - new_price: [%s] - calculated: [%t] elapsed_since_price: %f seconds - provider: %s",
@@ -106,11 +114,36 @@ func updateOrderFromCfg(cfg SimplePairMarketMakerConf, makerOrder mm2_data_struc
 	}
 }
 
+func recalculateThreshHoldFromLastTrade(cfg SimplePairMarketMakerConf, price string) string {
+	calculatedPrice := price
+	//! Let's say we are trading QTUM/KMD we check KMD/QTUM to see if it's existing before
+	if resp, err := mm2_tools_generics.MyRecentSwaps("1", "1", cfg.Rel, cfg.Base, "", ""); resp != nil {
+		if len(resp.Result.Swaps) > 0 {
+			lastTrade := resp.Result.Swaps[0]
+			lastTradePrice := helpers.BigFloatDivide(lastTrade.MyInfo.MyAmount, lastTrade.MyInfo.OtherAmount, 8)
+			if helpers.AsFloat(lastTradePrice) > helpers.AsFloat(price) {
+				calculatedPrice = helpers.BigFloatMultiply(calculatedPrice, cfg.Spread, 8)
+				glg.Infof("price: %s is less than %s, readjusting using last trade price - result: %s", price, lastTradePrice, calculatedPrice)
+			} else {
+				glg.Infof("price calculated by the CEX rates [%s] is above the last precedent trade price of [%s] - skipping threshold readjustment for pair: [%s/%s]", price, lastTradePrice, cfg.Rel, cfg.Base)
+			}
+		} else {
+			glg.Infof("No last trade for reversed pair [%s/%s] - keeping calculated price: %s", cfg.Rel, cfg.Base, price)
+		}
+	} else {
+		glg.Errorf("err my recentswaps: %v", err)
+	}
+	return calculatedPrice
+}
+
 func createOrderFromConf(cfg SimplePairMarketMakerConf) {
 	cexPrice, calculated, date, provider := services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
 	if elapsed := helpers.DateToTimeElapsed(date); elapsed < *cfg.PriceElapsedValidity {
 		if helpers.AsFloat(cexPrice) > 0 {
 			price := helpers.BigFloatMultiply(cexPrice, cfg.Spread, 8)
+			if cfg.CheckLastBidirectionalTradeThreshHold == nil || (cfg.CheckLastBidirectionalTradeThreshHold != nil && *cfg.CheckLastBidirectionalTradeThreshHold) {
+				price = recalculateThreshHoldFromLastTrade(cfg, price)
+			}
 			var max *bool = nil
 			var volume *string = nil
 			var minVolume *string = nil
