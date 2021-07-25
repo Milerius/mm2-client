@@ -116,30 +116,34 @@ func createOrderFromConf(cfg SimplePairMarketMakerConf) {
 			var minVolume *string = nil
 			respBalance, err := mm2_tools_generics.MyBalance(cfg.Base)
 			if respBalance != nil {
-				var maxBalance = respBalance.Balance
-				if cfg.Max {
-					max = helpers.BoolAddr(true)
+				if helpers.AsFloat(respBalance.Balance) <= 0 {
+					glg.Warnf("Skip placing order for %s/%s reason: balance is 0.", cfg.Base, cfg.Rel)
 				} else {
-					vol := helpers.BigFloatMultiply(maxBalance, cfg.BalancePercent, 8)
-					volume = &vol
-				}
-				if cfg.MinVolume != nil {
+					var maxBalance = respBalance.Balance
 					if cfg.Max {
-						minVol := helpers.BigFloatMultiply(maxBalance, *cfg.MinVolume, 8)
-						minVolume = &minVol
-					} else if !cfg.Max && volume != nil {
-						minVol := helpers.BigFloatMultiply(*volume, *cfg.MinVolume, 8)
-						minVolume = &minVol
+						max = helpers.BoolAddr(true)
+					} else {
+						vol := helpers.BigFloatMultiply(maxBalance, cfg.BalancePercent, 8)
+						volume = &vol
 					}
-				}
-				resp, setPriceErr := mm2_tools_generics.SetPrice(cfg.Base, cfg.Rel, price, volume, max, true, minVolume,
-					&cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
-				if resp != nil {
-					glg.Infof("Successfully placed the %s/%s order: %s, calculated: %t cex_price: [%s] - our price: [%s] - elapsed since last price update: %f seconds - provider: %s", cfg.Base, cfg.Rel, resp.Result.Uuid, calculated, cexPrice, price, elapsed, provider)
-					glg.Get().EnableJSON().Info(resp)
-					glg.Get().DisableJSON()
-				} else {
-					glg.Errorf("Couldn't place the order for %s/%s: %v", cfg.Base, cfg.Rel, setPriceErr)
+					if cfg.MinVolume != nil {
+						if cfg.Max {
+							minVol := helpers.BigFloatMultiply(maxBalance, *cfg.MinVolume, 8)
+							minVolume = &minVol
+						} else if !cfg.Max && volume != nil {
+							minVol := helpers.BigFloatMultiply(*volume, *cfg.MinVolume, 8)
+							minVolume = &minVol
+						}
+					}
+					resp, setPriceErr := mm2_tools_generics.SetPrice(cfg.Base, cfg.Rel, price, volume, max, true, minVolume,
+						&cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
+					if resp != nil {
+						glg.Infof("Successfully placed the %s/%s order: %s, calculated: %t cex_price: [%s] - our price: [%s] - elapsed since last price update: %f seconds - provider: %s", cfg.Base, cfg.Rel, resp.Result.Uuid, calculated, cexPrice, price, elapsed, provider)
+						glg.Get().EnableJSON().Info(resp)
+						glg.Get().DisableJSON()
+					} else {
+						glg.Errorf("Couldn't place the order for %s/%s: %v", cfg.Base, cfg.Rel, setPriceErr)
+					}
 				}
 			} else {
 				glg.Errorf("Cannot retrieve balance of %s - skipping: %v", cfg.Base, err)
