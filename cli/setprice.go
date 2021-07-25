@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/manifoldco/promptui"
 	"mm2_client/helpers"
+	"mm2_client/mm2_tools_generics"
 	"mm2_client/mm2_tools_generics/mm2_http_request"
 	"strconv"
 )
@@ -142,11 +143,7 @@ func interractiveSetPrice(base string, rel string, price string, volume *string,
 	relConfs := retrieveConfs(rel, "rel")
 	baseNota := retrieveNota(base, "base")
 	relNota := retrieveNota(rel, "rel")
-	if resp, err := mm2_http_request.SetPrice(base, rel, price, volume, max, cancelPrevious, minVolume, baseConfs, baseNota, relConfs, relNota); resp != nil {
-		resp.ToTable()
-	} else {
-		fmt.Println(err)
-	}
+	mm2_tools_generics.SetPriceCLI(base, rel, price, volume, max, cancelPrevious, minVolume, baseConfs, baseNota, relConfs, relNota)
 }
 
 func SetPrice(base string, rel string, price string, volumeOrMax string) {
