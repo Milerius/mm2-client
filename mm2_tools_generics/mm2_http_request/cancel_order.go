@@ -11,14 +11,8 @@ import (
 	"net/http"
 )
 
-func NewCancelOrderRequest(uuid string) *mm2_data_structure.CancelOrderRequest {
-	genReq := mm2_data_structure.NewGenericRequest("cancel_order")
-	req := &mm2_data_structure.CancelOrderRequest{Userpass: genReq.Userpass, Method: genReq.Method, Uuid: uuid}
-	return req
-}
-
 func CancelOrder(uuid string) (*mm2_data_structure.CancelOrderAnswer, error) {
-	req := NewCancelOrderRequest(uuid).ToJson()
+	req := mm2_data_structure.NewCancelOrderRequest(uuid).ToJson()
 	resp, err := http.Post(mm2_data_structure.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
 	if err != nil {
 		glg.Errorf("Err: %v", err)

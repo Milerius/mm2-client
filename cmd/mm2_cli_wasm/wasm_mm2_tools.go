@@ -317,6 +317,7 @@ func main() {
 	js.Global().Set("my_tx_history", myTxHistory())                 ///< my_tx_history implem
 	js.Global().Set("orderbook", orderbook())                       ///< orderbook implem
 	js.Global().Set("my_recent_swaps", myRecentSwaps())             ///< my_recent_swaps implem
+	js.Global().Set("cancel_order", cancelOrder())                  ///< cancel_order implem
 
 	<-make(chan bool)
 }
