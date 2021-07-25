@@ -16,6 +16,7 @@ var (
 	GSimpleMarketMakerBotRunning  = false
 	GSimpleMarketMakerBotStopping = false
 	GPricesServicesRunning        = false
+	GExtrasServicesRunning        = false
 	GDesktopCfgLoaded             = false
 )
 

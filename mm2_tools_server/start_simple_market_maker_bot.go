@@ -36,7 +36,7 @@ func internalStartSimpleMarketMakerBot(out *StartSimpleMarketMakerRequest) error
 			//! Launch price services
 			if !constants.GPricesServicesRunning {
 				_ = glg.Info("Launch price services")
-				services.LaunchServices()
+				services.LaunchPriceServices()
 			}
 
 			//! Launch the bot afterwards

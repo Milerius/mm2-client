@@ -9,6 +9,7 @@ import (
 	"mm2_client/services"
 	"os"
 	"os/exec"
+	"path"
 )
 
 func StartMM2(withServices bool) {
@@ -33,7 +34,7 @@ func StartMM2(withServices bool) {
 				config.ParseDesktopRegistry(http.GetLastDesktopVersion())
 				config.ParseMM2CFGRegistry()
 				if withServices {
-					services.LaunchServices()
+					services.LaunchServices("file", path.Join(constants.GMM2Dir, "notify_service.json"))
 				} else {
 					fmt.Println("Start MM2 without extra services")
 				}

@@ -5,7 +5,7 @@ import (
 	"mm2_client/constants"
 )
 
-func LaunchServices() {
+func LaunchPriceServices() {
 	glg.Info("Starting binance websocket service")
 	go StartBinanceWebsocketService()
 	glg.Info("Starting coingecko price service")
@@ -13,4 +13,16 @@ func LaunchServices() {
 	glg.Info("Starting coinpaprika price service")
 	go StartCoinpaprikaService()
 	constants.GPricesServicesRunning = true
+}
+
+func LaunchMessagesService() {
+	go StartNotifierMessagesService()
+	constants.GExtrasServicesRunning = true
+}
+
+func LaunchServices(kind string, target string) {
+	glg.Info("Launching price services")
+	LaunchPriceServices()
+	glg.Info("Launching extra services")
+	LaunchMessagesService()
 }

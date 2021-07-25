@@ -28,7 +28,7 @@ func startPriceService() js.Func {
 			_ = glg.Warn("Desktop cfg need to be loaded first before running the price service")
 			return nil
 		}
-		services.LaunchServices()
+		services.LaunchPriceServices()
 		return nil
 	})
 	return jsfunc

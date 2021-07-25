@@ -38,7 +38,7 @@ func StartPriceService(ctx *fasthttp.RequestCtx) {
 		}
 		if res {
 			_ = glg.Info("Launch price services")
-			services.LaunchServices()
+			services.LaunchPriceServices()
 			ctx.SetStatusCode(200)
 			ctx.SetBodyString("Price service launched")
 		} else {

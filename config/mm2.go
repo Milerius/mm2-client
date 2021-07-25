@@ -46,7 +46,7 @@ func NewMM2ConfigWasm(userpass string, passphrase string, extraArgs []string) st
 	mm2 := 1
 	cfg := &MM2Config{
 		MM2:         &mm2,
-		Gui:         "AtomicDEX Webassembly",
+		Gui:         "AtomicDEX Webassembly CLI",
 		Netid:       7777,
 		Passphrase:  passphrase,
 		RPCPassword: userpass,

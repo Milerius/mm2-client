@@ -19,6 +19,7 @@ require (
 	github.com/lunixbochs/vtclean v1.0.0 // indirect
 	github.com/manifoldco/promptui v0.8.0
 	github.com/milerius/go-binance/v2 v2.3.1-0.20210725081152-8a1f2c614470
+	github.com/nikoksr/notify v0.17.2 // indirect
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/schollz/progressbar/v3 v3.8.2
 	github.com/shurcooL/go v0.0.0-20200502201357-93f07166e636 // indirect
