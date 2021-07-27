@@ -46,6 +46,8 @@ github.com/Rhymen/go-whatsapp/examples/sendTextMessages v0.0.0-20190325075644-cc
 github.com/RocketChat/Rocket.Chat.Go.SDK v0.0.0-20210506200512-3b3352a919f0/go.mod h1:rjP7sIipbZcagro/6TCk6X0ZeFT2eyudH5+fve/cbBA=
 github.com/adshao/go-binance/v2 v2.3.0 h1:SZrqGZb71wnXzkl4hg2GT4tye78jo8b7wi97mMif5XQ=
 github.com/adshao/go-binance/v2 v2.3.0/go.mod h1:o+84WK3DQxq9vEKV9ncRcQi+J7RFCGhM27osbECZiJQ=
+github.com/adshao/go-binance/v2 v2.3.1 h1:HosM4CZuJOpVneqQ4NpXmHPYt+7nQezYxE0TJl2/S/U=
+github.com/adshao/go-binance/v2 v2.3.1/go.mod h1:m7xgo8a9C3b2F7qjt5jeY6ORZb5E0QTyU5vHxtDvUvQ=
 github.com/andybalholm/brotli v1.0.0/go.mod h1:loMXtMfwqflxFJPmdbJO0a3KNoPuLBgiu3qAvBg8x/Y=
 github.com/andybalholm/brotli v1.0.2/go.mod h1:loMXtMfwqflxFJPmdbJO0a3KNoPuLBgiu3qAvBg8x/Y=
 github.com/andybalholm/brotli v1.0.3 h1:fpcw+r1N1h0Poc1F/pHbW40cUm/lMEQslZtCkBQ0UnM=
