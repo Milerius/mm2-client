@@ -102,15 +102,20 @@ func updateOrderFromCfg(cfg SimplePairMarketMakerConf, makerOrder mm2_data_struc
 			glg.Get().EnableJSON().Info(resp)
 			glg.Get().DisableJSON()
 		} else {
-			glg.Warnf("err update_maker_order: %v", err)
+			glg.Warnf("rpc_err update_maker_order: %v", err)
+			cancelCurrentOrder(cfg, makerOrder)
 		}
 	} else {
-		cancelResp, cancelErr := mm2_tools_generics.CancelOrder(makerOrder.Uuid)
-		if cancelResp != nil {
-			glg.Warnf("Cancelled %s/%s order %s - reason: price elapsed > %.1f seconds", makerOrder.Base, makerOrder.Rel, makerOrder.Uuid, *cfg.PriceElapsedValidity)
-		} else {
-			glg.Warnf("Error when cancelling order: %v", cancelErr)
-		}
+		cancelCurrentOrder(cfg, makerOrder)
+	}
+}
+
+func cancelCurrentOrder(cfg SimplePairMarketMakerConf, makerOrder mm2_data_structure.MakerOrderContent) {
+	cancelResp, cancelErr := mm2_tools_generics.CancelOrder(makerOrder.Uuid)
+	if cancelResp != nil {
+		_ = glg.Warnf("Cancelled %s/%s order %s - reason: [price elapsed > %.1f seconds] or [rpc error]", makerOrder.Base, makerOrder.Rel, makerOrder.Uuid, *cfg.PriceElapsedValidity)
+	} else {
+		_ = glg.Warnf("Error when cancelling order: %v", cancelErr)
 	}
 }
 
@@ -212,6 +217,7 @@ func marketMakerProcess() {
 		}
 	} else {
 		glg.Errorf("err on my_orders: %v", err)
+		cancelPendingOrders()
 	}
 	wgUpdate.Wait()
 	glg.Info("Orders updated")
