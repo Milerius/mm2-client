@@ -89,24 +89,29 @@ func NewMarketMakerConfFromURL(targetURL string) bool {
 
 func updateOrderFromCfg(cfg SimplePairMarketMakerConf, makerOrder mm2_data_structure.MakerOrderContent) {
 	cexPrice, calculated, date, provider := services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
-	if elapsed := helpers.DateToTimeElapsed(date); elapsed < *cfg.PriceElapsedValidity {
-		price := helpers.BigFloatMultiply(cexPrice, cfg.Spread, 8)
-		if cfg.CheckLastBidirectionalTradeThreshHold == nil || (cfg.CheckLastBidirectionalTradeThreshHold != nil && *cfg.CheckLastBidirectionalTradeThreshHold) {
-			price = recalculateThreshHoldFromLastTrade(cfg, price)
-		}
-		resp, err := mm2_tools_generics.UpdateMakerOrder(makerOrder.Uuid, &price, nil, &cfg.Max, &makerOrder.MinBaseVol, &cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
-		if resp != nil {
-			glg.Infof("Successfully updated %s/%s order %s - cex_price: [%s] - new_price: [%s] - calculated: [%t] elapsed_since_price: %f seconds - provider: %s",
-				makerOrder.Base, makerOrder.Rel, makerOrder.Uuid,
-				cexPrice, price, calculated, elapsed, provider)
-			glg.Get().EnableJSON().Info(resp)
-			glg.Get().DisableJSON()
+	if provider == "unknown" {
+		glg.Warnf("Not able to retrieve a correct price for the pair: [%s:%s] - skipping", cfg.Base, cfg.Rel)
+		cancelCurrentOrder(cfg, makerOrder)
+	} else {
+		if elapsed := helpers.DateToTimeElapsed(date); elapsed < *cfg.PriceElapsedValidity {
+			price := helpers.BigFloatMultiply(cexPrice, cfg.Spread, 8)
+			if cfg.CheckLastBidirectionalTradeThreshHold == nil || (cfg.CheckLastBidirectionalTradeThreshHold != nil && *cfg.CheckLastBidirectionalTradeThreshHold) {
+				price = recalculateThreshHoldFromLastTrade(cfg, price)
+			}
+			resp, err := mm2_tools_generics.UpdateMakerOrder(makerOrder.Uuid, &price, nil, &cfg.Max, &makerOrder.MinBaseVol, &cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
+			if resp != nil {
+				glg.Infof("Successfully updated %s/%s order %s - cex_price: [%s] - new_price: [%s] - calculated: [%t] elapsed_since_price: %f seconds - provider: %s",
+					makerOrder.Base, makerOrder.Rel, makerOrder.Uuid,
+					cexPrice, price, calculated, elapsed, provider)
+				glg.Get().EnableJSON().Info(resp)
+				glg.Get().DisableJSON()
+			} else {
+				glg.Warnf("rpc_err update_maker_order: %v", err)
+				cancelCurrentOrder(cfg, makerOrder)
+			}
 		} else {
-			glg.Warnf("rpc_err update_maker_order: %v", err)
 			cancelCurrentOrder(cfg, makerOrder)
 		}
-	} else {
-		cancelCurrentOrder(cfg, makerOrder)
 	}
 }
 
@@ -127,7 +132,7 @@ func recalculateThreshHoldFromLastTrade(cfg SimplePairMarketMakerConf, price str
 			lastTrade := resp.Result.Swaps[0]
 			lastTradePrice := helpers.BigFloatDivide(lastTrade.MyInfo.MyAmount, lastTrade.MyInfo.OtherAmount, 8)
 			if helpers.AsFloat(lastTradePrice) > helpers.AsFloat(price) {
-				calculatedPrice = helpers.BigFloatMultiply(calculatedPrice, cfg.Spread, 8)
+				calculatedPrice = helpers.BigFloatMultiply(lastTradePrice, cfg.Spread, 8)
 				glg.Infof("price: %s is less than %s, readjusting using last trade price - result: %s", price, lastTradePrice, calculatedPrice)
 			} else {
 				glg.Infof("price calculated by the CEX rates [%s] is above the last precedent trade price of [%s] - skipping threshold readjustment for pair: [%s/%s]", price, lastTradePrice, cfg.Rel, cfg.Base)
@@ -143,54 +148,58 @@ func recalculateThreshHoldFromLastTrade(cfg SimplePairMarketMakerConf, price str
 
 func createOrderFromConf(cfg SimplePairMarketMakerConf) {
 	cexPrice, calculated, date, provider := services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
-	if elapsed := helpers.DateToTimeElapsed(date); elapsed < *cfg.PriceElapsedValidity {
-		if helpers.AsFloat(cexPrice) > 0 {
-			price := helpers.BigFloatMultiply(cexPrice, cfg.Spread, 8)
-			if cfg.CheckLastBidirectionalTradeThreshHold == nil || (cfg.CheckLastBidirectionalTradeThreshHold != nil && *cfg.CheckLastBidirectionalTradeThreshHold) {
-				price = recalculateThreshHoldFromLastTrade(cfg, price)
-			}
-			var max *bool = nil
-			var volume *string = nil
-			var minVolume *string = nil
-			respBalance, err := mm2_tools_generics.MyBalance(cfg.Base)
-			if respBalance != nil {
-				if helpers.AsFloat(respBalance.Balance) <= 0 {
-					glg.Warnf("Skip placing order for %s/%s reason: balance is 0.", cfg.Base, cfg.Rel)
-				} else {
-					var maxBalance = respBalance.Balance
-					if cfg.Max {
-						max = helpers.BoolAddr(true)
+	if provider == "unknown" {
+		glg.Warnf("Not able to retrieve a correct price for the pair: [%s:%s] - skipping", cfg.Base, cfg.Rel)
+	} else {
+		if elapsed := helpers.DateToTimeElapsed(date); elapsed < *cfg.PriceElapsedValidity {
+			if helpers.AsFloat(cexPrice) > 0 {
+				price := helpers.BigFloatMultiply(cexPrice, cfg.Spread, 8)
+				if cfg.CheckLastBidirectionalTradeThreshHold == nil || (cfg.CheckLastBidirectionalTradeThreshHold != nil && *cfg.CheckLastBidirectionalTradeThreshHold) {
+					price = recalculateThreshHoldFromLastTrade(cfg, price)
+				}
+				var max *bool = nil
+				var volume *string = nil
+				var minVolume *string = nil
+				respBalance, err := mm2_tools_generics.MyBalance(cfg.Base)
+				if respBalance != nil {
+					if helpers.AsFloat(respBalance.Balance) <= 0 {
+						glg.Warnf("Skip placing order for %s/%s reason: balance is 0.", cfg.Base, cfg.Rel)
 					} else {
-						vol := helpers.BigFloatMultiply(maxBalance, cfg.BalancePercent, 8)
-						volume = &vol
-					}
-					if cfg.MinVolume != nil {
+						var maxBalance = respBalance.Balance
 						if cfg.Max {
-							minVol := helpers.BigFloatMultiply(maxBalance, *cfg.MinVolume, 8)
-							minVolume = &minVol
-						} else if !cfg.Max && volume != nil {
-							minVol := helpers.BigFloatMultiply(*volume, *cfg.MinVolume, 8)
-							minVolume = &minVol
+							max = helpers.BoolAddr(true)
+						} else {
+							vol := helpers.BigFloatMultiply(maxBalance, cfg.BalancePercent, 8)
+							volume = &vol
+						}
+						if cfg.MinVolume != nil {
+							if cfg.Max {
+								minVol := helpers.BigFloatMultiply(maxBalance, *cfg.MinVolume, 8)
+								minVolume = &minVol
+							} else if !cfg.Max && volume != nil {
+								minVol := helpers.BigFloatMultiply(*volume, *cfg.MinVolume, 8)
+								minVolume = &minVol
+							}
+						}
+						resp, setPriceErr := mm2_tools_generics.SetPrice(cfg.Base, cfg.Rel, price, volume, max, true, minVolume,
+							&cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
+						if resp != nil {
+							glg.Infof("Successfully placed the %s/%s order: %s, calculated: %t cex_price: [%s] - our price: [%s] - elapsed since last price update: %f seconds - provider: %s", cfg.Base, cfg.Rel, resp.Result.Uuid, calculated, cexPrice, price, elapsed, provider)
+							glg.Get().EnableJSON().Info(resp)
+							glg.Get().DisableJSON()
+						} else {
+							glg.Errorf("Couldn't place the order for %s/%s: %v", cfg.Base, cfg.Rel, setPriceErr)
 						}
 					}
-					resp, setPriceErr := mm2_tools_generics.SetPrice(cfg.Base, cfg.Rel, price, volume, max, true, minVolume,
-						&cfg.BaseConfs, &cfg.BaseNota, &cfg.RelConfs, &cfg.RelNota)
-					if resp != nil {
-						glg.Infof("Successfully placed the %s/%s order: %s, calculated: %t cex_price: [%s] - our price: [%s] - elapsed since last price update: %f seconds - provider: %s", cfg.Base, cfg.Rel, resp.Result.Uuid, calculated, cexPrice, price, elapsed, provider)
-						glg.Get().EnableJSON().Info(resp)
-						glg.Get().DisableJSON()
-					} else {
-						glg.Errorf("Couldn't place the order for %s/%s: %v", cfg.Base, cfg.Rel, setPriceErr)
-					}
+				} else {
+					glg.Errorf("Cannot retrieve balance of %s - skipping: %v", cfg.Base, err)
 				}
 			} else {
-				glg.Errorf("Cannot retrieve balance of %s - skipping: %v", cfg.Base, err)
+				glg.Warnf("Price is 0 for %s/%s - skipping order creation", cfg.Base, cfg.Rel)
 			}
 		} else {
-			glg.Warnf("Price is 0 for %s/%s - skipping order creation", cfg.Base, cfg.Rel)
+			glg.Warnf("Last Price update for %s/%s is too far %f seconds, need to be under %.1f seconds to create an order", cfg.Base, cfg.Rel, helpers.DateToTimeElapsed(date), *cfg.PriceElapsedValidity)
 		}
-	} else {
-		glg.Warnf("Last Price update for %s/%s is too far %f seconds, need to be under %.1f seconds to create an order", cfg.Base, cfg.Rel, helpers.DateToTimeElapsed(date), *cfg.PriceElapsedValidity)
 	}
 }
 
