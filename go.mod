@@ -10,21 +10,18 @@ require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/fasthttp/router v1.4.1
 	github.com/fatih/color v1.12.0 // indirect
-	github.com/gorilla/websocket v1.4.2 // indirect
 	github.com/juju/ansiterm v0.0.0-20210706145210-9283cdf370b5 // indirect
 	github.com/klauspost/compress v1.13.1 // indirect
 	github.com/kpango/glg v1.6.4
-	github.com/kr/text v0.2.0 // indirect
 	github.com/kyokomi/emoji/v2 v2.2.8
 	github.com/lunixbochs/vtclean v1.0.0 // indirect
 	github.com/manifoldco/promptui v0.8.0
 	github.com/milerius/go-binance/v2 v2.3.1-0.20210725081152-8a1f2c614470
-	github.com/nikoksr/notify v0.17.2 // indirect
+	github.com/nikoksr/notify v0.17.2
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/schollz/progressbar/v3 v3.8.2
-	github.com/shurcooL/go v0.0.0-20200502201357-93f07166e636 // indirect
-	github.com/shurcooL/go-goon v0.0.0-20210110234559-7585751d9a17 // indirect
 	github.com/soniah/evaler v2.2.0+incompatible
+	github.com/stretchr/testify v1.7.0
 	github.com/tyler-smith/go-bip39 v1.1.0
 	github.com/ulule/limiter/v3 v3.8.0
 	github.com/valyala/fasthttp v1.28.0

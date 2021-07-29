@@ -20,6 +20,14 @@ type MyRecentSwapsRequest struct {
 	ToTimestamp   int64  `json:"to_timestamp,omitempty"`
 }
 
+type MyInfoContents struct {
+	MyAmount    string `json:"my_amount"`
+	MyCoin      string `json:"my_coin"`
+	OtherAmount string `json:"other_amount"`
+	OtherCoin   string `json:"other_coin"`
+	StartedAt   int64  `json:"started_at"`
+}
+
 type SwapContent struct {
 	ErrorEvents []string `json:"error_events"`
 	Events      []struct {
@@ -62,36 +70,32 @@ type SwapContent struct {
 		} `json:"event"`
 		Timestamp int64 `json:"timestamp"`
 	} `json:"events"`
-	MyInfo struct {
-		MyAmount    string `json:"my_amount"`
-		MyCoin      string `json:"my_coin"`
-		OtherAmount string `json:"other_amount"`
-		OtherCoin   string `json:"other_coin"`
-		StartedAt   int64  `json:"started_at"`
-	} `json:"my_info"`
-	MakerCoin     string   `json:"maker_coin"`
-	MakerAmount   string   `json:"maker_amount"`
-	TakerCoin     string   `json:"taker_coin"`
-	TakerAmount   string   `json:"taker_amount"`
-	Gui           string   `json:"gui,omitempty"`
-	MmVersion     string   `json:"mm_version"`
-	SuccessEvents []string `json:"success_events"`
-	Type          string   `json:"type"`
-	Uuid          string   `json:"uuid"`
-	MyOrderUuid   string   `json:"my_order_uuid,omitempty"`
+	MyInfo        MyInfoContents `json:"my_info"`
+	MakerCoin     string         `json:"maker_coin"`
+	MakerAmount   string         `json:"maker_amount"`
+	TakerCoin     string         `json:"taker_coin"`
+	TakerAmount   string         `json:"taker_amount"`
+	Gui           string         `json:"gui,omitempty"`
+	MmVersion     string         `json:"mm_version"`
+	SuccessEvents []string       `json:"success_events"`
+	Type          string         `json:"type"`
+	Uuid          string         `json:"uuid"`
+	MyOrderUuid   string         `json:"my_order_uuid,omitempty"`
+}
+
+type MyRecentSwapsAnswerSuccess struct {
+	FromUuid     string        `json:"from_uuid"`
+	Limit        int           `json:"limit"`
+	Skipped      int           `json:"skipped"`
+	Total        int           `json:"total"`
+	FoundRecords int           `json:"found_records"`
+	PageNumber   int           `json:"page_number,omitempty"`
+	TotalPages   int           `json:"total_pages"`
+	Swaps        []SwapContent `json:"swaps"`
 }
 
 type MyRecentSwapsAnswer struct {
-	Result struct {
-		FromUuid     string        `json:"from_uuid"`
-		Limit        int           `json:"limit"`
-		Skipped      int           `json:"skipped"`
-		Total        int           `json:"total"`
-		FoundRecords int           `json:"found_records"`
-		PageNumber   int           `json:"page_number,omitempty"`
-		TotalPages   int           `json:"total_pages"`
-		Swaps        []SwapContent `json:"swaps"`
-	} `json:"result"`
+	Result MyRecentSwapsAnswerSuccess `json:"result"`
 }
 
 func (receiver *SwapContent) getLastStatus() string {

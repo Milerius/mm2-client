@@ -126,22 +126,43 @@ func cancelCurrentOrder(cfg SimplePairMarketMakerConf, makerOrder mm2_data_struc
 
 func recalculateThreshHoldFromLastTrade(cfg SimplePairMarketMakerConf, price string) string {
 	calculatedPrice := price
-	//! Let's say we are trading QTUM/KMD we check KMD/QTUM to see if it's existing before
-	if resp, err := mm2_tools_generics.MyRecentSwaps("1", "1", cfg.Rel, cfg.Base, "", ""); resp != nil {
-		if len(resp.Result.Swaps) > 0 {
-			lastTrade := resp.Result.Swaps[0]
-			lastTradePrice := helpers.BigFloatDivide(lastTrade.MyInfo.MyAmount, lastTrade.MyInfo.OtherAmount, 8)
-			if helpers.AsFloat(lastTradePrice) > helpers.AsFloat(price) {
-				calculatedPrice = helpers.BigFloatMultiply(lastTradePrice, cfg.Spread, 8)
-				glg.Infof("price: %s is less than %s, readjusting using last trade price - result: %s", price, lastTradePrice, calculatedPrice)
-			} else {
-				glg.Infof("price calculated by the CEX rates [%s] is above the last precedent trade price of [%s] - skipping threshold readjustment for pair: [%s/%s]", price, lastTradePrice, cfg.Rel, cfg.Base)
-			}
-		} else {
-			glg.Infof("No last trade for reversed pair [%s/%s] - keeping calculated price: %s", cfg.Rel, cfg.Base, price)
-		}
+	//! Let's say we are trading FIRO/KMD we check KMD/FIRO to see if it's existing before
+	relResp, err := mm2_tools_generics.MyRecentSwaps("1000", "1", cfg.Rel, cfg.Base, "", "")
+	baseResp, err := mm2_tools_generics.MyRecentSwaps("1000", "1", cfg.Base, cfg.Rel, "", "")
+	if relResp != nil && baseResp != nil {
+		calculatedPrice = calculateThreshHoldFromLastTrades(cfg, price, baseResp, relResp, calculatedPrice)
 	} else {
 		glg.Errorf("err my recentswaps: %v", err)
+	}
+	return calculatedPrice
+}
+
+func calculateThreshHoldFromLastTrades(cfg SimplePairMarketMakerConf, price string, baseResp *mm2_data_structure.MyRecentSwapsAnswer, relResp *mm2_data_structure.MyRecentSwapsAnswer, calculatedPrice string) string {
+	nbDiffSwaps := len(relResp.Result.Swaps) - len(baseResp.Result.Swaps)
+	if nbDiffSwaps == 1 {
+		calculatedPrice = calculateThreshHoldFromSingleLastTrade(cfg, price, relResp, calculatedPrice, "by_base")
+	} else if nbDiffSwaps == -1 {
+		calculatedPrice = calculateThreshHoldFromSingleLastTrade(cfg, price, baseResp, calculatedPrice, "by_rel")
+	} else if nbDiffSwaps == 0 {
+		glg.Infof("No last trade for reversed pair [%s/%s] - keeping calculated price: %s", cfg.Rel, cfg.Base, price)
+	}
+	return calculatedPrice
+}
+
+func calculateThreshHoldFromSingleLastTrade(cfg SimplePairMarketMakerConf, price string, resp *mm2_data_structure.MyRecentSwapsAnswer, calculatedPrice string, kind string) string {
+	lastTrade := resp.Result.Swaps[0]
+	lastTradePrice := ""
+	switch kind {
+	case "by_base":
+		lastTradePrice = helpers.BigFloatDivide(lastTrade.MyInfo.MyAmount, lastTrade.MyInfo.OtherAmount, 8)
+	case "by_rel":
+		lastTradePrice = helpers.BigFloatDivide(lastTrade.MyInfo.OtherAmount, lastTrade.MyInfo.MyAmount, 8)
+	}
+	if helpers.AsFloat(lastTradePrice) > helpers.AsFloat(price) {
+		calculatedPrice = helpers.BigFloatMultiply(lastTradePrice, cfg.Spread, 8)
+		glg.Infof("price: %s is less than %s, readjusting using last trade price - result: %s", price, lastTradePrice, calculatedPrice)
+	} else {
+		glg.Infof("price calculated by the CEX rates [%s] is above the last precedent trade price of [%s] - skipping threshold readjustment for pair: [%s/%s]", price, lastTradePrice, cfg.Rel, cfg.Base)
 	}
 	return calculatedPrice
 }
