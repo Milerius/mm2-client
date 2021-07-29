@@ -1,13 +1,5 @@
 package mm2_data_structure
 
-import (
-	"fmt"
-	"github.com/olekukonko/tablewriter"
-	"mm2_client/helpers"
-	"os"
-	"sync"
-)
-
 type MakerMatchesContent struct {
 	Connect struct {
 		DestPubKey     string `json:"dest_pub_key"`
@@ -124,62 +116,4 @@ type MyOrdersAnswer struct {
 		MakerOrders map[string]MakerOrderContent `json:"maker_orders,omitempty"`
 		TakerOrders map[string]TakerOrderContent `json:"taker_orders,omitempty"`
 	} `json:"result"`
-}
-
-func renderTableTakerOrders(takerOrders map[string]TakerOrderContent) {
-	var data [][]string
-
-	for _, cur := range takerOrders {
-		var out = []string{cur.Request.Base, cur.Request.BaseAmount, "", cur.Request.RelAmount, cur.Request.Rel, cur.Request.Uuid}
-		data = append(data, out)
-	}
-
-	if len(data) > 0 {
-		table := tablewriter.NewWriter(os.Stdout)
-		table.SetAutoWrapText(false)
-		table.SetHeader([]string{"Base", "Base Amount", "", "Rel Amount", "Rel", "UUID"})
-		table.SetFooter([]string{"", "", "", "", "", "TakerOrders"})
-		table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
-		table.SetCenterSeparator("|")
-		table.AppendBulk(data) // Add Bulk Data
-		table.Render()
-		fmt.Println()
-	} else {
-		//goland:noinspection GoPrintFunctions
-		fmt.Println("No taker orders\n")
-	}
-}
-
-func renderTableMakerOrders(withFees bool, makerOrders map[string]MakerOrderContent) {
-	var data = make([][]string, len(makerOrders))
-
-	i := 0
-	var wg sync.WaitGroup
-	for _, cur := range makerOrders {
-		wg.Add(1)
-		go func(wg *sync.WaitGroup, idx int) {
-			defer wg.Done()
-			data[idx] = []string{cur.Base, cur.MinBaseVol, cur.AvailableAmount, "", helpers.BigFloatMultiply(cur.AvailableAmount, cur.Price, 8), cur.Rel, cur.Price, cur.Uuid}
-		}(&wg, i)
-		i += 1
-	}
-	wg.Wait()
-
-	if len(data) > 0 {
-		table := tablewriter.NewWriter(os.Stdout)
-		table.SetAutoWrapText(false)
-		table.SetHeader([]string{"Base", "Base MinVol", "Base Amount", "", "Rel Amount", "Rel", "Price", "UUID"})
-		table.SetFooter([]string{"", "", "", "", "", "", "", "MakerOrders"})
-		table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
-		table.SetCenterSeparator("|")
-		table.AppendBulk(data) // Add Bulk Data
-		table.Render()
-	} else {
-		fmt.Println("No maker orders")
-	}
-}
-
-func (answer *MyOrdersAnswer) ToTable(withFees bool) {
-	renderTableTakerOrders(answer.Result.TakerOrders)
-	renderTableMakerOrders(withFees, answer.Result.MakerOrders)
 }
