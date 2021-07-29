@@ -47,10 +47,10 @@ func renderTableMakerOrders(withFees bool, makerOrders map[string]mm2_data_struc
 		curData := []string{cur.Base, cur.MinBaseVol, cur.AvailableAmount, "", helpers.BigFloatMultiply(cur.AvailableAmount, cur.Price, 8), cur.Rel, cur.Price, cur.Uuid}
 		data[i] = curData
 		wg.Add(1)
-		go func(wg *sync.WaitGroup, idx int) {
+		go func(wg *sync.WaitGroup, idx int, curObj mm2_data_structure.MakerOrderContent) {
 			defer wg.Done()
 			if withFees {
-				resp, err := TradePreimage(cur.Base, cur.Rel, cur.Price, "setprice", "max")
+				resp, err := TradePreimage(curObj.Base, curObj.Rel, curObj.Price, "setprice", "max")
 				if resp != nil {
 					if resp.Result != nil {
 						fees := ""
@@ -72,8 +72,8 @@ func renderTableMakerOrders(withFees bool, makerOrders map[string]mm2_data_struc
 					fmt.Println(err)
 				}
 			}
-		}(&wg, i)
-		i += 1
+		}(&wg, i, cur)
+		i++
 	}
 	wg.Wait()
 
