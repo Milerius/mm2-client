@@ -60,7 +60,7 @@ func renderTableMakerOrders(withFees bool, makerOrders map[string]mm2_data_struc
 								if val != "0" {
 									val = helpers.BigFloatMultiply(curFee.Amount, val, 2)
 								}
-								fees += curFee.Amount + " " + curFee.Coin + " (" + val + " $)" + "\n"
+								fees += curFee.Amount + " " + curFee.Coin + " (" + val + " $)" + " "
 							}
 						}
 						fees = strings.TrimSuffix(fees, "\n")
@@ -91,6 +91,10 @@ func renderTableMakerOrders(withFees bool, makerOrders map[string]mm2_data_struc
 		}
 		table.SetFooter(footer)
 		table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
+		table.SetAutoWrapText(true)
+		table.SetAutoFormatHeaders(true)
+		table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
+		table.SetAlignment(tablewriter.ALIGN_LEFT)
 		table.SetCenterSeparator("|")
 		table.AppendBulk(data) // Add Bulk Data
 		table.Render()
