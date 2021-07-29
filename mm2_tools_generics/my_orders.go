@@ -10,6 +10,7 @@ import (
 	"mm2_client/services"
 	"os"
 	"runtime"
+	"strings"
 	"sync"
 )
 
@@ -49,7 +50,7 @@ func renderTableMakerOrders(withFees bool, makerOrders map[string]mm2_data_struc
 		go func(wg *sync.WaitGroup, idx int) {
 			defer wg.Done()
 			if withFees {
-				resp, err := TradePreimage(cur.Base, cur.Rel, cur.Price, "setprice", cur.AvailableAmount)
+				resp, err := TradePreimage(cur.Base, cur.Rel, cur.Price, "setprice", "max")
 				if resp != nil {
 					if resp.Result != nil {
 						fees := ""
@@ -59,9 +60,10 @@ func renderTableMakerOrders(withFees bool, makerOrders map[string]mm2_data_struc
 								if val != "0" {
 									val = helpers.BigFloatMultiply(curFee.Amount, val, 2)
 								}
-								fees += curFee.Amount + " " + curFee.Coin + " (" + val + " $)"
+								fees += curFee.Amount + " " + curFee.Coin + " (" + val + " $)" + "\n"
 							}
 						}
+						fees = strings.TrimSuffix(fees, "\n")
 						data[idx] = append(data[idx], fees)
 					} else {
 						fmt.Println(resp.Error)
