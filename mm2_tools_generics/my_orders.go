@@ -60,7 +60,7 @@ func renderTableMakerOrders(withFees bool, makerOrders map[string]mm2_data_struc
 								if val != "0" {
 									val = helpers.BigFloatMultiply(curFee.Amount, val, 2)
 								}
-								fees += curFee.Amount + " " + curFee.Coin + " (" + val + " $)" + " "
+								fees += curFee.Amount + " " + curFee.Coin + " (" + val + " $)" + "\n"
 							}
 						}
 						fees = strings.TrimSuffix(fees, "\n")
