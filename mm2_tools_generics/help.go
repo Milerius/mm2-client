@@ -48,7 +48,7 @@ const (
 	GetBinanceSupportedPairsHelp   = `Show supported pair for binance auto market maker bot`
 	GetBinanceSupportedPairsUsage  = `get_binance_supported_pairs`
 	MyOrdersHelp                   = `Show active orders`
-	MyOrdersUsage                  = `my_orders`
+	MyOrdersUsage                  = `my_orders (true)`
 	CancelOrderHelp                = `Cancel the given order`
 	CancelOrderUsage               = `cancel_order <uuid>`
 	SetPriceHelp                   = `The setprice method places an order on the orderbook, and it relies as a maker`

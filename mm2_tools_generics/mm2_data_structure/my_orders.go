@@ -5,6 +5,7 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"mm2_client/helpers"
 	"os"
+	"sync"
 )
 
 type MakerMatchesContent struct {
@@ -149,13 +150,20 @@ func renderTableTakerOrders(takerOrders map[string]TakerOrderContent) {
 	}
 }
 
-func renderTableMakerOrders(makerOrders map[string]MakerOrderContent) {
-	var data [][]string
+func renderTableMakerOrders(withFees bool, makerOrders map[string]MakerOrderContent) {
+	var data = make([][]string, len(makerOrders))
 
+	i := 0
+	var wg sync.WaitGroup
 	for _, cur := range makerOrders {
-		var out = []string{cur.Base, cur.MinBaseVol, cur.AvailableAmount, "", helpers.BigFloatMultiply(cur.AvailableAmount, cur.Price, 8), cur.Rel, cur.Price, cur.Uuid}
-		data = append(data, out)
+		wg.Add(1)
+		go func(wg *sync.WaitGroup, idx int) {
+			defer wg.Done()
+			data[idx] = []string{cur.Base, cur.MinBaseVol, cur.AvailableAmount, "", helpers.BigFloatMultiply(cur.AvailableAmount, cur.Price, 8), cur.Rel, cur.Price, cur.Uuid}
+		}(&wg, i)
+		i += 1
 	}
+	wg.Wait()
 
 	if len(data) > 0 {
 		table := tablewriter.NewWriter(os.Stdout)
@@ -171,7 +179,7 @@ func renderTableMakerOrders(makerOrders map[string]MakerOrderContent) {
 	}
 }
 
-func (answer *MyOrdersAnswer) ToTable() {
+func (answer *MyOrdersAnswer) ToTable(withFees bool) {
 	renderTableTakerOrders(answer.Result.TakerOrders)
-	renderTableMakerOrders(answer.Result.MakerOrders)
+	renderTableMakerOrders(withFees, answer.Result.MakerOrders)
 }

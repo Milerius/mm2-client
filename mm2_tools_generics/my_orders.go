@@ -16,9 +16,9 @@ func MyOrders() (*mm2_data_structure.MyOrdersAnswer, error) {
 	}
 }
 
-func MyOrdersCLI() {
+func MyOrdersCLI(withFees bool) {
 	if resp, err := MyOrders(); resp != nil {
-		resp.ToTable()
+		resp.ToTable(withFees)
 	} else {
 		fmt.Println(err)
 	}

@@ -103,7 +103,16 @@ func Executor(fullCommand string) {
 			mm2_tools_generics.MyTxHistoryCLI(command[1], command[2:])
 		}
 	case "my_orders":
-		mm2_tools_generics.MyOrdersCLI()
+		if len(command) == 1 {
+			mm2_tools_generics.MyOrdersCLI(false)
+		} else if len(command) == 2 {
+			val, err := strconv.ParseBool(command[1])
+			if err == nil {
+				mm2_tools_generics.MyOrdersCLI(val)
+			} else {
+				fmt.Println(err)
+			}
+		}
 	case "my_recent_swaps":
 		if len(command) == 1 {
 			mm2_tools_generics.MyRecentSwapsCLI("50", "1", []string{})
