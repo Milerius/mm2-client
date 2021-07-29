@@ -140,8 +140,10 @@ func recalculateThreshHoldFromLastTrade(cfg SimplePairMarketMakerConf, price str
 func calculateThreshHoldFromLastTrades(cfg SimplePairMarketMakerConf, price string, baseResp *mm2_data_structure.MyRecentSwapsAnswer, relResp *mm2_data_structure.MyRecentSwapsAnswer, calculatedPrice string) string {
 	nbDiffSwaps := len(relResp.Result.Swaps) - len(baseResp.Result.Swaps)
 	if nbDiffSwaps == 1 {
+		glg.Infof("There is one more swaps in [%s/%s] against [%s/%s] using last [%s/%s] trade to calculate price", cfg.Rel, cfg.Base, cfg.Base, cfg.Rel, cfg.Rel, cfg.Base)
 		calculatedPrice = calculateThreshHoldFromSingleLastTrade(cfg, price, relResp, calculatedPrice, "by_base")
 	} else if nbDiffSwaps == -1 {
+		glg.Infof("There is one more swaps in [%s/%s] against [%s/%s] using last [%s/%s] trade to calculate price", cfg.Base, cfg.Rel, cfg.Rel, cfg.Base, cfg.Base, cfg.Rel)
 		calculatedPrice = calculateThreshHoldFromSingleLastTrade(cfg, price, baseResp, calculatedPrice, "by_rel")
 	} else if nbDiffSwaps == 0 {
 		glg.Infof("No last trade for reversed pair [%s/%s] - keeping calculated price: %s", cfg.Rel, cfg.Base, price)
@@ -160,7 +162,7 @@ func calculateThreshHoldFromSingleLastTrade(cfg SimplePairMarketMakerConf, price
 	}
 	if helpers.AsFloat(lastTradePrice) > helpers.AsFloat(price) {
 		calculatedPrice = helpers.BigFloatMultiply(lastTradePrice, cfg.Spread, 8)
-		glg.Infof("price: %s is less than %s, readjusting using last trade price - result: %s", price, lastTradePrice, calculatedPrice)
+		glg.Infof("[%s/%s]: price: %s is less than %s, readjusting using last trade price - result: %s", cfg.Base, cfg.Rel, price, lastTradePrice, calculatedPrice)
 	} else {
 		glg.Infof("price calculated by the CEX rates [%s] is above the last precedent trade price of [%s] - skipping threshold readjustment for pair: [%s/%s]", price, lastTradePrice, cfg.Rel, cfg.Base)
 	}
