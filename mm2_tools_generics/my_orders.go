@@ -43,10 +43,11 @@ func renderTableMakerOrders(withFees bool, makerOrders map[string]mm2_data_struc
 	i := 0
 	var wg sync.WaitGroup
 	for _, cur := range makerOrders {
+		curData := []string{cur.Base, cur.MinBaseVol, cur.AvailableAmount, "", helpers.BigFloatMultiply(cur.AvailableAmount, cur.Price, 8), cur.Rel, cur.Price, cur.Uuid}
+		data[i] = curData
 		wg.Add(1)
 		go func(wg *sync.WaitGroup, idx int) {
 			defer wg.Done()
-			data[idx] = []string{cur.Base, cur.MinBaseVol, cur.AvailableAmount, "", helpers.BigFloatMultiply(cur.AvailableAmount, cur.Price, 8), cur.Rel, cur.Price, cur.Uuid}
 			if withFees {
 				resp, err := TradePreimage(cur.Base, cur.Rel, cur.Price, "setprice", cur.AvailableAmount)
 				if resp != nil {
