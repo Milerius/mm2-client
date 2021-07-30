@@ -163,6 +163,10 @@ func calculateThreshHoldFromMultipleTrade(cfg SimplePairMarketMakerConf, price s
 	lastAverageTradingPrice := price
 	averagePrice := "0"
 	for _, cur := range resp.Result.Swaps[0:nbDiffSwaps] {
+		if cur.GetLastStatus() != "Finished" {
+			_ = glg.Warnf("swap %s not finished or contains error - skipping for calculating average - status: %s", cur.Uuid, cur.GetLastStatus())
+			continue
+		}
 		switch kind {
 		case "by_base":
 			lastAverageTradingPrice = helpers.BigFloatDivide(cur.MyInfo.MyAmount, cur.MyInfo.OtherAmount, 8)
@@ -170,6 +174,10 @@ func calculateThreshHoldFromMultipleTrade(cfg SimplePairMarketMakerConf, price s
 			lastAverageTradingPrice = helpers.BigFloatDivide(cur.MyInfo.OtherAmount, cur.MyInfo.MyAmount, 8)
 		}
 		averagePrice = helpers.BigFloatAdd(averagePrice, lastAverageTradingPrice, 8)
+	}
+	if averagePrice == "0" {
+		glg.Info("Unable to get average from last multiple trade - stick with calculated price")
+		return calculatedPrice
 	}
 	lastAverageTradingPrice = helpers.BigFloatDivide(averagePrice, strconv.Itoa(nbDiffSwaps), 8)
 	if helpers.AsFloat(lastAverageTradingPrice) > helpers.AsFloat(price) {
@@ -183,6 +191,10 @@ func calculateThreshHoldFromMultipleTrade(cfg SimplePairMarketMakerConf, price s
 
 func calculateThreshHoldFromSingleLastTrade(cfg SimplePairMarketMakerConf, price string, resp *mm2_data_structure.MyRecentSwapsAnswer, calculatedPrice string, kind string) string {
 	lastTrade := resp.Result.Swaps[0]
+	if lastTrade.GetLastStatus() != "Finished" {
+		_ = glg.Infof("Last trade status %s is not Finished or Contains error, keeping calculated price - status: %s", lastTrade.Uuid, lastTrade.GetLastStatus())
+		return calculatedPrice
+	}
 	lastTradePrice := ""
 	switch kind {
 	case "by_base":

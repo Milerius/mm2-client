@@ -5,6 +5,7 @@ import (
 	"mm2_client/helpers"
 	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"testing"
+	"time"
 )
 
 type Content struct {
@@ -16,8 +17,12 @@ func NewSwapContentInfos(values []Content) *mm2_data_structure.MyRecentSwapsAnsw
 	resp := &mm2_data_structure.MyRecentSwapsAnswer{}
 	respSuccess := mm2_data_structure.MyRecentSwapsAnswerSuccess{}
 	var swaps []mm2_data_structure.SwapContent
+	var events []mm2_data_structure.SwapEventContent
+	eventData := mm2_data_structure.SwapEvent{Type: "Finished"}
+	curEvent := mm2_data_structure.SwapEventContent{Timestamp: time.Now().Unix(), Event: eventData}
+	events = append(events, curEvent)
 	for _, cur := range values {
-		swaps = append(swaps, mm2_data_structure.SwapContent{MyInfo: mm2_data_structure.MyInfoContents{MyAmount: cur.BaseAmount, OtherAmount: cur.RelAmount}})
+		swaps = append(swaps, mm2_data_structure.SwapContent{MyInfo: mm2_data_structure.MyInfoContents{MyAmount: cur.BaseAmount, OtherAmount: cur.RelAmount}, Events: events})
 	}
 	respSuccess.Swaps = swaps
 	resp.Result = respSuccess

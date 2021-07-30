@@ -28,59 +28,65 @@ type MyInfoContents struct {
 	StartedAt   int64  `json:"started_at"`
 }
 
+type SwapEventData struct {
+	Error                     string `json:"error,omitempty"`
+	LockDuration              int    `json:"lock_duration,omitempty"`
+	MakerAmount               string `json:"maker_amount,omitempty"`
+	MakerCoin                 string `json:"maker_coin,omitempty"`
+	MakerCoinStartBlock       int    `json:"maker_coin_start_block,omitempty"`
+	MakerPaymentConfirmations int    `json:"maker_payment_confirmations,omitempty"`
+	MakerPaymentRequiresNota  bool   `json:"maker_payment_requires_nota,omitempty"`
+	MakerPaymentLock          int    `json:"maker_payment_lock,omitempty"`
+	MyPersistentPub           string `json:"my_persistent_pub,omitempty"`
+	Secret                    string `json:"secret,omitempty"`
+	StartedAt                 int    `json:"started_at,omitempty"`
+	Taker                     string `json:"taker,omitempty"`
+	TakerAmount               string `json:"taker_amount,omitempty"`
+	TakerCoin                 string `json:"taker_coin,omitempty"`
+	TakerCoinStartBlock       int    `json:"taker_coin_start_block,omitempty"`
+	TakerPaymentConfirmations int    `json:"taker_payment_confirmations,omitempty"`
+	TakerPaymentRequiresNota  bool   `json:"taker_payment_requires_nota,omitempty"`
+	Uuid                      string `json:"uuid,omitempty"`
+	TakerPaymentLocktime      int    `json:"taker_payment_locktime,omitempty"`
+	TakerPubkey               string `json:"taker_pubkey,omitempty"`
+	TxHash                    string `json:"tx_hash,omitempty"`
+	TxHex                     string `json:"tx_hex,omitempty"`
+	Maker                     string `json:"maker,omitempty"`
+	MakerPaymentWait          int    `json:"maker_payment_wait,omitempty"`
+	TakerPaymentLock          int    `json:"taker_payment_lock,omitempty"`
+	MakerPaymentLocktime      int    `json:"maker_payment_locktime,omitempty"`
+	MakerPubkey               string `json:"maker_pubkey,omitempty"`
+	SecretHash                string `json:"secret_hash,omitempty"`
+	Transaction               struct {
+		TxHash string `json:"tx_hash"`
+		TxHex  string `json:"tx_hex"`
+	} `json:"transaction,omitempty"`
+}
+
+type SwapEvent struct {
+	Data SwapEventData `json:"data,omitempty"`
+	Type string        `json:"type"`
+}
+
+type SwapEventContent struct {
+	Event     SwapEvent `json:"event"`
+	Timestamp int64     `json:"timestamp"`
+}
+
 type SwapContent struct {
-	ErrorEvents []string `json:"error_events"`
-	Events      []struct {
-		Event struct {
-			Data struct {
-				Error                     string `json:"error,omitempty"`
-				LockDuration              int    `json:"lock_duration,omitempty"`
-				MakerAmount               string `json:"maker_amount,omitempty"`
-				MakerCoin                 string `json:"maker_coin,omitempty"`
-				MakerCoinStartBlock       int    `json:"maker_coin_start_block,omitempty"`
-				MakerPaymentConfirmations int    `json:"maker_payment_confirmations,omitempty"`
-				MakerPaymentRequiresNota  bool   `json:"maker_payment_requires_nota,omitempty"`
-				MakerPaymentLock          int    `json:"maker_payment_lock,omitempty"`
-				MyPersistentPub           string `json:"my_persistent_pub,omitempty"`
-				Secret                    string `json:"secret,omitempty"`
-				StartedAt                 int    `json:"started_at,omitempty"`
-				Taker                     string `json:"taker,omitempty"`
-				TakerAmount               string `json:"taker_amount,omitempty"`
-				TakerCoin                 string `json:"taker_coin,omitempty"`
-				TakerCoinStartBlock       int    `json:"taker_coin_start_block,omitempty"`
-				TakerPaymentConfirmations int    `json:"taker_payment_confirmations,omitempty"`
-				TakerPaymentRequiresNota  bool   `json:"taker_payment_requires_nota,omitempty"`
-				Uuid                      string `json:"uuid,omitempty"`
-				TakerPaymentLocktime      int    `json:"taker_payment_locktime,omitempty"`
-				TakerPubkey               string `json:"taker_pubkey,omitempty"`
-				TxHash                    string `json:"tx_hash,omitempty"`
-				TxHex                     string `json:"tx_hex,omitempty"`
-				Maker                     string `json:"maker,omitempty"`
-				MakerPaymentWait          int    `json:"maker_payment_wait,omitempty"`
-				TakerPaymentLock          int    `json:"taker_payment_lock,omitempty"`
-				MakerPaymentLocktime      int    `json:"maker_payment_locktime,omitempty"`
-				MakerPubkey               string `json:"maker_pubkey,omitempty"`
-				SecretHash                string `json:"secret_hash,omitempty"`
-				Transaction               struct {
-					TxHash string `json:"tx_hash"`
-					TxHex  string `json:"tx_hex"`
-				} `json:"transaction,omitempty"`
-			} `json:"data,omitempty"`
-			Type string `json:"type"`
-		} `json:"event"`
-		Timestamp int64 `json:"timestamp"`
-	} `json:"events"`
-	MyInfo        MyInfoContents `json:"my_info"`
-	MakerCoin     string         `json:"maker_coin"`
-	MakerAmount   string         `json:"maker_amount"`
-	TakerCoin     string         `json:"taker_coin"`
-	TakerAmount   string         `json:"taker_amount"`
-	Gui           string         `json:"gui,omitempty"`
-	MmVersion     string         `json:"mm_version"`
-	SuccessEvents []string       `json:"success_events"`
-	Type          string         `json:"type"`
-	Uuid          string         `json:"uuid"`
-	MyOrderUuid   string         `json:"my_order_uuid,omitempty"`
+	ErrorEvents   []string           `json:"error_events"`
+	Events        []SwapEventContent `json:"events"`
+	MyInfo        MyInfoContents     `json:"my_info"`
+	MakerCoin     string             `json:"maker_coin"`
+	MakerAmount   string             `json:"maker_amount"`
+	TakerCoin     string             `json:"taker_coin"`
+	TakerAmount   string             `json:"taker_amount"`
+	Gui           string             `json:"gui,omitempty"`
+	MmVersion     string             `json:"mm_version"`
+	SuccessEvents []string           `json:"success_events"`
+	Type          string             `json:"type"`
+	Uuid          string             `json:"uuid"`
+	MyOrderUuid   string             `json:"my_order_uuid,omitempty"`
 }
 
 type MyRecentSwapsAnswerSuccess struct {
@@ -98,16 +104,20 @@ type MyRecentSwapsAnswer struct {
 	Result MyRecentSwapsAnswerSuccess `json:"result"`
 }
 
-func (receiver *SwapContent) getLastStatus() string {
-	lastEvent := receiver.Events[len(receiver.Events)-1].Event.Type
-	if lastEvent == "Finished" {
-		for _, cur := range receiver.Events {
-			if cur.Event.Data.Error != "" {
-				lastEvent = cur.Event.Type
+func (receiver *SwapContent) GetLastStatus() string {
+	if len(receiver.Events) > 0 {
+		lastEvent := receiver.Events[len(receiver.Events)-1].Event.Type
+		if lastEvent == "Finished" {
+			for _, cur := range receiver.Events {
+				if cur.Event.Data.Error != "" {
+					lastEvent = cur.Event.Type
+				}
 			}
 		}
+		return lastEvent
+	} else {
+		return "Unknown"
 	}
-	return lastEvent
 }
 
 func NewMyRecentSwapsRequest(limit string, pageNumber string, baseCoin string, relCoin string, from string, to string) *MyRecentSwapsRequest {
@@ -151,7 +161,7 @@ func (answer *MyRecentSwapsAnswer) ToTable() {
 	for _, cur := range answer.Result.Swaps {
 		out := []string{cur.MyInfo.MyCoin, helpers.ResizeNb(cur.MyInfo.MyAmount), "",
 			helpers.ResizeNb(cur.MyInfo.OtherAmount), cur.MyInfo.OtherCoin,
-			helpers.GetDateFromTimestamp(cur.MyInfo.StartedAt, true), cur.Uuid, cur.getLastStatus()}
+			helpers.GetDateFromTimestamp(cur.MyInfo.StartedAt, true), cur.Uuid, cur.GetLastStatus()}
 		data = append(data, out)
 	}
 
