@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/Delta456/box-cli-maker v1.3.2
-	github.com/adshao/go-binance/v2 v2.3.0
+	github.com/adshao/go-binance/v2 v2.3.2-0.20210729164709-86f8bfbbaee6 // indirect
 	github.com/andybalholm/brotli v1.0.3 // indirect
 	github.com/c-bata/go-prompt v0.2.6
 	github.com/dustin/go-humanize v1.0.0
@@ -16,7 +16,6 @@ require (
 	github.com/kyokomi/emoji/v2 v2.2.8
 	github.com/lunixbochs/vtclean v1.0.0 // indirect
 	github.com/manifoldco/promptui v0.8.0
-	github.com/milerius/go-binance/v2 v2.3.1-0.20210725081152-8a1f2c614470
 	github.com/nikoksr/notify v0.17.2
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/schollz/progressbar/v3 v3.8.2

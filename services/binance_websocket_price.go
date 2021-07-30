@@ -5,12 +5,10 @@ import (
 	"github.com/adshao/go-binance/v2"
 	"github.com/kpango/glg"
 	"github.com/kyokomi/emoji/v2"
-	milerius_binance "github.com/milerius/go-binance/v2"
 	"github.com/olekukonko/tablewriter"
 	"mm2_client/config"
 	"mm2_client/helpers"
 	"os"
-	"runtime"
 	"strings"
 	"sync"
 	"time"
@@ -79,11 +77,7 @@ func StartBinanceWebsocketService() {
 	//fmt.Printf("%v\n", out)
 	for _, cur := range out {
 		//fmt.Println(cur)
-		if runtime.GOARCH != "wasm" {
-			go startWebsocketForSymbol(cur)
-		} else {
-			go startWebsocketForSymbolWasm(cur)
-		}
+		go startWebsocketForSymbol(cur)
 	}
 }
 
@@ -100,31 +94,6 @@ func startWebsocketForSymbol(cur string) {
 	}
 	//fmt.Printf("Starting websocket service for symbol: %s\n", cur)
 	doneC, _, err := binance.WsMarketStatServe(cur, wsMarketHandler, errHandler)
-	if err != nil {
-		glg.Errorf("err: %s", err)
-		time.Sleep(1 * time.Second)
-		if strings.Contains(err.Error(), "EOF") {
-			go startWebsocketForSymbol(cur)
-		}
-	}
-	<-doneC
-	glg.Infof("Disconnected, reconnecting now")
-	go startWebsocketForSymbol(cur)
-}
-
-func startWebsocketForSymbolWasm(cur string) {
-	wsMarketHandler := func(event *milerius_binance.WsMarketStatEvent) {
-		//fmt.Println(event.Time)
-		BinancePriceRegistry.Store(event.Symbol, []string{event.LastPrice, helpers.GetDateFromTimestampStandard(event.Time * int64(time.Millisecond)), event.PriceChangePercent})
-	}
-	errHandler := func(err error) {
-		glg.Errorf("err: %s", err)
-		if strings.Contains(err.Error(), "websocket: close 1006 (abnormal closure)") {
-			go startWebsocketForSymbol(cur)
-		}
-	}
-	//fmt.Printf("Starting websocket service for symbol: %s\n", cur)
-	doneC, _, err := milerius_binance.WsMarketStatServe(cur, wsMarketHandler, errHandler)
 	if err != nil {
 		glg.Errorf("err: %s", err)
 		time.Sleep(1 * time.Second)
