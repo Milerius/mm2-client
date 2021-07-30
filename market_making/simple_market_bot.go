@@ -151,26 +151,26 @@ func calculateThreshHoldFromLastTrades(cfg SimplePairMarketMakerConf, price stri
 		calculatedPrice = calculateThreshHoldFromSingleLastTrade(cfg, price, relResp, calculatedPrice, "by_base")
 	} else if nbDiffSwaps > 1 {
 		glg.Infof("There is more swaps in [%s/%s] against [%s/%s] using last [%s/%s] average trading price to calculate price", cfg.Rel, cfg.Base, cfg.Base, cfg.Rel, cfg.Rel, cfg.Base)
-		calculatedPrice = calculateThreshHoldFromMultipleTrade(cfg, price, relResp, calculatedPrice, "by_base", nbDiffSwaps)
+		calculatedPrice = calculateThreshHoldFromMultipleTrade(cfg, price, relResp, calculatedPrice, "by_base", nbDiffSwaps, true)
 	} else if nbDiffSwaps == -1 {
 		glg.Infof("There is one more swaps in [%s/%s] against [%s/%s] using last [%s/%s] trade to calculate price", cfg.Base, cfg.Rel, cfg.Rel, cfg.Base, cfg.Base, cfg.Rel)
 		calculatedPrice = calculateThreshHoldFromSingleLastTrade(cfg, price, baseResp, calculatedPrice, "by_rel")
 	} else if nbDiffSwaps < -1 {
 		glg.Infof("There is more swaps in [%s/%s] against [%s/%s] using last [%s/%s] average trading price to calculate price", cfg.Base, cfg.Rel, cfg.Rel, cfg.Base, cfg.Base, cfg.Rel)
-		calculatedPrice = calculateThreshHoldFromMultipleTrade(cfg, price, baseResp, calculatedPrice, "by_rel", int(math.Abs(float64(nbDiffSwaps))))
+		calculatedPrice = calculateThreshHoldFromMultipleTrade(cfg, price, baseResp, calculatedPrice, "by_rel", int(math.Abs(float64(nbDiffSwaps))), true)
 	} else if nbDiffSwaps == 0 && !havePrecedentSwaps {
 		glg.Infof("No last trade for reversed pair [%s/%s] - keeping calculated price: %s", cfg.Rel, cfg.Base, price)
 	} else if havePrecedentSwaps && heavierBase {
 		glg.Infof("There is no swaps diff for pair for [%s/%s] but there is history and heavier volume from [%s/%s] using history with most average", cfg.Base, cfg.Rel, cfg.Base, cfg.Rel)
-		calculateThreshHoldFromMultipleTrade(cfg, price, baseResp, calculatedPrice, "by_rel", len(baseResp.Result.Swaps))
+		calculatedPrice = calculateThreshHoldFromMultipleTrade(cfg, price, baseResp, calculatedPrice, "by_rel", len(baseResp.Result.Swaps), false)
 	} else if havePrecedentSwaps && !heavierBase {
 		glg.Infof("There is no swaps diff for pair for [%s/%s] but there is history and heavier volume from [%s/%s] using history with most average", cfg.Rel, cfg.Base, cfg.Rel, cfg.Base)
-		calculateThreshHoldFromMultipleTrade(cfg, price, relResp, calculatedPrice, "by_base", len(relResp.Result.Swaps))
+		calculatedPrice = calculateThreshHoldFromMultipleTrade(cfg, price, relResp, calculatedPrice, "by_base", len(relResp.Result.Swaps), false)
 	}
 	return calculatedPrice
 }
 
-func calculateThreshHoldFromMultipleTrade(cfg SimplePairMarketMakerConf, price string, resp *mm2_data_structure.MyRecentSwapsAnswer, calculatedPrice string, kind string, nbDiffSwaps int) string {
+func calculateThreshHoldFromMultipleTrade(cfg SimplePairMarketMakerConf, price string, resp *mm2_data_structure.MyRecentSwapsAnswer, calculatedPrice string, kind string, nbDiffSwaps int, withSpread bool) string {
 	lastAverageTradingPrice := price
 	averagePrice := "0"
 	for _, cur := range resp.Result.Swaps[0:nbDiffSwaps] {
@@ -192,8 +192,13 @@ func calculateThreshHoldFromMultipleTrade(cfg SimplePairMarketMakerConf, price s
 	}
 	lastAverageTradingPrice = helpers.BigFloatDivide(averagePrice, strconv.Itoa(nbDiffSwaps), 8)
 	if helpers.AsFloat(lastAverageTradingPrice) > helpers.AsFloat(price) {
-		calculatedPrice = helpers.BigFloatMultiply(lastAverageTradingPrice, cfg.Spread, 8)
-		glg.Infof("[%s/%s]: price: %s is less than average trading price (%d swaps): %s, readjusting using last average trade price + spread - result: %s", cfg.Base, cfg.Rel, price, nbDiffSwaps, lastAverageTradingPrice, calculatedPrice)
+		if withSpread {
+			calculatedPrice = helpers.BigFloatMultiply(lastAverageTradingPrice, cfg.Spread, 8)
+			glg.Infof("[%s/%s]: price: %s is less than average trading price (%d swaps): %s, readjusting using last average trade price + spread - result: %s", cfg.Base, cfg.Rel, price, nbDiffSwaps, lastAverageTradingPrice, calculatedPrice)
+		} else {
+			calculatedPrice = lastAverageTradingPrice
+			glg.Infof("[%s/%s]: price: %s is less than average trading price (%d swaps): %s, readjusting using last average trade price - result: %s", cfg.Base, cfg.Rel, price, nbDiffSwaps, lastAverageTradingPrice, calculatedPrice)
+		}
 	} else {
 		glg.Infof("price calculated by the CEX rates [%s] is above the last average trading price (%d swaps) [%s] - skipping threshold readjustment for pair: [%s/%s]", price, nbDiffSwaps, lastAverageTradingPrice, cfg.Rel, cfg.Base)
 	}
