@@ -141,6 +141,11 @@ func recalculateThreshHoldFromLastTrade(cfg SimplePairMarketMakerConf, price str
 
 func calculateThreshHoldFromLastTrades(cfg SimplePairMarketMakerConf, price string, baseResp *mm2_data_structure.MyRecentSwapsAnswer, relResp *mm2_data_structure.MyRecentSwapsAnswer, calculatedPrice string) string {
 	nbDiffSwaps := len(relResp.Result.Swaps) - len(baseResp.Result.Swaps)
+	havePrecedentSwaps := len(relResp.Result.Swaps) > 0 && len(baseResp.Result.Swaps) > 0
+	heavierBase := false
+	if havePrecedentSwaps {
+		heavierBase = helpers.AsFloat(baseResp.Result.Swaps[0].MakerAmount) > helpers.AsFloat(relResp.Result.Swaps[0].MakerAmount)
+	}
 	if nbDiffSwaps == 1 {
 		glg.Infof("There is one more swaps in [%s/%s] against [%s/%s] using last [%s/%s] trade to calculate price", cfg.Rel, cfg.Base, cfg.Base, cfg.Rel, cfg.Rel, cfg.Base)
 		calculatedPrice = calculateThreshHoldFromSingleLastTrade(cfg, price, relResp, calculatedPrice, "by_base")
@@ -153,8 +158,14 @@ func calculateThreshHoldFromLastTrades(cfg SimplePairMarketMakerConf, price stri
 	} else if nbDiffSwaps < -1 {
 		glg.Infof("There is more swaps in [%s/%s] against [%s/%s] using last [%s/%s] average trading price to calculate price", cfg.Base, cfg.Rel, cfg.Rel, cfg.Base, cfg.Base, cfg.Rel)
 		calculatedPrice = calculateThreshHoldFromMultipleTrade(cfg, price, baseResp, calculatedPrice, "by_rel", int(math.Abs(float64(nbDiffSwaps))))
-	} else if nbDiffSwaps == 0 {
+	} else if nbDiffSwaps == 0 && !havePrecedentSwaps {
 		glg.Infof("No last trade for reversed pair [%s/%s] - keeping calculated price: %s", cfg.Rel, cfg.Base, price)
+	} else if havePrecedentSwaps && heavierBase {
+		glg.Infof("There is no swaps diff for pair for [%s/%s] but there is history and heavier volume from [%s/%s] using history with most average", cfg.Base, cfg.Rel, cfg.Base, cfg.Rel)
+		calculateThreshHoldFromMultipleTrade(cfg, price, baseResp, calculatedPrice, "by_rel", len(baseResp.Result.Swaps))
+	} else if havePrecedentSwaps && !heavierBase {
+		glg.Infof("There is no swaps diff for pair for [%s/%s] but there is history and heavier volume from [%s/%s] using history with most average", cfg.Rel, cfg.Base, cfg.Rel, cfg.Base)
+		calculateThreshHoldFromMultipleTrade(cfg, price, relResp, calculatedPrice, "by_base", len(relResp.Result.Swaps))
 	}
 	return calculatedPrice
 }
