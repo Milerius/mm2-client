@@ -91,7 +91,7 @@ func NewMarketMakerConfFromURL(targetURL string) bool {
 
 func updateOrderFromCfg(cfg SimplePairMarketMakerConf, makerOrder mm2_data_structure.MakerOrderContent) {
 	cexPrice, calculated, date, provider := services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
-	if provider == "unknown" {
+	if provider == "unknown" || helpers.AsFloat(cexPrice) <= 0 {
 		glg.Warnf("Not able to retrieve a correct price for the pair: [%s:%s] - skipping", cfg.Base, cfg.Rel)
 		cancelCurrentOrder(cfg, makerOrder)
 	} else {
@@ -213,7 +213,7 @@ func calculateThreshHoldFromSingleLastTrade(cfg SimplePairMarketMakerConf, price
 
 func createOrderFromConf(cfg SimplePairMarketMakerConf) {
 	cexPrice, calculated, date, provider := services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
-	if provider == "unknown" {
+	if provider == "unknown" || helpers.AsFloat(cexPrice) <= 0 {
 		glg.Warnf("Not able to retrieve a correct price for the pair: [%s:%s] - skipping", cfg.Base, cfg.Rel)
 	} else {
 		if elapsed := helpers.DateToTimeElapsed(date); elapsed < *cfg.PriceElapsedValidity {
