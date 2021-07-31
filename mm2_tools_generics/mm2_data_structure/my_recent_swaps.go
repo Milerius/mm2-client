@@ -120,6 +120,11 @@ func (receiver *SwapContent) GetLastStatus() string {
 	}
 }
 
+func (receiver *SwapContent) ToMessage() string {
+	str := fmt.Sprintf("%s: %s (%s) vs %s (%s), status: %s", receiver.Uuid, receiver.MyInfo.MyCoin, receiver.MyInfo.MyAmount, receiver.MyInfo.OtherCoin, receiver.MyInfo.OtherAmount, receiver.GetLastStatus())
+	return str
+}
+
 func NewMyRecentSwapsRequest(limit string, pageNumber string, baseCoin string, relCoin string, from string, to string) *MyRecentSwapsRequest {
 	genReq := NewGenericRequest("my_recent_swaps")
 	limitNb, err := strconv.Atoi(limit)
@@ -178,4 +183,12 @@ func (answer *MyRecentSwapsAnswer) ToTable() {
 	table.SetCenterSeparator("|")
 	table.AppendBulk(data) // Add Bulk Data
 	table.Render()
+}
+
+func (answer *MyRecentSwapsAnswer) ToMap() map[string]SwapContent {
+	out := make(map[string]SwapContent)
+	for _, cur := range answer.Result.Swaps {
+		out[cur.Uuid] = cur
+	}
+	return out
 }

@@ -33,11 +33,14 @@ func loadNotifierCFG(kind string, target string) {
 
 func SendMessage(subject string, message string) {
 	if constants.GNotifyCfgLoaded {
-		_ = gNotifier.Send(
+		err := gNotifier.Send(
 			context.Background(),
 			subject,
 			message,
 		)
+		if err != nil {
+			glg.Errorf("err when sending message: %v", err)
+		}
 	} else {
 		_ = glg.Warn("You try to send a message to the notify service, but the configuration is not loaded - skipping")
 	}

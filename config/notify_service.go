@@ -13,7 +13,8 @@ type TelegramApiConfig struct {
 }
 
 type NotifierConfig struct {
-	Telegram *TelegramApiConfig `json:"telegram"`
+	Telegram              *TelegramApiConfig `json:"telegram"`
+	MyRecentSwapsNotifier *bool              `json:"my_recent_swaps_notifier"`
 }
 
 var GNotifyCFG *NotifierConfig = nil

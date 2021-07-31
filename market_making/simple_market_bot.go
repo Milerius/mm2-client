@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	"math"
+	"mm2_client/config"
 	"mm2_client/constants"
 	"mm2_client/external_services"
 	"mm2_client/helpers"
@@ -351,6 +352,9 @@ func StopSimpleMarketMakerBotService() error {
 		go func() {
 			gQuitMarketMakerBot <- struct{}{}
 		}()
+		if config.GNotifyCFG != nil && config.GNotifyCFG.MyRecentSwapsNotifier != nil && *config.GNotifyCFG.MyRecentSwapsNotifier {
+			stopRecentSwapsUpdate()
+		}
 		return nil
 	} else {
 		fmt.Println("Simple market maker is still shutting down or not running")
@@ -390,6 +394,9 @@ func StartSimpleMarketMakerBot(target string, targetType string) error {
 				constants.GSimpleMarketMakerBotRunning = true
 				gQuitMarketMakerBot = make(chan struct{})
 				go startSimpleMarketMakerBotService()
+				if config.GNotifyCFG != nil && config.GNotifyCFG.MyRecentSwapsNotifier != nil && *config.GNotifyCFG.MyRecentSwapsNotifier {
+					go bootstrapRecentSwapsUpdate()
+				}
 				return nil
 			} else {
 				fmt.Println("Couldn't start simple market maker without valid conf")
