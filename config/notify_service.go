@@ -38,3 +38,15 @@ func ParseNotifyCfgFromFile(path string) bool {
 	}
 	return false
 }
+
+func ParseNotifyCfgFromString(cfg string) bool {
+	if constants.GNotifyCfgLoaded {
+		return true
+	}
+	_ = json.Unmarshal([]byte(cfg), &GNotifyCFG)
+	if GNotifyCFG != nil {
+		constants.GNotifyCfgLoaded = true
+		return true
+	}
+	return false
+}

@@ -17,7 +17,6 @@ func LaunchPriceServices() {
 
 func LaunchMessagesService(kind string, target string) {
 	go StartNotifierMessagesService(kind, target)
-	constants.GExtrasServicesRunning = true
 }
 
 func LaunchServices(kind string, target string) {
