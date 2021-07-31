@@ -9,10 +9,10 @@ import (
 	"io/ioutil"
 	"math"
 	"mm2_client/constants"
+	"mm2_client/external_services"
 	"mm2_client/helpers"
 	"mm2_client/mm2_tools_generics"
 	"mm2_client/mm2_tools_generics/mm2_data_structure"
-	"mm2_client/services"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -90,7 +90,7 @@ func NewMarketMakerConfFromURL(targetURL string) bool {
 }
 
 func updateOrderFromCfg(cfg SimplePairMarketMakerConf, makerOrder mm2_data_structure.MakerOrderContent) {
-	cexPrice, calculated, date, provider := services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
+	cexPrice, calculated, date, provider := external_services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
 	if provider == "unknown" || helpers.AsFloat(cexPrice) <= 0 {
 		glg.Warnf("Not able to retrieve a correct price for the pair: [%s:%s] - skipping", cfg.Base, cfg.Rel)
 		cancelCurrentOrder(cfg, makerOrder)
@@ -222,7 +222,7 @@ func calculateThreshHoldFromSingleLastTrade(cfg SimplePairMarketMakerConf, price
 }
 
 func createOrderFromConf(cfg SimplePairMarketMakerConf) {
-	cexPrice, calculated, date, provider := services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
+	cexPrice, calculated, date, provider := external_services.RetrieveCEXRatesFromPair(cfg.Base, cfg.Rel)
 	if provider == "unknown" || helpers.AsFloat(cexPrice) <= 0 {
 		glg.Warnf("Not able to retrieve a correct price for the pair: [%s:%s] - skipping", cfg.Base, cfg.Rel)
 	} else {

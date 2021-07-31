@@ -1,4 +1,4 @@
-package services
+package external_services
 
 func RetrieveUSDValIfSupported(coin string) (string, string, string) {
 	//! Binance

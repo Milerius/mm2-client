@@ -9,10 +9,10 @@ import (
 	"mm2_client/config"
 	"mm2_client/config/wasm_storage"
 	"mm2_client/constants"
+	"mm2_client/external_services"
 	"mm2_client/mm2_tools_generics"
 	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"mm2_client/mm2_tools_generics/mm2_wasm_request"
-	"mm2_client/services"
 	"net/url"
 	"strconv"
 	"syscall/js"
@@ -28,7 +28,7 @@ func startPriceService() js.Func {
 			_ = glg.Warn("Desktop cfg need to be loaded first before running the price service")
 			return nil
 		}
-		services.LaunchPriceServices()
+		external_services.LaunchPriceServices()
 		return nil
 	})
 	return jsfunc

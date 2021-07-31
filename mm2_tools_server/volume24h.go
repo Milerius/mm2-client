@@ -7,7 +7,7 @@ import (
 	"github.com/kpango/glg"
 	"github.com/valyala/fasthttp"
 	"mm2_client/constants"
-	"mm2_client/services"
+	"mm2_client/external_services"
 	"net/http"
 )
 
@@ -53,7 +53,7 @@ func Volume24h(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	val, date, provider := services.RetrieveVolume24h(out.Coin)
+	val, date, provider := external_services.RetrieveVolume24h(out.Coin)
 	resp := &Volume24hAnswer{Coin: out.Coin, Volume24h: val, LastUpdated: date, Provider: provider}
 	ctx.SetStatusCode(200)
 	ctx.SetBodyString(resp.ToJson())

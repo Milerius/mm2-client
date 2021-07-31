@@ -7,7 +7,7 @@ import (
 	"github.com/valyala/fasthttp"
 	"mm2_client/config"
 	"mm2_client/constants"
-	"mm2_client/services"
+	"mm2_client/external_services"
 	"net/http"
 )
 
@@ -44,7 +44,7 @@ func StartNotifyService(ctx *fasthttp.RequestCtx) {
 		}
 		if res {
 			_ = glg.Info("Launch message service")
-			services.LaunchMessagesService(kind, target)
+			external_services.LaunchMessagesService(kind, target)
 			ctx.SetStatusCode(200)
 			ctx.SetBodyString("Message service launched")
 		} else {

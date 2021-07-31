@@ -3,11 +3,11 @@ package mm2_tools_generics
 import (
 	"fmt"
 	"github.com/olekukonko/tablewriter"
+	"mm2_client/external_services"
 	"mm2_client/helpers"
 	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"mm2_client/mm2_tools_generics/mm2_http_request"
 	"mm2_client/mm2_tools_generics/mm2_wasm_request"
-	"mm2_client/services"
 	"os"
 	"runtime"
 	"strings"
@@ -56,7 +56,7 @@ func renderTableMakerOrders(withFees bool, makerOrders map[string]mm2_data_struc
 						fees := ""
 						for _, curFee := range resp.Result.TotalFees {
 							if helpers.AsFloat(curFee.RequiredBalance) > 0 {
-								val, _, _ := services.RetrieveUSDValIfSupported(curFee.Coin)
+								val, _, _ := external_services.RetrieveUSDValIfSupported(curFee.Coin)
 								if val != "0" {
 									val = helpers.BigFloatMultiply(curFee.Amount, val, 2)
 								}

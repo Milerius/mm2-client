@@ -8,9 +8,9 @@ import (
 	"github.com/valyala/fasthttp"
 	"mm2_client/config"
 	"mm2_client/constants"
+	"mm2_client/external_services"
 	"mm2_client/market_making"
 	"mm2_client/mm2_tools_generics/mm2_data_structure"
-	"mm2_client/services"
 	"net/http"
 )
 
@@ -36,7 +36,7 @@ func internalStartSimpleMarketMakerBot(out *StartSimpleMarketMakerRequest) error
 			//! Launch price services
 			if !constants.GPricesServicesRunning {
 				_ = glg.Info("Launch price services")
-				services.LaunchPriceServices()
+				external_services.LaunchPriceServices()
 			}
 
 			//! Launch the bot afterwards

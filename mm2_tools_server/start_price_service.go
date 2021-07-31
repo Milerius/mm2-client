@@ -7,7 +7,7 @@ import (
 	"github.com/valyala/fasthttp"
 	"mm2_client/config"
 	"mm2_client/constants"
-	"mm2_client/services"
+	"mm2_client/external_services"
 	"net/http"
 )
 
@@ -38,7 +38,7 @@ func StartPriceService(ctx *fasthttp.RequestCtx) {
 		}
 		if res {
 			_ = glg.Info("Launch price services")
-			services.LaunchPriceServices()
+			external_services.LaunchPriceServices()
 			ctx.SetStatusCode(200)
 			ctx.SetBodyString("Price service launched")
 		} else {

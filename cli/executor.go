@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"mm2_client/config"
 	"mm2_client/constants"
+	"mm2_client/external_services"
 	"mm2_client/market_making"
 	"mm2_client/mm2_tools_generics"
 	"mm2_client/mm2_tools_generics/mm2_data_structure"
-	"mm2_client/services"
 	"os"
 	"strconv"
 	"strings"
@@ -154,9 +154,9 @@ func Executor(fullCommand string) {
 		}
 	case "get_binance_supported_pairs":
 		if len(command) == 1 {
-			services.GetBinanceSupportedPairs("")
+			external_services.GetBinanceSupportedPairs("")
 		} else if len(command) == 2 {
-			services.GetBinanceSupportedPairs(command[1])
+			external_services.GetBinanceSupportedPairs(command[1])
 		}
 	case "start_simple_market_maker_bot":
 		_ = market_making.StartSimpleMarketMakerBot(constants.GSimpleMarketMakerConf, "file")

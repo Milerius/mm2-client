@@ -7,7 +7,7 @@ import (
 	"github.com/kpango/glg"
 	"github.com/valyala/fasthttp"
 	"mm2_client/constants"
-	"mm2_client/services"
+	"mm2_client/external_services"
 	"net/http"
 )
 
@@ -57,7 +57,7 @@ func CexRates(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
-	val, calculated, date, provider := services.RetrieveCEXRatesFromPair(out.Base, out.Rel)
+	val, calculated, date, provider := external_services.RetrieveCEXRatesFromPair(out.Base, out.Rel)
 	resp := &CexRateAnswer{Base: out.Base, Rel: out.Rel, LastPrice: val, LastUpdated: date, Provider: provider, Calculated: calculated}
 	ctx.SetStatusCode(200)
 	ctx.SetBodyString(resp.ToJson())

@@ -3,7 +3,7 @@ package mm2_tools_generics
 import (
 	"encoding/json"
 	"fmt"
-	"mm2_client/services"
+	"mm2_client/external_services"
 )
 
 type TickerInfosRequest struct {
@@ -42,10 +42,10 @@ func (req *TickerInfosAnswer) ToWeb() map[string]interface{} {
 }
 
 func GetTickerInfos(ticker string) *TickerInfosAnswer {
-	val, date, provider := services.RetrieveUSDValIfSupported(ticker)
-	volume, _, volumeProvider := services.RetrieveVolume24h(ticker)
-	sparkline7d, _, sparklineProvider := services.RetrieveSparkline7D(ticker)
-	change24h, _, change24hProvider := services.RetrievePercentChange24h(ticker)
+	val, date, provider := external_services.RetrieveUSDValIfSupported(ticker)
+	volume, _, volumeProvider := external_services.RetrieveVolume24h(ticker)
+	sparkline7d, _, sparklineProvider := external_services.RetrieveSparkline7D(ticker)
+	change24h, _, change24hProvider := external_services.RetrievePercentChange24h(ticker)
 	return &TickerInfosAnswer{Ticker: ticker, LastPrice: val, LastUpdated: date,
 		PriceProvider: provider,
 		Volume24h:     volume, VolumeProvider: volumeProvider,

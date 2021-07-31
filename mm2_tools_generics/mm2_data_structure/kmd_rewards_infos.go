@@ -3,8 +3,8 @@ package mm2_data_structure
 import (
 	"github.com/kyokomi/emoji/v2"
 	"github.com/olekukonko/tablewriter"
+	"mm2_client/external_services"
 	"mm2_client/helpers"
-	"mm2_client/services"
 	"os"
 )
 
@@ -28,7 +28,7 @@ func (answer *KMDRewardsInfoAnswer) ToTable() bool {
 	var data [][]string
 	valid := false
 	for _, cur := range answer.Result {
-		val, _, provider := services.RetrieveUSDValIfSupported("KMD")
+		val, _, provider := external_services.RetrieveUSDValIfSupported("KMD")
 		accrued := cur.AccruedRewards.Accrued
 		if val != "0" {
 			if cur.AccruedRewards.Accrued != "" {

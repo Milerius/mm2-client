@@ -1,4 +1,4 @@
-package services
+package external_services
 
 import (
 	"github.com/kpango/glg"
