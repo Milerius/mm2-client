@@ -146,25 +146,19 @@ func calculateThreshHoldFromLastTrades(cfg SimplePairMarketMakerConf, price stri
 	if havePrecedentSwaps {
 		heavierBase = helpers.AsFloat(baseResp.Result.Swaps[0].MakerAmount) > helpers.AsFloat(relResp.Result.Swaps[0].MakerAmount)
 	}
-	if nbDiffSwaps == 1 {
-		glg.Infof("There is one more swaps in [%s/%s] against [%s/%s] using last [%s/%s] trade to calculate price", cfg.Rel, cfg.Base, cfg.Base, cfg.Rel, cfg.Rel, cfg.Base)
-		calculatedPrice = calculateThreshHoldFromSingleLastTrade(cfg, price, relResp, calculatedPrice, "by_base")
-	} else if nbDiffSwaps > 1 {
-		glg.Infof("There is more swaps in [%s/%s] against [%s/%s] using last [%s/%s] average trading price to calculate price", cfg.Rel, cfg.Base, cfg.Base, cfg.Rel, cfg.Rel, cfg.Base)
+	if nbDiffSwaps >= 1 {
+		_ = glg.Infof("There is more swaps in [%s/%s] against [%s/%s] using last [%s/%s] average trading price to calculate price", cfg.Rel, cfg.Base, cfg.Base, cfg.Rel, cfg.Rel, cfg.Base)
 		calculatedPrice = calculateThreshHoldFromMultipleTrade(cfg, price, relResp, calculatedPrice, "by_base", nbDiffSwaps, true)
-	} else if nbDiffSwaps == -1 {
-		glg.Infof("There is one more swaps in [%s/%s] against [%s/%s] using last [%s/%s] trade to calculate price", cfg.Base, cfg.Rel, cfg.Rel, cfg.Base, cfg.Base, cfg.Rel)
-		calculatedPrice = calculateThreshHoldFromSingleLastTrade(cfg, price, baseResp, calculatedPrice, "by_rel")
-	} else if nbDiffSwaps < -1 {
-		glg.Infof("There is more swaps in [%s/%s] against [%s/%s] using last [%s/%s] average trading price to calculate price", cfg.Base, cfg.Rel, cfg.Rel, cfg.Base, cfg.Base, cfg.Rel)
+	} else if nbDiffSwaps <= -1 {
+		_ = glg.Infof("There is more swaps in [%s/%s] against [%s/%s] using last [%s/%s] average trading price to calculate price", cfg.Base, cfg.Rel, cfg.Rel, cfg.Base, cfg.Base, cfg.Rel)
 		calculatedPrice = calculateThreshHoldFromMultipleTrade(cfg, price, baseResp, calculatedPrice, "by_rel", int(math.Abs(float64(nbDiffSwaps))), true)
 	} else if nbDiffSwaps == 0 && !havePrecedentSwaps {
-		glg.Infof("No last trade for reversed pair [%s/%s] - keeping calculated price: %s", cfg.Rel, cfg.Base, price)
-	} else if havePrecedentSwaps && heavierBase {
-		glg.Infof("There is no swaps diff for pair for [%s/%s] but there is history and heavier volume from [%s/%s] using history with most average", cfg.Base, cfg.Rel, cfg.Base, cfg.Rel)
+		_ = glg.Infof("No last trade for reversed pair [%s/%s] - keeping calculated price: %s", cfg.Rel, cfg.Base, price)
+	} else if havePrecedentSwaps && heavierBase && nbDiffSwaps == 0 {
+		_ = glg.Infof("There is no swaps diff for pair for [%s/%s] but there is history and heavier volume from [%s/%s] using history with most average", cfg.Base, cfg.Rel, cfg.Base, cfg.Rel)
 		calculatedPrice = calculateThreshHoldFromMultipleTrade(cfg, price, baseResp, calculatedPrice, "by_rel", len(baseResp.Result.Swaps), false)
-	} else if havePrecedentSwaps && !heavierBase {
-		glg.Infof("There is no swaps diff for pair for [%s/%s] but there is history and heavier volume from [%s/%s] using history with most average", cfg.Rel, cfg.Base, cfg.Rel, cfg.Base)
+	} else if havePrecedentSwaps && !heavierBase && nbDiffSwaps == 0 {
+		_ = glg.Infof("There is no swaps diff for pair for [%s/%s] but there is history and heavier volume from [%s/%s] using history with most average", cfg.Rel, cfg.Base, cfg.Rel, cfg.Base)
 		calculatedPrice = calculateThreshHoldFromMultipleTrade(cfg, price, relResp, calculatedPrice, "by_base", len(relResp.Result.Swaps), false)
 	}
 	return calculatedPrice
