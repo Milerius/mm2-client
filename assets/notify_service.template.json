@@ -1,6 +1,6 @@
 {
   "telegram": {
     "telegram_api_token": "your_telegram_api_token",
-    "telegram_receiver": "my_receiver_id"
+    "telegram_receiver": -1
   }
 }

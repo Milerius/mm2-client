@@ -18,6 +18,7 @@ var (
 	GPricesServicesRunning        = false
 	GExtrasServicesRunning        = false
 	GDesktopCfgLoaded             = false
+	GNotifyCfgLoaded              = false
 )
 
 func GetAppDataPath() string {
