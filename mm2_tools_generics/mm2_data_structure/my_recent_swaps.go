@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/olekukonko/tablewriter"
+	"mm2_client/external_services"
 	"mm2_client/helpers"
 	"os"
 	"strconv"
@@ -164,8 +165,16 @@ func (answer *MyRecentSwapsAnswer) ToTable() {
 	var data [][]string
 
 	for _, cur := range answer.Result.Swaps {
-		out := []string{cur.MyInfo.MyCoin, helpers.ResizeNb(cur.MyInfo.MyAmount), "",
-			helpers.ResizeNb(cur.MyInfo.OtherAmount), cur.MyInfo.OtherCoin,
+		baseVal, _, _ := external_services.RetrieveUSDValIfSupported(cur.MyInfo.MyCoin)
+		if baseVal != "0" {
+			baseVal = helpers.BigFloatMultiply(cur.MyInfo.MyAmount, baseVal, 2)
+		}
+		relVal, _, _ := external_services.RetrieveUSDValIfSupported(cur.MyInfo.OtherCoin)
+		if relVal != "0" {
+			relVal = helpers.BigFloatMultiply(cur.MyInfo.OtherAmount, relVal, 2)
+		}
+		out := []string{cur.MyInfo.MyCoin, helpers.ResizeNb(cur.MyInfo.MyAmount) + " (" + baseVal + " $)", "",
+			helpers.ResizeNb(cur.MyInfo.OtherAmount) + " (" + relVal + " $)", cur.MyInfo.OtherCoin,
 			helpers.GetDateFromTimestamp(cur.MyInfo.StartedAt, true), cur.Uuid, cur.GetLastStatus()}
 		data = append(data, out)
 	}
