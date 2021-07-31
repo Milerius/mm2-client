@@ -163,6 +163,8 @@ func (req *MyRecentSwapsRequest) ToJson() string {
 
 func (answer *MyRecentSwapsAnswer) ToTable() {
 	var data [][]string
+	baseTotalValue := "0"
+	relTotalValue := "0"
 
 	for _, cur := range answer.Result.Swaps {
 		baseVal, _, _ := external_services.RetrieveUSDValIfSupported(cur.MyInfo.MyCoin)
@@ -177,6 +179,8 @@ func (answer *MyRecentSwapsAnswer) ToTable() {
 			helpers.ResizeNb(cur.MyInfo.OtherAmount) + " (" + relVal + " $)", cur.MyInfo.OtherCoin,
 			helpers.GetDateFromTimestamp(cur.MyInfo.StartedAt, true), cur.Uuid, cur.GetLastStatus()}
 		data = append(data, out)
+		baseTotalValue = helpers.BigFloatAdd(baseTotalValue, baseVal, 2)
+		relTotalValue = helpers.BigFloatAdd(relTotalValue, relVal, 2)
 	}
 
 	table := tablewriter.NewWriter(os.Stdout)
@@ -184,10 +188,11 @@ func (answer *MyRecentSwapsAnswer) ToTable() {
 	table.SetHeader([]string{"MyCoin", "MyAmount", "", "OtherAmount", "OtherCoin", "Date", "UUID", "Status"})
 	table.SetFooter([]string{
 		"Page: " + strconv.Itoa(answer.Result.PageNumber),
-		"Total pages: " + strconv.Itoa(answer.Result.TotalPages),
+		"Total USD (base): " + baseTotalValue + " $",
 		"Nb swaps (DB): " + strconv.Itoa(answer.Result.Total),
+		"Total USD (rel): " + relTotalValue + " $",
 		"Limit: " + strconv.Itoa(answer.Result.Limit),
-		"Skipped: " + strconv.Itoa(answer.Result.Skipped), "", "", ""})
+		"Skipped: " + strconv.Itoa(answer.Result.Skipped), "Total pages: " + strconv.Itoa(answer.Result.TotalPages), ""})
 	table.SetBorders(tablewriter.Border{Left: true, Top: false, Right: true, Bottom: false})
 	table.SetCenterSeparator("|")
 	table.AppendBulk(data) // Add Bulk Data
