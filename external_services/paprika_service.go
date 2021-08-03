@@ -62,7 +62,7 @@ func processCoinpaprika() *[]CoinpaprikaAnswer {
 		var answer = &[]CoinpaprikaAnswer{}
 		decodeErr := json.NewDecoder(resp.Body).Decode(answer)
 		if decodeErr != nil {
-			fmt.Printf("Err: %v\n", err)
+			fmt.Printf("Err: %v\n", decodeErr)
 			return nil
 		}
 		return answer
