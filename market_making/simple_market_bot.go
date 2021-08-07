@@ -180,12 +180,12 @@ func calculateThreshHoldFromMultipleTrade(cfg SimplePairMarketMakerConf, price s
 			curPrice := helpers.BigFloatDivide(cur.MyInfo.MyAmount, cur.MyInfo.OtherAmount, 8)
 			lastAverageTradingPrice = helpers.BigFloatMultiply(curPrice, cur.MyInfo.OtherAmount, 8)
 			totalVolume = helpers.BigFloatAdd(totalVolume, cur.MyInfo.OtherAmount, 8)
-			glg.Infof("price: %s - amount: %s - sumprice: %s - total volume: %s", curPrice, cur.MyInfo.OtherAmount, lastAverageTradingPrice, totalVolume)
+			glg.Infof("[%s/%s] - price: %s - amount: %s - sumprice: %s - total volume: %s", cfg.Base, cfg.Rel, curPrice, cur.MyInfo.OtherAmount, lastAverageTradingPrice, totalVolume)
 		case "by_rel":
 			curPrice := helpers.BigFloatDivide(cur.MyInfo.OtherAmount, cur.MyInfo.MyAmount, 8)
 			lastAverageTradingPrice = helpers.BigFloatMultiply(curPrice, cur.MyInfo.MyAmount, 8)
 			totalVolume = helpers.BigFloatAdd(totalVolume, cur.MyInfo.MyAmount, 8)
-			glg.Infof("price: %s - amount: %s - sumprice: %s - total volume: %s", curPrice, cur.MyInfo.MyAmount, lastAverageTradingPrice, totalVolume)
+			glg.Infof("[%s/%s] - price: %s - amount: %s - sumprice: %s - total volume: %s", cfg.Base, cfg.Rel, curPrice, cur.MyInfo.MyAmount, lastAverageTradingPrice, totalVolume)
 		}
 		averagePrice = helpers.BigFloatAdd(averagePrice, lastAverageTradingPrice, 8)
 	}
@@ -194,7 +194,7 @@ func calculateThreshHoldFromMultipleTrade(cfg SimplePairMarketMakerConf, price s
 		return calculatedPrice
 	}
 	lastAverageTradingPrice = helpers.BigFloatDivide(averagePrice, totalVolume, 8)
-	glg.Infof("VWAP price: %s - calculated cex price: %s", lastAverageTradingPrice, price)
+	glg.Infof("[%s/%s] - VWAP price: %s - calculated cex price: %s", cfg.Base, cfg.Rel, lastAverageTradingPrice, price)
 	if helpers.AsFloat(lastAverageTradingPrice) > helpers.AsFloat(price) {
 		if withSpread {
 			calculatedPrice = helpers.BigFloatMultiply(lastAverageTradingPrice, cfg.Spread, 8)
