@@ -15,6 +15,7 @@ import (
 	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"os"
 	"path/filepath"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -141,17 +142,22 @@ func recalculateThreshHoldFromLastTrade(cfg SimplePairMarketMakerConf, price str
 func calculateThreshHoldFromLastTrades(cfg SimplePairMarketMakerConf, price string, baseResp *mm2_data_structure.MyRecentSwapsAnswer, relResp *mm2_data_structure.MyRecentSwapsAnswer, calculatedPrice string) string {
 	nbDiffSwaps := len(relResp.Result.Swaps) - len(baseResp.Result.Swaps)
 	havePrecedentSwaps := len(relResp.Result.Swaps) > 0 && len(baseResp.Result.Swaps) > 0
-	heavierBase := false
+	if nbDiffSwaps == 0 && !havePrecedentSwaps {
+		_ = glg.Infof("No last trade for reversed pair [%s/%s] - keeping calculated price: %s", cfg.Rel, cfg.Base, price)
+	} else {
+		calculatedPrice = calculateThreshHoldFromMultipleTrade(cfg, price, baseResp, relResp, calculatedPrice, false)
+	}
+	/*heavierBase := false
 	if havePrecedentSwaps {
 		heavierBase = helpers.AsFloat(baseResp.Result.Swaps[0].MakerAmount) > helpers.AsFloat(relResp.Result.Swaps[0].MakerAmount)
 	}
 	if nbDiffSwaps >= 1 {
 		_ = glg.Infof("There is more swaps in [%s/%s] against [%s/%s] using last [%s/%s] average trading price to calculate price", cfg.Rel, cfg.Base, cfg.Base, cfg.Rel, cfg.Rel, cfg.Base)
 		//There is more swaps in [KMD/LTC] against [LTC/KMD] using last [KMD/LTC] average trading price to calculate price
-		calculatedPrice = calculateThreshHoldFromMultipleTrade(cfg, price, relResp, calculatedPrice, "by_base", true)
+		calculatedPrice = calculateThreshHoldFromMultipleTrade(cfg, price, relResp, calculatedPrice, "by_base", false)
 	} else if nbDiffSwaps <= -1 {
 		_ = glg.Infof("There is more swaps in [%s/%s] against [%s/%s] using last [%s/%s] average trading price to calculate price", cfg.Base, cfg.Rel, cfg.Rel, cfg.Base, cfg.Base, cfg.Rel)
-		calculatedPrice = calculateThreshHoldFromMultipleTrade(cfg, price, baseResp, calculatedPrice, "by_rel", true)
+		calculatedPrice = calculateThreshHoldFromMultipleTrade(cfg, price, baseResp, calculatedPrice, "by_rel", false)
 	} else if nbDiffSwaps == 0 && !havePrecedentSwaps {
 		_ = glg.Infof("No last trade for reversed pair [%s/%s] - keeping calculated price: %s", cfg.Rel, cfg.Base, price)
 	} else if havePrecedentSwaps && heavierBase && nbDiffSwaps == 0 {
@@ -160,41 +166,64 @@ func calculateThreshHoldFromLastTrades(cfg SimplePairMarketMakerConf, price stri
 	} else if havePrecedentSwaps && !heavierBase && nbDiffSwaps == 0 {
 		_ = glg.Infof("There is no swaps diff for pair for [%s/%s] but there is history and heavier volume from [%s/%s] using history with most average", cfg.Rel, cfg.Base, cfg.Rel, cfg.Base)
 		calculatedPrice = calculateThreshHoldFromMultipleTrade(cfg, price, relResp, calculatedPrice, "by_base", false)
-	}
+	}*/
 	return calculatedPrice
 }
 
-func calculateThreshHoldFromMultipleTrade(cfg SimplePairMarketMakerConf, price string, resp *mm2_data_structure.MyRecentSwapsAnswer, calculatedPrice string, kind string, withSpread bool) string {
-	validTrade := len(resp.Result.Swaps)
+func calculateThreshHoldFromMultipleTrade(cfg SimplePairMarketMakerConf, price string, baseResp *mm2_data_structure.MyRecentSwapsAnswer, relResp *mm2_data_structure.MyRecentSwapsAnswer, calculatedPrice string, withSpread bool) string {
 	lastAverageTradingPrice := price
-	averagePrice := "0"
-	totalVolume := "0"
-	for _, cur := range resp.Result.Swaps {
-		if cur.GetLastStatus() != "Finished" {
-			_ = glg.Warnf("swap %s not finished or contains error - skipping for calculating average - status: %s", cur.Uuid, cur.GetLastStatus())
-			validTrade -= 1
-			continue
+	validTrade := len(baseResp.Result.Swaps) + len(relResp.Result.Swaps)
+	vwapFunctor := func(kind string, resp *mm2_data_structure.MyRecentSwapsAnswer) string {
+		totalSumPriceVolume := "0"
+		totalVolume := "0"
+		for _, cur := range resp.Result.Swaps {
+			curSumPriceVolume := "0"
+			if cur.GetLastStatus() != "Finished" {
+				_ = glg.Warnf("swap %s not finished or contains error - skipping for calculating average - status: %s", cur.Uuid, cur.GetLastStatus())
+				validTrade -= 1
+				continue
+			}
+			switch kind {
+			case "by_base":
+				curPrice := helpers.BigFloatDivide(cur.MyInfo.MyAmount, cur.MyInfo.OtherAmount, 8)
+				curSumPriceVolume = helpers.BigFloatMultiply(curPrice, cur.MyInfo.OtherAmount, 8)
+				totalVolume = helpers.BigFloatAdd(totalVolume, cur.MyInfo.OtherAmount, 8)
+				glg.Infof("[%s/%s] - price: %s - amount: %s - sumprice: %s - total volume: %s", cfg.Base, cfg.Rel, curPrice, cur.MyInfo.OtherAmount, lastAverageTradingPrice, totalVolume)
+			case "by_rel":
+				curPrice := helpers.BigFloatDivide(cur.MyInfo.OtherAmount, cur.MyInfo.MyAmount, 8)
+				curSumPriceVolume = helpers.BigFloatMultiply(curPrice, cur.MyInfo.MyAmount, 8)
+				totalVolume = helpers.BigFloatAdd(totalVolume, cur.MyInfo.MyAmount, 8)
+				glg.Infof("[%s/%s] - price: %s - amount: %s - sumprice: %s - total volume: %s", cfg.Base, cfg.Rel, curPrice, cur.MyInfo.MyAmount, lastAverageTradingPrice, totalVolume)
+			}
+			totalSumPriceVolume = helpers.BigFloatAdd(totalSumPriceVolume, curSumPriceVolume, 8)
 		}
-		switch kind {
-		case "by_base":
-			curPrice := helpers.BigFloatDivide(cur.MyInfo.MyAmount, cur.MyInfo.OtherAmount, 8)
-			lastAverageTradingPrice = helpers.BigFloatMultiply(curPrice, cur.MyInfo.OtherAmount, 8)
-			totalVolume = helpers.BigFloatAdd(totalVolume, cur.MyInfo.OtherAmount, 8)
-			glg.Infof("[%s/%s] - price: %s - amount: %s - sumprice: %s - total volume: %s", cfg.Base, cfg.Rel, curPrice, cur.MyInfo.OtherAmount, lastAverageTradingPrice, totalVolume)
-		case "by_rel":
-			curPrice := helpers.BigFloatDivide(cur.MyInfo.OtherAmount, cur.MyInfo.MyAmount, 8)
-			lastAverageTradingPrice = helpers.BigFloatMultiply(curPrice, cur.MyInfo.MyAmount, 8)
-			totalVolume = helpers.BigFloatAdd(totalVolume, cur.MyInfo.MyAmount, 8)
-			glg.Infof("[%s/%s] - price: %s - amount: %s - sumprice: %s - total volume: %s", cfg.Base, cfg.Rel, curPrice, cur.MyInfo.MyAmount, lastAverageTradingPrice, totalVolume)
+		if totalSumPriceVolume == "0" {
+			glg.Info("Unable to get average from last multiple trade - stick with calculated price")
+			return calculatedPrice
 		}
-		averagePrice = helpers.BigFloatAdd(averagePrice, lastAverageTradingPrice, 8)
+		lastAverageTradingPrice = helpers.BigFloatDivide(totalSumPriceVolume, totalVolume, 8)
+		glg.Infof("[%s/%s] - VWAP price: %s - calculated cex price: %s", cfg.Base, cfg.Rel, lastAverageTradingPrice, price)
+		return lastAverageTradingPrice
 	}
-	if averagePrice == "0" {
-		glg.Info("Unable to get average from last multiple trade - stick with calculated price")
+	baseVWAP := vwapFunctor("by_rel", baseResp)
+	relVWAP := vwapFunctor("by_base", relResp)
+	if baseVWAP == calculatedPrice && relVWAP == calculatedPrice { //< this means error occured for both side
 		return calculatedPrice
 	}
-	lastAverageTradingPrice = helpers.BigFloatDivide(averagePrice, totalVolume, 8)
-	glg.Infof("[%s/%s] - VWAP price: %s - calculated cex price: %s", cfg.Base, cfg.Rel, lastAverageTradingPrice, price)
+	totalVWAP := "0"
+	toDivide := 0
+	if len(baseResp.Result.Swaps) > 0 {
+		toDivide += 1
+		totalVWAP = helpers.BigFloatAdd(totalVWAP, baseVWAP, 8)
+	}
+	if len(relResp.Result.Swaps) > 0 {
+		toDivide += 1
+		totalVWAP = helpers.BigFloatAdd(totalVWAP, relVWAP, 8)
+	}
+	if toDivide > 0 {
+		lastAverageTradingPrice = helpers.BigFloatDivide(totalVWAP, strconv.Itoa(toDivide), 8)
+		glg.Infof("[%s/%s] - final VWAP: %s - toDivide: %d", cfg.Base, cfg.Rel, lastAverageTradingPrice, toDivide)
+	}
 	if helpers.AsFloat(lastAverageTradingPrice) > helpers.AsFloat(price) {
 		if withSpread {
 			calculatedPrice = helpers.BigFloatMultiply(lastAverageTradingPrice, cfg.Spread, 8)

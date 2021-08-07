@@ -42,7 +42,7 @@ func (suite *CalculateThreshHoldFromLastTradesTestSuite) TestSingleTradeReversed
 	relResp := NewSwapContentInfos([]Content{{BaseAmount: "219.4709", RelAmount: "29.99999"}})
 
 	expectedPrice := calculateThreshHoldFromLastTrades(cfg, "7.14455729", baseResp, relResp, "7.14455729")
-	suite.Equal(expectedPrice, "7.42543460")
+	suite.Equal(expectedPrice, "7.31569911")
 }
 
 func (suite *CalculateThreshHoldFromLastTradesTestSuite) TestSingleTradeReversedSideForcePrice() {
@@ -64,7 +64,7 @@ func (suite *CalculateThreshHoldFromLastTradesTestSuite) TestMultipleTradeRevers
 	relResp := NewSwapContentInfos([]Content{{BaseAmount: "219.4709", RelAmount: "19.99999"}, {BaseAmount: "222.762", RelAmount: "29.99999"}})
 
 	expectedPrice := calculateThreshHoldFromLastTrades(cfg, "7.14455729", baseResp, relResp, "7.14455729")
-	suite.Equal(expectedPrice, "8.97733146")
+	suite.Equal(expectedPrice, "8.84466154")
 }
 
 func (suite *CalculateThreshHoldFromLastTradesTestSuite) TestMultipleTradeReversedSideForcePrice() {
@@ -97,7 +97,7 @@ func (suite *CalculateThreshHoldFromLastTradesTestSuite) TestSingleTradeBaseSide
 	relResp := &mm2_data_structure.MyRecentSwapsAnswer{}
 
 	expectedPrice := calculateThreshHoldFromLastTrades(cfg, "7.14455729", baseResp, relResp, "7.14455729")
-	suite.Equal(expectedPrice, "7.53681368")
+	suite.Equal(expectedPrice, "7.42543220")
 }
 
 func (suite *CalculateThreshHoldFromLastTradesTestSuite) TestSingleTradeBaseSideForPrice() {
@@ -118,7 +118,7 @@ func (suite *CalculateThreshHoldFromLastTradesTestSuite) TestMultipleTradeBaseSi
 	baseResp := NewSwapContentInfos([]Content{{BaseAmount: "29.99997438", RelAmount: "222.76277576"}, {BaseAmount: "14.99998719", RelAmount: "105.38138788"}})
 	relResp := &mm2_data_structure.MyRecentSwapsAnswer{}
 	expectedPrice := calculateThreshHoldFromLastTrades(cfg, "7.14455729", baseResp, relResp, "7.14455729")
-	suite.Equal(expectedPrice, "7.40148023")
+	suite.Equal(expectedPrice, "7.29209875")
 }
 
 func (suite *CalculateThreshHoldFromLastTradesTestSuite) TestMultipleTradeBaseSideForcePrice() {
@@ -129,6 +129,23 @@ func (suite *CalculateThreshHoldFromLastTradesTestSuite) TestMultipleTradeBaseSi
 	relResp := &mm2_data_structure.MyRecentSwapsAnswer{}
 	expectedPrice := calculateThreshHoldFromLastTrades(cfg, "7.14455729", baseResp, relResp, "7.14455729")
 	suite.Equal(expectedPrice, "7.14455729")
+}
+
+func (suite *CalculateThreshHoldFromLastTradesTestSuite) TestMultipleTradeBothSide() {
+	suite.Equal(true, true)
+	cfg := SimplePairMarketMakerConf{Base: "LTC", Rel: "KMD", Spread: "1.013", Max: true, MinVolume: nil, Enable: true,
+		PriceElapsedValidity: nil, CheckLastBidirectionalTradeThreshHold: helpers.BoolAddr(true)}
+	baseResp := NewSwapContentInfos([]Content{{BaseAmount: "4.102174", RelAmount: "752.8892"}, {BaseAmount: "1.719676", RelAmount: "316.4945"}, {BaseAmount: "0.052971", RelAmount: "10.24148"}, {BaseAmount: "0.133952", RelAmount: "25.98481"}})
+	relResp := NewSwapContentInfos([]Content{
+		{BaseAmount: "27.18649", RelAmount: "0.161065"},
+		{BaseAmount: "13.17659", RelAmount: "0.077728"},
+		{BaseAmount: "37.00451", RelAmount: "0.208161"},
+		{BaseAmount: "743.0625", RelAmount: "4.266546"},
+		{BaseAmount: "2819.370", RelAmount: "15.68015"},
+		{BaseAmount: "2633.345", RelAmount: "14.61151"},
+		{BaseAmount: "559.7940", RelAmount: "3.006166"}})
+	expectedPrice := calculateThreshHoldFromLastTrades(cfg, "174.1375", baseResp, relResp, "174.1375")
+	suite.Equal(expectedPrice, "181.87995125")
 }
 
 func TestCalculateThreshHoldFromLastTradesTestSuite(t *testing.T) {
