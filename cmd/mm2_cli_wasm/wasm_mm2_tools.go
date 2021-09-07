@@ -197,7 +197,7 @@ func getAllTickerInfos() js.Func {
 		}
 		var out = make(map[string]interface{})
 		for _, cur := range config.GCFGRegistry {
-			resp := mm2_tools_generics.GetTickerInfos(cur.Coin).ToWeb()
+			resp := mm2_tools_generics.GetTickerInfos(cur.Coin, 0).ToWeb()
 			out[cur.Coin] = resp
 		}
 		return out

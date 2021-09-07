@@ -1,6 +1,8 @@
 package external_services
 
-import "mm2_client/helpers"
+import (
+	"mm2_client/helpers"
+)
 
 func RetrieveUSDValIfSupported(coin string, expirePriceValidity int) (string, string, string) {
 	//! Binance
