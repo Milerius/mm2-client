@@ -179,7 +179,7 @@ func getTickerInfos() js.Func {
 			}
 			return result
 		}
-		resp := mm2_tools_generics.GetTickerInfos(args[0].String())
+		resp := mm2_tools_generics.GetTickerInfos(args[0].String(), 0)
 		return resp.ToWeb()
 	})
 	return jsfunc
