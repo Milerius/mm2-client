@@ -23,9 +23,25 @@ func TickerAllInfos(ctx *fasthttp.RequestCtx) {
 		return
 	}
 
+	args := ctx.QueryArgs()
+	expirationPriceValidity := 0
+	if args.Len() > 0 {
+		glg.Info("len is above 0, there is an arg to this get request")
+		expireAt, err := args.GetUint("expire_at")
+		if err != nil {
+			_ = glg.Errorf("error with request args: %v", err)
+			ctx.SetStatusCode(http.StatusBadRequest)
+			ctx.SetBodyString("invalid request, please follow this format: api/v1/tickers?expire_at=60")
+			return
+		} else {
+			_ = glg.Infof("Expire at arg is: %d", expireAt)
+			expirationPriceValidity = expireAt
+		}
+	}
+
 	var out = make(map[string]*mm2_tools_generics.TickerInfosAnswer)
 	for _, cur := range config.GCFGRegistry {
-		resp := mm2_tools_generics.GetTickerInfos(cur.Coin)
+		resp := mm2_tools_generics.GetTickerInfos(cur.Coin, expirationPriceValidity)
 		out[cur.Coin] = resp
 	}
 	b, err := json.Marshal(out)

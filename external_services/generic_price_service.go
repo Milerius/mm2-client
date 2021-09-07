@@ -1,17 +1,24 @@
 package external_services
 
-func RetrieveUSDValIfSupported(coin string) (string, string, string) {
+import "mm2_client/helpers"
+
+func RetrieveUSDValIfSupported(coin string, expirePriceValidity int) (string, string, string) {
 	//! Binance
 	val, date, _, provider := BinanceRetrieveUSDValIfSupported(coin)
 
+	elapsed := helpers.DateToTimeElapsed(date)
+	expirePriceValidityF := float64(expirePriceValidity)
+
 	//! Gecko
-	if val == "0" {
+	if val == "0" || (expirePriceValidity > 0 && elapsed > expirePriceValidityF) {
 		val, date, provider = CoingeckoRetrieveUSDValIfSupported(coin)
+		elapsed = helpers.DateToTimeElapsed(date)
 	}
 
 	//! Paprika
-	if val == "0" {
+	if val == "0" || (expirePriceValidity > 0 && elapsed > expirePriceValidityF) {
 		val, date, provider = CoinpaprikaRetrieveUSDValIfSupported(coin)
+		elapsed = helpers.DateToTimeElapsed(date)
 	}
 
 	//! Verification

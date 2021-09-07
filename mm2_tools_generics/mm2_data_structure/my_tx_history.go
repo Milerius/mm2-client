@@ -107,7 +107,7 @@ func (answer *MyTxHistoryAnswer) ToTable(coinReq string, page int, tx int, withO
 		if curAnswer.Coin != "" {
 			val := "0"
 			if !withOriginalFiatValue {
-				val, _, _ = external_services.RetrieveUSDValIfSupported(curAnswer.Coin)
+				val, _, _ = external_services.RetrieveUSDValIfSupported(curAnswer.Coin, 0)
 				if val != "0" {
 					val = helpers.BigFloatMultiply(curAnswer.MyBalanceChange, val, 2)
 				}

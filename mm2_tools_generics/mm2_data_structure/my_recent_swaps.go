@@ -167,11 +167,11 @@ func (answer *MyRecentSwapsAnswer) ToTable() {
 	relTotalValue := "0"
 
 	for _, cur := range answer.Result.Swaps {
-		baseVal, _, _ := external_services.RetrieveUSDValIfSupported(cur.MyInfo.MyCoin)
+		baseVal, _, _ := external_services.RetrieveUSDValIfSupported(cur.MyInfo.MyCoin, 0)
 		if baseVal != "0" {
 			baseVal = helpers.BigFloatMultiply(cur.MyInfo.MyAmount, baseVal, 2)
 		}
-		relVal, _, _ := external_services.RetrieveUSDValIfSupported(cur.MyInfo.OtherCoin)
+		relVal, _, _ := external_services.RetrieveUSDValIfSupported(cur.MyInfo.OtherCoin, 0)
 		if relVal != "0" {
 			relVal = helpers.BigFloatMultiply(cur.MyInfo.OtherAmount, relVal, 2)
 		}

@@ -56,7 +56,7 @@ func renderTableMakerOrders(withFees bool, makerOrders map[string]mm2_data_struc
 						fees := ""
 						for _, curFee := range resp.Result.TotalFees {
 							if helpers.AsFloat(curFee.RequiredBalance) > 0 {
-								val, _, _ := external_services.RetrieveUSDValIfSupported(curFee.Coin)
+								val, _, _ := external_services.RetrieveUSDValIfSupported(curFee.Coin, 0)
 								if val != "0" {
 									val = helpers.BigFloatMultiply(curFee.Amount, val, 2)
 								}

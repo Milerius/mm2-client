@@ -22,7 +22,7 @@ type GenericEnableAnswer struct {
 
 func (answer *GenericEnableAnswer) ToTable() {
 	if answer.Coin != "" {
-		val, _, provider := external_services.RetrieveUSDValIfSupported(answer.Coin)
+		val, _, provider := external_services.RetrieveUSDValIfSupported(answer.Coin, 0)
 		if val != "0" {
 			val = helpers.BigFloatMultiply(answer.Balance, val, 2)
 		}
@@ -46,7 +46,7 @@ func ToTableGenericEnableAnswers(answers []GenericEnableAnswer) {
 
 	for _, answer := range answers {
 		if answer.Coin != "" {
-			val, _, provider := external_services.RetrieveUSDValIfSupported(answer.Coin)
+			val, _, provider := external_services.RetrieveUSDValIfSupported(answer.Coin, 0)
 			if val != "0" {
 				val = helpers.BigFloatMultiply(answer.Balance, val, 2)
 			}

@@ -43,7 +43,7 @@ func (req *MyBalanceRequest) ToJson() string {
 
 func (answer *MyBalanceAnswer) ToTable() {
 	if answer.Coin != "" {
-		val, _, provider := external_services.RetrieveUSDValIfSupported(answer.Coin)
+		val, _, provider := external_services.RetrieveUSDValIfSupported(answer.Coin, 0)
 		if val != "0" {
 			val = helpers.BigFloatMultiply(answer.Balance, val, 2)
 		}
@@ -85,7 +85,7 @@ func ToTableMyBalanceAnswers(answers []MyBalanceAnswer) {
 	total := "0"
 	for _, answer := range answers {
 		if answer.Coin != "" {
-			val, _, provider := external_services.RetrieveUSDValIfSupported(answer.Coin)
+			val, _, provider := external_services.RetrieveUSDValIfSupported(answer.Coin, 0)
 			if val != "0" {
 				val = helpers.BigFloatMultiply(answer.Balance, val, 2)
 			}

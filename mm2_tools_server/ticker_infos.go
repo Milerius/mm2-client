@@ -33,7 +33,7 @@ func TickerInfos(ctx *fasthttp.RequestCtx) {
 		ctx.SetBodyString(err.Error())
 		return
 	}
-	resp := mm2_tools_generics.GetTickerInfos(out.Ticker)
+	resp := mm2_tools_generics.GetTickerInfos(out.Ticker, 0)
 	ctx.SetStatusCode(200)
 	ctx.SetBodyString(resp.ToJson())
 	ctx.SetContentType("application/json")

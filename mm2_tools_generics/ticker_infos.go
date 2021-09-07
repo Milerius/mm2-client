@@ -43,8 +43,8 @@ func (req *TickerInfosAnswer) ToWeb() map[string]interface{} {
 	return nil
 }
 
-func GetTickerInfos(ticker string) *TickerInfosAnswer {
-	val, date, provider := external_services.RetrieveUSDValIfSupported(ticker)
+func GetTickerInfos(ticker string, expirePriceValidity int) *TickerInfosAnswer {
+	val, date, provider := external_services.RetrieveUSDValIfSupported(ticker, expirePriceValidity)
 	volume, _, volumeProvider := external_services.RetrieveVolume24h(ticker)
 	sparkline7d, _, sparklineProvider := external_services.RetrieveSparkline7D(ticker)
 	change24h, _, change24hProvider := external_services.RetrievePercentChange24h(ticker)
