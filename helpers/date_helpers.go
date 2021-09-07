@@ -55,3 +55,11 @@ func RFC3339ToTimestamp(date string) int64 {
 	}
 	return parse.UnixNano()
 }
+
+func RFC3339ToTimestampSecond(date string) int64 {
+	parse, err := time.Parse(time.RFC3339, date)
+	if err != nil {
+		return 0
+	}
+	return parse.Unix()
+}
