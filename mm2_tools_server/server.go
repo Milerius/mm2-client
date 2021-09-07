@@ -12,7 +12,7 @@ import (
 
 var gAppName = ""
 
-func LaunchServer(appName string) {
+func LaunchServer(appName string, onlyPriceService bool) {
 	if runtime.GOOS == "ios" {
 		glg.Get().SetMode(glg.STD)
 		glg.Info("Launch MM2 Tools Server from ios")
@@ -24,7 +24,7 @@ func LaunchServer(appName string) {
 	}
 
 	gAppName = appName
-	router := InitRooter()
+	router := InitRooter(onlyPriceService)
 	rate, err := limiter.NewRateFromFormatted("30-M")
 	if err != nil {
 		glg.Fatalf("error on limiter: %v", err)
