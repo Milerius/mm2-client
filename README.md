@@ -60,7 +60,7 @@ tail -f ~/.atomicdex_cli/logs/mm2.client.log
 ### How to use the simple market maker bot with an existing atomicdex instance
 
 ```
-go build -o mm2_tools_server_bin cmd/mm2_tools_server.go
+go build -o mm2_tools_server_bin cmd/mm2_tools_server/mm2_tools_server.go
 ./mm2_tools_server_bin
 
 # Assuming your userpass for the session is foobar
