@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/Delta456/box-cli-maker v1.3.2
-	github.com/adshao/go-binance/v2 v2.3.2-0.20210729164709-86f8bfbbaee6
+	github.com/adshao/go-binance/v2 v2.3.2
 	github.com/andybalholm/brotli v1.0.3 // indirect
 	github.com/c-bata/go-prompt v0.2.6
 	github.com/dustin/go-humanize v1.0.0
