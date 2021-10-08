@@ -64,7 +64,11 @@ func StartBinanceWebsocketService() {
 		_, okErc := config.GCFGRegistry[v.BaseAsset+"-ERC20"]
 		_, okBep := config.GCFGRegistry[v.BaseAsset+"-BEP20"]
 		_, okQrc := config.GCFGRegistry[v.BaseAsset+"-QRC20"]
-		if (ok || okErc || okBep || okQrc) && helpers.IsAStableCoin(v.QuoteAsset) && v.Status == "TRADING" {
+		_, okPlg := config.GCFGRegistry[v.BaseAsset+"-PLG20"]
+		_, okAvx := config.GCFGRegistry[v.BaseAsset+"-AVX20"]
+		_, okArb := config.GCFGRegistry[v.BaseAsset+"-ARB20"]
+		_, okMvr := config.GCFGRegistry[v.BaseAsset+"-MVR20"]
+		if (ok || okErc || okBep || okQrc || okPlg || okAvx || okArb || okMvr) && helpers.IsAStableCoin(v.QuoteAsset) && v.Status == "TRADING" {
 			if _, value := keys[v.Symbol]; !value {
 				keys[v.Symbol] = true
 				out = append(out, v.Symbol)
@@ -124,10 +128,17 @@ func retrievePossibilities(cur string) []string {
 	functorAppendIfExist(&base, curBase+"-ERC20")
 	functorAppendIfExist(&base, curBase+"-QRC20")
 	functorAppendIfExist(&base, curBase+"-BEP20")
+	functorAppendIfExist(&base, curBase+"-PLG20")
+	functorAppendIfExist(&base, curBase+"-AVX20")
+	functorAppendIfExist(&base, curBase+"-ARB20")
+	functorAppendIfExist(&base, curBase+"-MVR20")
 	functorAppendIfExist(&rel, curRel)
 	functorAppendIfExist(&rel, curRel+"-ERC20")
 	functorAppendIfExist(&rel, curRel+"-QRC20")
 	functorAppendIfExist(&rel, curRel+"-BEP20")
+	functorAppendIfExist(&rel, curRel+"-PLG20")
+	functorAppendIfExist(&rel, curRel+"-AVX20")
+	functorAppendIfExist(&rel, curRel+"-MVR20")
 
 	for _, b := range base {
 		for _, r := range rel {
