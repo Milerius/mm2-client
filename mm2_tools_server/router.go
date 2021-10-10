@@ -25,6 +25,7 @@ func InitRooter(onlyPriceService bool) *router.Router {
 
 	r.POST("/api/v1/ticker_infos", setResponseHeader(TickerInfos))
 	r.GET("/api/v1/tickers", setResponseHeader(TickerAllInfos))
+	r.GET("/api/v2/tickers", setResponseHeader(TickerAllInfosV2))
 	r.GET("/api/v1/ping", setResponseHeader(Ping))
 	r.POST("/api/v1/cex_rates", setResponseHeader(CexRates))
 	r.POST("/api/v1/volume24h", setResponseHeader(Volume24h))
