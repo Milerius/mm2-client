@@ -4,7 +4,7 @@ go 1.16
 
 require (
 	github.com/Delta456/box-cli-maker v1.3.2
-	github.com/adshao/go-binance/v2 v2.3.2-0.20210729164709-86f8bfbbaee6
+	github.com/adshao/go-binance/v2 v2.3.2
 	github.com/andybalholm/brotli v1.0.3 // indirect
 	github.com/c-bata/go-prompt v0.2.6
 	github.com/dustin/go-humanize v1.0.0
@@ -17,7 +17,7 @@ require (
 	github.com/manifoldco/promptui v0.8.0
 	github.com/nikoksr/notify v0.17.3
 	github.com/olekukonko/tablewriter v0.0.5
-	github.com/schollz/progressbar/v3 v3.8.2
+	github.com/schollz/progressbar/v3 v3.8.3
 	github.com/soniah/evaler v2.2.0+incompatible
 	github.com/stretchr/testify v1.7.0
 	github.com/tyler-smith/go-bip39 v1.1.0
