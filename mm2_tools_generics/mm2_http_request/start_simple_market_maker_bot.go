@@ -13,10 +13,9 @@ import (
 
 func StartSimpleMarketMakerBot() (*mm2_data_structure.StartSimpleMarketMakerAnswer, error) {
 	req := mm2_data_structure.NewStartSimpleMarketMakerRequest().ToJson()
-	fmt.Println(req)
 	resp, err := http.Post(mm2_data_structure.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
 	if err != nil {
-		glg.Errorf("Err: %v", err)
+		_ = glg.Errorf("Err: %v", err)
 		return nil, err
 	}
 	if resp.StatusCode == http.StatusOK {
@@ -24,7 +23,7 @@ func StartSimpleMarketMakerBot() (*mm2_data_structure.StartSimpleMarketMakerAnsw
 		var answer = &mm2_data_structure.StartSimpleMarketMakerAnswer{}
 		decodeErr := json.NewDecoder(resp.Body).Decode(answer)
 		if decodeErr != nil {
-			glg.Errorf("Err: %v", err)
+			_ = glg.Errorf("Err: %v", err)
 			return nil, decodeErr
 		}
 		return answer, nil
