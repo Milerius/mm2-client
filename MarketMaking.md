@@ -79,3 +79,51 @@ cd ..
 # When you want to stop (orders can take up to 30 seconds to be cancelled)
 > stop_simple_market_maker_bot
 ```
+
+## I don't want want to run MarketMaking through the mm2-client, can I run it with mm2 directly?
+
+Yes:
+
+```bash
+curl --location --request POST 'http://127.0.0.1:7783' \
+--header 'Content-Type: application/json' \
+--data-raw '{
+    "userpass": "simplepassword123",
+    "mmrpc": "2.0",
+    "method": "start_simple_market_maker_bot",
+    "params": {
+        "price_url": "http://prices.cipig.net:1313/api/v2/tickers?expire_at=600",
+        "cfg": {
+            "MATIC/KMD": {
+                "base": "MATIC",
+                "rel": "KMD",
+                "max": true,
+                "min_volume": "0.25",
+                "spread": "1.025",
+                "base_confs": 3,
+                "base_nota": false,
+                "rel_confs": 1,
+                "rel_nota": false,
+                "enable": true,
+                "price_elapsed_validity": 30.0,
+                "check_last_bidirectional_trade_thresh_hold": true
+            },
+             "MATIC/VRSC": {
+                "base": "MATIC",
+                "rel": "VRSC",
+                "max": true,
+                "min_volume": "0.25",
+                "spread": "1.025",
+                "base_confs": 3,
+                "base_nota": false,
+                "rel_confs": 1,
+                "rel_nota": false,
+                "enable": true,
+                "price_elapsed_validity": 30.0,
+                "check_last_bidirectional_trade_thresh_hold": true
+            }
+        }
+    },
+    "id": 0
+}'
+```
