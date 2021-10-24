@@ -63,6 +63,10 @@ const (
 	FtmFallbackContractAddress             = FtmContractAddress
 	FtmTestnetContractAddress              = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
 	FtmTestnetFallbackContractAddress      = FtmTestnetContractAddress
+	HcoContractAddress                     = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
+	HcoFallbackContractAddress             = HcoContractAddress
+	HcoTestnetContractAddress              = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
+	HcoTestnetFallbackContractAddress      = HcoTestnetContractAddress
 	MaticContractAddress                   = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
 	MaticFallbackContractAddress           = MaticContractAddress
 	MaticTestnetContractAddress            = "0x73c1Dd989218c3A154C71Fc08Eb55A24Bd2B3A10"
@@ -233,6 +237,12 @@ func (cfg *DesktopCFG) RetrieveContracts() (string, string) {
 			return FtmTestnetContractAddress, FtmTestnetFallbackContractAddress
 		} else {
 			return FtmContractAddress, FtmFallbackContractAddress
+		}
+	case "HecoChain":
+		if cfg.IsTestNet {
+			return HcoTestnetContractAddress, HcoTestnetFallbackContractAddress
+		} else {
+			return HcoContractAddress, HcoFallbackContractAddress
 		}
 	case "HRC-20":
 		if cfg.IsTestNet {
