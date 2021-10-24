@@ -67,6 +67,10 @@ const (
 	HcoFallbackContractAddress             = HcoContractAddress
 	HcoTestnetContractAddress              = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
 	HcoTestnetFallbackContractAddress      = HcoTestnetContractAddress
+	KrcContractAddress                     = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
+	KrcFallbackContractAddress             = KrcContractAddress
+	KrcTestnetContractAddress              = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
+	KrcTestnetFallbackContractAddress      = KrcTestnetContractAddress
 	MaticContractAddress                   = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
 	MaticFallbackContractAddress           = MaticContractAddress
 	MaticTestnetContractAddress            = "0x73c1Dd989218c3A154C71Fc08Eb55A24Bd2B3A10"
@@ -87,6 +91,10 @@ const (
 	QrcSwapContractAddress                 = "0x2f754733acd6d753731c00fee32cb484551cc15d"
 	QrcTestnetFallbackSwapContractAddress  = QrcTestnetSwapContractAddress
 	QrcFallbackSwapContractAddress         = QrcSwapContractAddress
+	UbiqContractAddress                    = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
+	UbiqFallbackContractAddress            = UbiqContractAddress
+	UbiqTestnetContractAddress             = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
+	UbiqTestnetFallbackContractAddress     = UbiqTestnetContractAddress
 )
 
 var GCFGRegistry = make(map[string]*DesktopCFG)
@@ -254,6 +262,12 @@ func (cfg *DesktopCFG) RetrieveContracts() (string, string) {
 		} else {
 			return OneContractAddress, OneFallbackContractAddress
 		}
+	case "KRC-20":
+		if cfg.IsTestNet {
+			return KrcTestnetContractAddress, KrcTestnetFallbackContractAddress
+		} else {
+			return KrcContractAddress, KrcFallbackContractAddress
+		}
 	case "Matic":
 		if cfg.IsTestNet {
 			return MaticTestnetContractAddress, MaticTestnetFallbackContractAddress
@@ -277,6 +291,12 @@ func (cfg *DesktopCFG) RetrieveContracts() (string, string) {
 			return QrcTestnetSwapContractAddress, QrcTestnetFallbackSwapContractAddress
 		} else {
 			return QrcSwapContractAddress, QrcFallbackSwapContractAddress
+		}
+	case "Ubiq":
+		if cfg.IsTestNet {
+			return UbiqTestnetContractAddress, UbiqTestnetFallbackContractAddress
+		} else {
+			return UbiqContractAddress, UbiqFallbackContractAddress
 		}
 	default:
 		return "", ""
