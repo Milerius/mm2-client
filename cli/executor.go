@@ -164,6 +164,8 @@ func Executor(fullCommand string) {
 		mm2_tools_generics.StartSimpleMarketMakerBotCLI()
 	case "stop_simple_market_maker_bot_v1":
 		_ = market_making.StopSimpleMarketMakerBotService()
+	case "stop_simple_market_maker_bot":
+		mm2_tools_generics.StopSimpleMarketMakerBotCLI()
 	case "exit":
 		fmt.Println("Quitting the application - trying to shutdown MM2")
 		_ = market_making.StopSimpleMarketMakerBotService()

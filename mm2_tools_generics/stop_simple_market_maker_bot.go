@@ -8,16 +8,16 @@ import (
 	"runtime"
 )
 
-func StartSimpleMarketMakerBot() (*mm2_data_structure.StartSimpleMarketMakerAnswer, error) {
+func StopSimpleMarketMakerBot() (*mm2_data_structure.StopSimpleMarketMakerAnswer, error) {
 	if runtime.GOARCH == "wasm" {
-		return mm2_wasm_request.StartSimpleMarketMakerBot()
+		return mm2_wasm_request.StopSimpleMarketMakerBot()
 	} else {
-		return mm2_http_request.StartSimpleMarketMakerBot()
+		return mm2_http_request.StopSimpleMarketMakerBot()
 	}
 }
 
-func StartSimpleMarketMakerBotCLI() {
-	if resp, err := StartSimpleMarketMakerBot(); resp != nil {
+func StopSimpleMarketMakerBotCLI() {
+	if resp, err := StopSimpleMarketMakerBot(); resp != nil {
 		fmt.Printf("%s\n", resp.Result.Result)
 	} else {
 		fmt.Println(err)
