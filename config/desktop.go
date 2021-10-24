@@ -41,19 +41,32 @@ type DesktopCFG struct {
 }
 
 const (
-	GasStation                            = "https://ethgasstation.info/json/ethgasAPI.json"
-	ErcSwapContractAddress                = "0x24ABE4c71FC658C91313b6552cd40cD808b3Ea80"
-	ErcTestnetSwapContractAddress         = "0x6b5A52217006B965BB190864D62dc3d270F7AaFD"
-	BnbTestnetSwapContractAddress         = "0xcCD17C913aD7b772755Ad4F0BDFF7B34C6339150"
-	BnbSwapContractAddress                = "0xeDc5b89Fe1f0382F9E4316069971D90a0951DB31"
-	ErcFallbackSwapContractAddress        = "0x8500AFc0bc5214728082163326C2FF0C73f4a871"
-	ErcTestnetFallbackSwapContractAddress = "0x7Bc1bBDD6A0a722fC9bffC49c921B685ECB84b94"
-	QrcTestnetSwapContractAddress         = "0xba8b71f3544b93e2f681f996da519a98ace0107a"
-	QrcSwapContractAddress                = "0x2f754733acd6d753731c00fee32cb484551cc15d"
-	BnbFallbackSwapContractAddress        = BnbSwapContractAddress
-	BnbTestnetFallbackSwapContractAddress = BnbTestnetSwapContractAddress
-	QrcTestnetFallbackSwapContractAddress = QrcTestnetSwapContractAddress
-	QrcFallbackSwapContractAddress        = QrcSwapContractAddress
+	GasStationErc20                        = "https://ethgasstation.info/json/ethgasAPI.json"
+	GasStationMatic                        = "https://gasstation-mainnet.matic.network"
+	ArbitrumContractAddress                = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
+	ArbitrumFallbackContractAddress        = ArbitrumContractAddress
+	ArbitrumTestnetContractAddress         = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
+	ArbitrumTestnetFallbackContractAddress = ArbitrumTestnetContractAddress
+	BnbTestnetSwapContractAddress          = "0xcCD17C913aD7b772755Ad4F0BDFF7B34C6339150"
+	BnbSwapContractAddress                 = "0xeDc5b89Fe1f0382F9E4316069971D90a0951DB31"
+	BnbFallbackSwapContractAddress         = BnbSwapContractAddress
+	BnbTestnetFallbackSwapContractAddress  = BnbTestnetSwapContractAddress
+	ErcSwapContractAddress                 = "0x24ABE4c71FC658C91313b6552cd40cD808b3Ea80"
+	ErcTestnetSwapContractAddress          = "0x6b5A52217006B965BB190864D62dc3d270F7AaFD"
+	ErcFallbackSwapContractAddress         = "0x8500AFc0bc5214728082163326C2FF0C73f4a871"
+	ErcTestnetFallbackSwapContractAddress  = "0x7Bc1bBDD6A0a722fC9bffC49c921B685ECB84b94"
+	MaticContractAddress                   = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
+	MaticFallbackContractAddress           = MaticContractAddress
+	MaticTestnetContractAddress            = "0x73c1Dd989218c3A154C71Fc08Eb55A24Bd2B3A10"
+	MaticTestnetFallbackContractAddress    = MaticTestnetContractAddress
+	OptimismContractAddress                = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
+	OptimismFallbackContractAddress        = OptimismContractAddress
+	OptimismTestnetContractAddress         = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
+	OptimismTestnetFallbackContractAddress = OptimismTestnetContractAddress
+	QrcTestnetSwapContractAddress          = "0xba8b71f3544b93e2f681f996da519a98ace0107a"
+	QrcSwapContractAddress                 = "0x2f754733acd6d753731c00fee32cb484551cc15d"
+	QrcTestnetFallbackSwapContractAddress  = QrcTestnetSwapContractAddress
+	QrcFallbackSwapContractAddress         = QrcSwapContractAddress
 )
 
 var GCFGRegistry = make(map[string]*DesktopCFG)
@@ -102,7 +115,10 @@ func GetDesktopPath(appName string) string {
 func ParseDesktopRegistry(version string) {
 	var desktopCoinsPath = constants.GMM2Dir + "/" + version + "-coins.json"
 	file, _ := ioutil.ReadFile(desktopCoinsPath)
-	_ = json.Unmarshal([]byte(file), &GCFGRegistry)
+	err := json.Unmarshal([]byte(file), &GCFGRegistry)
+	if err != nil {
+		glg.Errorf("Cannot parse cfg: %v", err)
+	}
 	helpers.PrintCheck("Successfully load desktop cfg with "+strconv.Itoa(len(GCFGRegistry))+" coins", true)
 }
 
@@ -164,8 +180,22 @@ func ParseDesktopRegistryFromUrl(url string) error {
 	return errors.New("unknown error")
 }
 
+func (cfg *DesktopCFG) RetrieveGasStationUrl() string {
+	switch cfg.Type {
+	case "ERC-20":
+		return GasStationErc20
+	}
+	return ""
+}
+
 func (cfg *DesktopCFG) RetrieveContracts() (string, string) {
 	switch cfg.Type {
+	case "Arbitrum":
+		if cfg.IsTestNet {
+			return ArbitrumTestnetContractAddress, ArbitrumTestnetFallbackContractAddress
+		} else {
+			return ArbitrumContractAddress, ArbitrumFallbackContractAddress
+		}
 	case "BEP-20":
 		if cfg.IsTestNet {
 			return BnbTestnetSwapContractAddress, BnbTestnetFallbackSwapContractAddress
@@ -177,6 +207,18 @@ func (cfg *DesktopCFG) RetrieveContracts() (string, string) {
 			return ErcTestnetSwapContractAddress, ErcTestnetFallbackSwapContractAddress
 		} else {
 			return ErcSwapContractAddress, ErcFallbackSwapContractAddress
+		}
+	case "Matic":
+		if cfg.IsTestNet {
+			return MaticTestnetContractAddress, MaticTestnetFallbackContractAddress
+		} else {
+			return MaticContractAddress, MaticFallbackContractAddress
+		}
+	case "Optimism":
+		if cfg.IsTestNet {
+			return OptimismTestnetContractAddress, OptimismTestnetFallbackContractAddress
+		} else {
+			return OptimismContractAddress, OptimismFallbackContractAddress
 		}
 	case "QRC-20":
 		if cfg.IsTestNet {

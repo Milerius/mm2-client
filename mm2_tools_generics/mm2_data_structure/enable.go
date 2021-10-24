@@ -14,6 +14,7 @@ type EnableRequest struct {
 	TxHistory            bool     `json:"tx_history"`
 	Urls                 []string `json:"urls"`
 	Userpass             string   `json:"userpass"`
+	GasStationUrl        string   `json:"gas_station_url,omitempty"`
 }
 
 func NewEnableRequest(cfg *config.DesktopCFG) *EnableRequest {
@@ -23,6 +24,7 @@ func NewEnableRequest(cfg *config.DesktopCFG) *EnableRequest {
 	req.TxHistory = false
 	req.Urls = cfg.Nodes
 	req.SwapContractAddress, req.FallbackSwapContract = cfg.RetrieveContracts()
+	req.GasStationUrl = cfg.RetrieveGasStationUrl()
 	return req
 }
 
