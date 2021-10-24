@@ -55,6 +55,10 @@ const (
 	ErcTestnetSwapContractAddress          = "0x6b5A52217006B965BB190864D62dc3d270F7AaFD"
 	ErcFallbackSwapContractAddress         = "0x8500AFc0bc5214728082163326C2FF0C73f4a871"
 	ErcTestnetFallbackSwapContractAddress  = "0x7Bc1bBDD6A0a722fC9bffC49c921B685ECB84b94"
+	FtmContractAddress                     = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
+	FtmFallbackContractAddress             = FtmContractAddress
+	FtmTestnetContractAddress              = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
+	FtmTestnetFallbackContractAddress      = FtmTestnetContractAddress
 	MaticContractAddress                   = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
 	MaticFallbackContractAddress           = MaticContractAddress
 	MaticTestnetContractAddress            = "0x73c1Dd989218c3A154C71Fc08Eb55A24Bd2B3A10"
@@ -117,7 +121,7 @@ func ParseDesktopRegistry(version string) {
 	file, _ := ioutil.ReadFile(desktopCoinsPath)
 	err := json.Unmarshal([]byte(file), &GCFGRegistry)
 	if err != nil {
-		glg.Errorf("Cannot parse cfg: %v", err)
+		_ = glg.Errorf("Cannot parse cfg: %v", err)
 	}
 	helpers.PrintCheck("Successfully load desktop cfg with "+strconv.Itoa(len(GCFGRegistry))+" coins", true)
 }
@@ -128,12 +132,12 @@ func ParseDesktopRegistryFromFile(path string) bool {
 	}
 	file, err := ioutil.ReadFile(path)
 	if err != nil {
-		glg.Errorf("err when parsing: %v", err)
+		_ = glg.Errorf("err when parsing: %v", err)
 		return false
 	}
 	unmarshalErr := json.Unmarshal([]byte(file), &GCFGRegistry)
 	if unmarshalErr != nil {
-		glg.Errorf("err when unmarshaling: %v", unmarshalErr)
+		_ = glg.Errorf("err when unmarshaling: %v", unmarshalErr)
 		return false
 	}
 	if len(GCFGRegistry) > 0 {
@@ -184,6 +188,8 @@ func (cfg *DesktopCFG) RetrieveGasStationUrl() string {
 	switch cfg.Type {
 	case "ERC-20":
 		return GasStationErc20
+	case "Matic":
+		return GasStationMatic
 	}
 	return ""
 }
@@ -207,6 +213,12 @@ func (cfg *DesktopCFG) RetrieveContracts() (string, string) {
 			return ErcTestnetSwapContractAddress, ErcTestnetFallbackSwapContractAddress
 		} else {
 			return ErcSwapContractAddress, ErcFallbackSwapContractAddress
+		}
+	case "FTM-20":
+		if cfg.IsTestNet {
+			return FtmTestnetContractAddress, FtmTestnetFallbackContractAddress
+		} else {
+			return FtmContractAddress, FtmFallbackContractAddress
 		}
 	case "Matic":
 		if cfg.IsTestNet {
@@ -271,7 +283,7 @@ func (cfg *DesktopCFG) RetrieveElectrums() []ElectrumData {
 
 func Update(version string) {
 	//fmt.Println("Updating cfg")
-	glg.Infof("Updating cfg")
+	_ = glg.Infof("Updating cfg")
 	if runtime.GOARCH != "wasm" {
 		var desktopCoinsPath = constants.GMM2Dir + "/" + version + "-coins.json"
 		e := os.Remove(desktopCoinsPath)
