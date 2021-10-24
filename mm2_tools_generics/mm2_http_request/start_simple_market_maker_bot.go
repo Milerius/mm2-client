@@ -13,6 +13,7 @@ import (
 
 func StartSimpleMarketMakerBot() (*mm2_data_structure.StartSimpleMarketMakerAnswer, error) {
 	req := mm2_data_structure.NewStartSimpleMarketMakerRequest().ToJson()
+	fmt.Println(req)
 	resp, err := http.Post(mm2_data_structure.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
 	if err != nil {
 		glg.Errorf("Err: %v", err)

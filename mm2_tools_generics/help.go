@@ -11,7 +11,7 @@ const (
 	initUsage                      = `init`
 	startHelp                      = `The start command allow you to start MM2 (with or without services)`
 	startUsage                     = `start (true|false)`
-	startSimpleMarketMakerBotHelp  = `The start_simple_market_maker_bot start a AMM bot that follow binance CEX prices`
+	startSimpleMarketMakerBotHelp  = `The start_simple_market_maker_bot start a AMM bot that CEX prices`
 	startSimpleMarketMakerBotUsage = `start_simple_market_maker_bot`
 	stopSimpleMarketMakerBotHelp   = `The stop_simple_market_maker_bot stop the simple AMM bot`
 	stopSimpleMarketMakerBotUsage  = `stop_simple_market_maker_bot`
@@ -198,6 +198,12 @@ func ShowCommandHelp(command string) {
 		fmt.Println(startSimpleMarketMakerBotHelp)
 		fmt.Println(startSimpleMarketMakerBotUsage)
 	case "stop_simple_market_maker_bot":
+		fmt.Println(stopSimpleMarketMakerBotHelp)
+		fmt.Println(stopSimpleMarketMakerBotUsage)
+	case "start_simple_market_maker_bot_v1":
+		fmt.Println(startSimpleMarketMakerBotHelp)
+		fmt.Println(startSimpleMarketMakerBotUsage)
+	case "stop_simple_market_maker_bot_v1":
 		fmt.Println(stopSimpleMarketMakerBotHelp)
 		fmt.Println(stopSimpleMarketMakerBotUsage)
 	default:

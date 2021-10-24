@@ -35,6 +35,6 @@ func (req *StartSimpleMarketMakerRequest) ToJson() string {
 
 func NewStartSimpleMarketMakerRequest() *StartSimpleMarketMakerRequest {
 	genReq := NewGenericRequestV2("start_simple_market_maker_bot")
-	out := &StartSimpleMarketMakerRequest{Mmrpc: genReq.MMRpc, Userpass: genReq.Userpass, Params: config.GSimpleMarketMakerConf}
+	out := &StartSimpleMarketMakerRequest{Mmrpc: genReq.MMRpc, Userpass: genReq.Userpass, Method: genReq.Method, Params: config.GSimpleMarketMakerConf}
 	return out
 }

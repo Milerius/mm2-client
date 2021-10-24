@@ -160,6 +160,8 @@ func Executor(fullCommand string) {
 		}
 	case "start_simple_market_maker_bot_v1":
 		_ = market_making.StartSimpleMarketMakerBot(constants.GSimpleMarketMakerConf, "file")
+	case "start_simple_market_maker_bot":
+		mm2_tools_generics.StartSimpleMarketMakerBotCLI()
 	case "stop_simple_market_maker_bot_v1":
 		_ = market_making.StopSimpleMarketMakerBotService()
 	case "exit":
