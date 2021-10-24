@@ -30,8 +30,8 @@ var commands = []prompt.Suggest{
 	{Text: "my_orders", Description: "Show the active orders"},
 	{Text: "cancel_order", Description: "Cancel the given order"},
 	{Text: "orderbook", Description: "Show the orderbook of the given pair"},
-	{Text: "start_simple_market_maker_bot", Description: "Start the simple market maker bot"},
-	{Text: "stop_simple_market_maker_bot", Description: "Stop the simple market maker bot"},
+	{Text: "start_simple_market_maker_bot_v1", Description: "[Deprecated] Start the simple market maker bot"},
+	{Text: "stop_simple_market_maker_bot_v1", Description: "[Deprecated] Stop the simple market maker bot"},
 	{Text: "setprice", Description: "The setprice method places an order on the orderbook, and it relies on this node acting as a maker, also called a Bob node."},
 	{Text: "get_binance_supported_pairs", Description: "Show a table of binance supported pairs with average and real calculation"},
 }
@@ -60,8 +60,8 @@ var subCommandsHelp = []prompt.Suggest{
 	{Text: "cancel_order", Description: "Show the help of the cancel_order command"},
 	{Text: "orderbook", Description: "Show the help of the orderbook command"},
 	{Text: "get_binance_supported_pairs", Description: "Show the help of the get_binance_supported_pairs command"},
-	{Text: "start_simple_market_maker_bot", Description: "Show the help of the start_simple_market_maker_bot command"},
-	{Text: "stop_simple_market_maker_bot", Description: "Show the help of the stop_simple_market_maker_bot command"},
+	{Text: "start_simple_market_maker_bot_v1", Description: "[Deprecated] Show the help of the start_simple_market_maker_bot command"},
+	{Text: "stop_simple_market_maker_bot_v1", Description: "[Deprecated] Show the help of the stop_simple_market_maker_bot command"},
 }
 
 var subCommandsEnable = []prompt.Suggest{
