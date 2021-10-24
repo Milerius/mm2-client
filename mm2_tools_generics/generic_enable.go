@@ -13,7 +13,7 @@ func EnableCLI(coin string) {
 	var err error = nil
 	if val, ok := config.GCFGRegistry[coin]; ok {
 		switch val.Type {
-		case "BEP-20", "ERC-20", "Arbitrum", "Optimism", "Matic", "FTM-20", "HRC-20", "AVX-20", "HecoChain":
+		case "BEP-20", "ERC-20", "Arbitrum", "Optimism", "Matic", "FTM-20", "HRC-20", "AVX-20", "HecoChain", "Moonriver":
 			resp, err = Enable(coin)
 		case "UTXO", "QRC-20", "Smart Chain":
 			resp, err = Electrum(coin)
@@ -41,7 +41,7 @@ func EnableMultipleCoins(coins []string) {
 	for _, v := range coins {
 		if val, ok := config.GCFGRegistry[v]; ok {
 			switch val.Type {
-			case "BEP-20", "ERC-20", "Arbitrum", "Optimism", "Matic", "FTM-20", "HRC-20", "AVX-20", "HecoChain":
+			case "BEP-20", "ERC-20", "Arbitrum", "Optimism", "Matic", "FTM-20", "HRC-20", "AVX-20", "HecoChain", "Moonriver":
 				req := mm2_data_structure.NewEnableRequest(val)
 				//fmt.Println(req)
 				outBatch = append(outBatch, req)
