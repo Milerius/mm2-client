@@ -19,3 +19,4 @@ cmd/mm2_cli_wasm/data/deps
 cmd/mm2_cli_wasm/data/js
 cmd/mm2_cli_wasm/data/script.js
 cmd/mm2_cli_wasm/data/wasm_exec.js
+cmd/mm2_cli_wasm/data/static/assets/mm2_market_maker.json
