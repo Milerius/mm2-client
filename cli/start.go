@@ -33,6 +33,7 @@ func StartMM2(withServices bool) {
 			} else {
 				config.ParseDesktopRegistry(http.GetLastDesktopVersion())
 				config.ParseMM2CFGRegistry()
+				config.ParseMarketMakerConf()
 				if withServices {
 					external_services.LaunchServices("file", path.Join(constants.GMM2Dir, "notify_service.json"))
 				} else {

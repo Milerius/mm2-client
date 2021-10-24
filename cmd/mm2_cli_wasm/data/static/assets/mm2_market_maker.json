@@ -1,0 +1,34 @@
+{
+  "price_url": "http://price.cipig.net:1313/api/v2/tickers?expire_at=600",
+  "telegram_api_key": "your_telegram_api_key",
+  "cfg": {
+    "KMD/BCH": {
+      "base": "KMD",
+      "rel": "BCH",
+      "max": true,
+      "min_volume": "0.25",
+      "spread": "1.015",
+      "base_confs": 1,
+      "base_nota": false,
+      "rel_confs": 1,
+      "rel_nota": false,
+      "enable": true,
+      "price_elapsed_validity": 30.0,
+      "check_last_bidirectional_trade_thresh_hold": true
+    },
+    "BCH/KMD": {
+      "base": "BCH",
+      "rel": "KMD",
+      "max": true,
+      "min_volume": "0.25",
+      "spread": "1.015",
+      "base_confs": 1,
+      "base_nota": false,
+      "rel_confs": 1,
+      "rel_nota": false,
+      "enable": true,
+      "price_elapsed_validity": 30.0,
+      "check_last_bidirectional_trade_thresh_hold": true
+    }
+  }
+}

@@ -19,6 +19,7 @@ var (
 	GPricesServicesRunning              = false
 	GMessageServiceRunning              = false
 	GDesktopCfgLoaded                   = false
+	GMarketMakerCfgLoaded               = false
 	GNotifyCfgLoaded                    = false
 )
 

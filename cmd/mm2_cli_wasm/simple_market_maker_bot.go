@@ -6,7 +6,7 @@ import (
 	"syscall/js"
 )
 
-func startSimpleMarketMakerBot() js.Func {
+func startSimpleMarketMakerBotV1() js.Func {
 	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		go func() {
 			err := market_making.StartSimpleMarketMakerBot("http://localhost:8080/static/assets/simple_market_bot.json", "url")
@@ -19,7 +19,7 @@ func startSimpleMarketMakerBot() js.Func {
 	return jsfunc
 }
 
-func stopSimpleMarketMakerBot() js.Func {
+func stopSimpleMarketMakerBotV1() js.Func {
 	jsfunc := js.FuncOf(func(this js.Value, args []js.Value) interface{} {
 		go func() {
 			err := market_making.StopSimpleMarketMakerBotService()
