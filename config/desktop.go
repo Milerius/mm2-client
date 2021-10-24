@@ -47,6 +47,10 @@ const (
 	ArbitrumFallbackContractAddress        = ArbitrumContractAddress
 	ArbitrumTestnetContractAddress         = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
 	ArbitrumTestnetFallbackContractAddress = ArbitrumTestnetContractAddress
+	AvaxContractAddress                    = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
+	AvaxFallbackContractAddress            = AvaxContractAddress
+	AvaxTestnetContractAddress             = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
+	AvaxTestnetFallbackContractAddress     = AvaxTestnetContractAddress
 	BnbTestnetSwapContractAddress          = "0xcCD17C913aD7b772755Ad4F0BDFF7B34C6339150"
 	BnbSwapContractAddress                 = "0xeDc5b89Fe1f0382F9E4316069971D90a0951DB31"
 	BnbFallbackSwapContractAddress         = BnbSwapContractAddress
@@ -63,6 +67,10 @@ const (
 	MaticFallbackContractAddress           = MaticContractAddress
 	MaticTestnetContractAddress            = "0x73c1Dd989218c3A154C71Fc08Eb55A24Bd2B3A10"
 	MaticTestnetFallbackContractAddress    = MaticTestnetContractAddress
+	OneContractAddress                     = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
+	OneFallbackContractAddress             = OneContractAddress
+	OneTestnetContractAddress              = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
+	OneTestnetFallbackContractAddress      = OneTestnetContractAddress
 	OptimismContractAddress                = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
 	OptimismFallbackContractAddress        = OptimismContractAddress
 	OptimismTestnetContractAddress         = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
@@ -202,6 +210,12 @@ func (cfg *DesktopCFG) RetrieveContracts() (string, string) {
 		} else {
 			return ArbitrumContractAddress, ArbitrumFallbackContractAddress
 		}
+	case "AVX-20":
+		if cfg.IsTestNet {
+			return AvaxTestnetContractAddress, AvaxTestnetFallbackContractAddress
+		} else {
+			return AvaxContractAddress, AvaxFallbackContractAddress
+		}
 	case "BEP-20":
 		if cfg.IsTestNet {
 			return BnbTestnetSwapContractAddress, BnbTestnetFallbackSwapContractAddress
@@ -219,6 +233,12 @@ func (cfg *DesktopCFG) RetrieveContracts() (string, string) {
 			return FtmTestnetContractAddress, FtmTestnetFallbackContractAddress
 		} else {
 			return FtmContractAddress, FtmFallbackContractAddress
+		}
+	case "HRC-20":
+		if cfg.IsTestNet {
+			return OneTestnetContractAddress, OneTestnetFallbackContractAddress
+		} else {
+			return OneContractAddress, OneFallbackContractAddress
 		}
 	case "Matic":
 		if cfg.IsTestNet {
