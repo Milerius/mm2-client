@@ -1,6 +1,8 @@
 package mm2_data_structure
 
 import (
+	"encoding/json"
+	"fmt"
 	"mm2_client/config"
 )
 
@@ -9,6 +11,26 @@ type StartSimpleMarketMakerRequest struct {
 	Userpass string                               `json:"userpass"`
 	Method   string                               `json:"method"`
 	Params   *config.StartSimpleMarketMakerParams `json:"params"`
+}
+
+type StartSimpleMarketMakerAnswerSuccess struct {
+	Result string `json:"result"`
+}
+
+type StartSimpleMarketMakerAnswer struct {
+	Mmrpc  string                               `json:"mmrpc"`
+	Result *StartSimpleMarketMakerAnswerSuccess `json:"result,omitempty"`
+	Id     int                                  `json:"id"`
+	Error  string                               `json:"error,omitempty"`
+}
+
+func (req *StartSimpleMarketMakerRequest) ToJson() string {
+	b, err := json.Marshal(req)
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	return string(b)
 }
 
 func NewStartSimpleMarketMakerRequest() *StartSimpleMarketMakerRequest {

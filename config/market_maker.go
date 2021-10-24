@@ -36,6 +36,11 @@ type StartSimpleMarketMakerParams struct {
 
 var GSimpleMarketMakerConf *StartSimpleMarketMakerParams
 
+func init() {
+	GSimpleMarketMakerConf = &StartSimpleMarketMakerParams{}
+	GSimpleMarketMakerConf.Cfg = make(map[string]SimplePairMarketMakerConf)
+}
+
 func ParseMarketMakerConf() {
 	if constants.GMarketMakerCfgLoaded {
 		_ = glg.Infof("Simple Market Maker conf already loaded")
@@ -75,5 +80,5 @@ func ParseMarketMakerConfFromUrl(url string) error {
 		constants.GMarketMakerCfgLoaded = true
 		return nil
 	}
-	return errors.New("unknown error")
+	return errors.New("empty cfg")
 }
