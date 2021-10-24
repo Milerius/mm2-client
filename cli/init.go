@@ -110,9 +110,34 @@ func processVersionConfiguration() {
 	}
 }
 
+func processMarketMakerConf() {
+	targetDir := helpers.GetWorkingDir() + "/mm2"
+	targetPath := targetDir + "/mm2_market_maker.json"
+	if !helpers.FileExists(targetPath) {
+		helpers.PrintCheck("Checking if mm2_market_maker.json is present and configured", false)
+		marketMakerCfg := config.NewMarketMakerTemplateConfig()
+		freshCfg := marketMakerCfg.ToJson()
+		f, err := os.Create(targetPath)
+		if err != nil {
+			fmt.Printf("Err: %v", err)
+			os.Exit(1)
+		}
+		defer f.Close()
+		_, err = f.WriteString(freshCfg)
+		if err != nil {
+			fmt.Printf("Err: %v", err)
+			os.Exit(1)
+		}
+		helpers.PrintCheck("Successfully generated a mm2_market_maker.json template configuration", true)
+	} else {
+		helpers.PrintCheck("Checking if market maker conf json is present", true)
+	}
+}
+
 func InitMM2() {
 	processCoinsFile()
 	processMM2Release()
 	processMM2Json()
 	processVersionConfiguration()
+	processMarketMakerConf()
 }

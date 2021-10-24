@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"github.com/kpango/glg"
 	"io"
 	"io/ioutil"
@@ -39,6 +40,43 @@ var GSimpleMarketMakerConf *StartSimpleMarketMakerParams
 func init() {
 	GSimpleMarketMakerConf = &StartSimpleMarketMakerParams{}
 	GSimpleMarketMakerConf.Cfg = make(map[string]SimplePairMarketMakerConf)
+}
+
+func (cfg *StartSimpleMarketMakerParams) ToJson() string {
+	b, err := json.MarshalIndent(cfg, "", "    ")
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	return string(b)
+}
+
+func NewMarketMakerTemplateConfig() StartSimpleMarketMakerParams {
+	cfg := make(map[string]SimplePairMarketMakerConf)
+	minVol := "0.25"
+	priceElapsedValidity := 30.0
+	cfg["KMD/LTC"] = SimplePairMarketMakerConf{
+		Base:                                  "KMD",
+		Rel:                                   "LTC",
+		Max:                                   true,
+		BalancePercent:                        "",
+		MinVolume:                             &minVol,
+		Spread:                                "1.015",
+		BaseConfs:                             1,
+		BaseNota:                              false,
+		RelConfs:                              1,
+		RelNota:                               false,
+		Enable:                                true,
+		PriceElapsedValidity:                  &priceElapsedValidity,
+		CheckLastBidirectionalTradeThreshHold: helpers.BoolAddr(true),
+	}
+	out := StartSimpleMarketMakerParams{
+		PriceUrl:          "http://price.cipig.net:1313/api/v2/tickers?expire_at=600",
+		TelegramApiKey:    "",
+		TelegramApiChatId: "",
+		Cfg:               cfg,
+	}
+	return out
 }
 
 func ParseMarketMakerConf() {
