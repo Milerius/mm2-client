@@ -14,7 +14,7 @@ require (
 	github.com/kpango/glg v1.6.4
 	github.com/kyokomi/emoji/v2 v2.2.8
 	github.com/lunixbochs/vtclean v1.0.0 // indirect
-	github.com/manifoldco/promptui v0.8.0
+	github.com/manifoldco/promptui v0.9.0
 	github.com/nikoksr/notify v0.17.3
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/schollz/progressbar/v3 v3.8.3
