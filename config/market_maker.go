@@ -29,10 +29,8 @@ type SimplePairMarketMakerConf struct {
 }
 
 type StartSimpleMarketMakerParams struct {
-	PriceUrl          string                               `json:"price_url,omitempty"`
-	TelegramApiKey    string                               `json:"telegram_api_key,omitempty"`
-	TelegramApiChatId string                               `json:"telegram_api_chat_id,omitempty"`
-	Cfg               map[string]SimplePairMarketMakerConf `json:"cfg"`
+	PriceUrl string                               `json:"price_url,omitempty"`
+	Cfg      map[string]SimplePairMarketMakerConf `json:"cfg"`
 }
 
 var GSimpleMarketMakerConf *StartSimpleMarketMakerParams
@@ -71,10 +69,8 @@ func NewMarketMakerTemplateConfig() StartSimpleMarketMakerParams {
 		CheckLastBidirectionalTradeThreshHold: helpers.BoolAddr(true),
 	}
 	out := StartSimpleMarketMakerParams{
-		PriceUrl:          "http://price.cipig.net:1313/api/v2/tickers?expire_at=600",
-		TelegramApiKey:    "",
-		TelegramApiChatId: "",
-		Cfg:               cfg,
+		PriceUrl: "http://price.cipig.net:1313/api/v2/tickers?expire_at=600",
+		Cfg:      cfg,
 	}
 	return out
 }

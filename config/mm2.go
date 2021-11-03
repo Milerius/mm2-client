@@ -10,17 +10,27 @@ import (
 	"strconv"
 )
 
+type TelegramConfig struct {
+	ApiKey       string            `json:"api_key"`
+	ChatRegistry map[string]string `json:"chat_registry"`
+}
+
+type MessageServiceConfig struct {
+	Telegram *TelegramConfig `json:"telegram"`
+}
+
 type MM2Config struct {
-	Dbdir       *string    `json:"dbdir,omitempty"`
-	Gui         string     `json:"gui"`
-	MM2         *int       `json:"mm2,omitempty"`
-	Netid       int        `json:"netid"`
-	Passphrase  string     `json:"passphrase"`
-	RPCPassword string     `json:"rpc_password"`
-	Userhome    *string    `json:"userhome,omitempty"`
-	IMASeed     bool       `json:"im_a_seed,omitempty"`
-	Coins       *[]*MM2CFG `json:"coins,omitempty"`
-	SeedNodes   *[]string  `json:"seednodes,omitempty"`
+	Dbdir             *string               `json:"dbdir,omitempty"`
+	Gui               string                `json:"gui"`
+	MM2               *int                  `json:"mm2,omitempty"`
+	Netid             int                   `json:"netid"`
+	Passphrase        string                `json:"passphrase"`
+	RPCPassword       string                `json:"rpc_password"`
+	Userhome          *string               `json:"userhome,omitempty"`
+	IMASeed           bool                  `json:"im_a_seed,omitempty"`
+	Coins             *[]*MM2CFG            `json:"coins,omitempty"`
+	SeedNodes         *[]string             `json:"seednodes,omitempty"`
+	MessageServiceCfg *MessageServiceConfig `json:"message_service_cfg"`
 }
 
 func NewMM2ConfigFromFile(targetPath string) *MM2Config {
