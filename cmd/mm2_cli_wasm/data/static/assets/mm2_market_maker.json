@@ -1,6 +1,6 @@
 {
   "price_url": "http://price.cipig.net:1313/api/v2/tickers?expire_at=600",
-  "telegram_api_key": "your_telegram_api_key",
+  "telegram_api_key": "1940710747:AAHYWPI6NiWZn8BJ271fcIezXvA58lsZS5A",
   "cfg": {
     "KMD/BCH": {
       "base": "KMD",
