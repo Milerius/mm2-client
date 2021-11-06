@@ -110,7 +110,7 @@ func NomicsRetrieveUSDValIfSupported(coin string) (string, string, string) {
 		val, ok := NomicsPriceRegistry.Load(*cfg.NomicsId)
 		if ok {
 			resp := val.(NomicsAnswer)
-			valStr = fmt.Sprintf("%f", resp.Price)
+			valStr = fmt.Sprintf("%s", resp.Price)
 			dateStr = helpers.GetDateFromTime(resp.PriceTimestamp)
 		}
 		return valStr, dateStr, "nomics"

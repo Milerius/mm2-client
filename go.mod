@@ -10,10 +10,8 @@ require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/fasthttp/router v1.4.4
 	github.com/fatih/color v1.12.0 // indirect
-	github.com/juju/ansiterm v0.0.0-20210706145210-9283cdf370b5 // indirect
 	github.com/kpango/glg v1.6.4
 	github.com/kyokomi/emoji/v2 v2.2.8
-	github.com/lunixbochs/vtclean v1.0.0 // indirect
 	github.com/manifoldco/promptui v0.9.0
 	github.com/nikoksr/notify v0.17.3
 	github.com/olekukonko/tablewriter v0.0.5
