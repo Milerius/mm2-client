@@ -18,6 +18,15 @@ func GetDateFromTimestampStandard(timestamp int64) string {
 	return tm.UTC().Format(time.RFC3339)
 }
 
+func RFCDateToTimestamp(date string) int64 {
+	layout := "2006-01-02T15:04:05Z"
+	parse, err := time.Parse(layout, date)
+	if err != nil {
+		return 0
+	}
+	return parse.Unix()
+}
+
 func DateToTimestamp(date string, withoutSecond bool) int64 {
 	layout := "2 Jan 2006 15:04:05"
 	if withoutSecond {

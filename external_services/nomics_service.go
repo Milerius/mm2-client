@@ -6,7 +6,6 @@ import (
 	"github.com/kpango/glg"
 	"io/ioutil"
 	"mm2_client/config"
-	"mm2_client/helpers"
 	"net/http"
 	"os"
 	"strings"
@@ -57,8 +56,8 @@ var NomicsPriceRegistry sync.Map
 func NewNomicsRequest() string {
 	url := gNomicsEndpoint + "&ids="
 	for _, cur := range config.GCFGRegistry {
-		if !cur.IsTestNet {
-			url += helpers.RetrieveMainTicker(cur.Coin) + ","
+		if !cur.IsTestNet && cur.NomicsId != nil {
+			url += *cur.NomicsId + ","
 		}
 	}
 	url = strings.TrimSuffix(url, ",")
