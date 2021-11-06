@@ -3,6 +3,7 @@ package mm2_tools_generics
 import (
 	"encoding/json"
 	"fmt"
+	"mm2_client/config"
 	"mm2_client/external_services"
 	"mm2_client/helpers"
 )
@@ -44,10 +45,14 @@ func (req *TickerInfosAnswer) ToWeb() map[string]interface{} {
 }
 
 func GetTickerInfos(ticker string, expirePriceValidity int) *TickerInfosAnswer {
-	val, date, provider := external_services.RetrieveUSDValIfSupported(ticker, expirePriceValidity)
-	volume, _, volumeProvider := external_services.RetrieveVolume24h(ticker)
-	sparkline7d, _, sparklineProvider := external_services.RetrieveSparkline7D(ticker)
-	change24h, _, change24hProvider := external_services.RetrievePercentChange24h(ticker)
+	outTicker := ticker
+	if cfg, cfgOk := config.GCFGRegistry[ticker]; cfgOk && cfg.AliasTicker != nil {
+		outTicker = *cfg.AliasTicker
+	}
+	val, date, provider := external_services.RetrieveUSDValIfSupported(outTicker, expirePriceValidity)
+	volume, _, volumeProvider := external_services.RetrieveVolume24h(outTicker)
+	sparkline7d, _, sparklineProvider := external_services.RetrieveSparkline7D(outTicker)
+	change24h, _, change24hProvider := external_services.RetrievePercentChange24h(outTicker)
 	return &TickerInfosAnswer{Ticker: ticker, LastPrice: val, LastUpdated: date,
 		LastUpdatedTimestamp: helpers.RFC3339ToTimestampSecond(date),
 		PriceProvider:        provider,

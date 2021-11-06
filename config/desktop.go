@@ -25,6 +25,7 @@ type ElectrumData struct {
 type DesktopCFG struct {
 	Coin               string         `json:"coin"`
 	Name               string         `json:"name"`
+	AliasTicker        *string        `json:"alias_ticker,omitempty"`
 	CoinpaprikaID      string         `json:"coinpaprika_id"`
 	CoingeckoID        string         `json:"coingecko_id"`
 	NomicsId           *string        `json:"nomics_id,omitempty"`
