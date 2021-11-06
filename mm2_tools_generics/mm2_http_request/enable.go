@@ -15,6 +15,7 @@ import (
 func Enable(coin string) (*mm2_data_structure.GenericEnableAnswer, error) {
 	if val, ok := config.GCFGRegistry[coin]; ok {
 		req := mm2_data_structure.NewEnableRequest(val).ToJson()
+		//println(req)
 		resp, err := http.Post(mm2_data_structure.GMM2Endpoint, "application/json", bytes.NewBuffer([]byte(req)))
 		if err != nil {
 			glg.Errorf("Err: %v", err)

@@ -15,6 +15,7 @@ type EnableRequest struct {
 	Urls                 []string `json:"urls"`
 	Userpass             string   `json:"userpass"`
 	GasStationUrl        string   `json:"gas_station_url,omitempty"`
+	GasStationDecimals   *int     `json:"gas_station_decimals,omitempty"`
 }
 
 func NewEnableRequest(cfg *config.DesktopCFG) *EnableRequest {
@@ -25,6 +26,7 @@ func NewEnableRequest(cfg *config.DesktopCFG) *EnableRequest {
 	req.Urls = cfg.Nodes
 	req.SwapContractAddress, req.FallbackSwapContract = cfg.RetrieveContracts()
 	req.GasStationUrl = cfg.RetrieveGasStationUrl()
+	req.GasStationDecimals = cfg.RetrieveGasStationDecimals()
 	return req
 }
 

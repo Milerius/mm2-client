@@ -59,6 +59,10 @@ const (
 	ErcTestnetSwapContractAddress          = "0x6b5A52217006B965BB190864D62dc3d270F7AaFD"
 	ErcFallbackSwapContractAddress         = "0x8500AFc0bc5214728082163326C2FF0C73f4a871"
 	ErcTestnetFallbackSwapContractAddress  = "0x7Bc1bBDD6A0a722fC9bffC49c921B685ECB84b94"
+	EtcContractAddress                     = "0x6d9ce4BD298DE38bAfEFD15f5C6f5c95313B1d94"
+	EtcFallbackContractAddress             = EtcContractAddress
+	EtcTestnetContractAddress              = "0x6d9ce4BD298DE38bAfEFD15f5C6f5c95313B1d94"
+	EtcTestnetFallbackContractAddress      = EtcTestnetContractAddress
 	FtmContractAddress                     = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
 	FtmFallbackContractAddress             = FtmContractAddress
 	FtmTestnetContractAddress              = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
@@ -91,6 +95,10 @@ const (
 	QrcSwapContractAddress                 = "0x2f754733acd6d753731c00fee32cb484551cc15d"
 	QrcTestnetFallbackSwapContractAddress  = QrcTestnetSwapContractAddress
 	QrcFallbackSwapContractAddress         = QrcSwapContractAddress
+	SmartBchContractAddress                = "0x25bF2AAB8749AD2e4360b3e0B738f3Cd700C4D68"
+	SmartBchFallbackContractAddress        = SmartBchContractAddress
+	SmartBchTestnetContractAddress         = "0x25bF2AAB8749AD2e4360b3e0B738f3Cd700C4D68"
+	SmartBchTestnetFallbackContractAddress = SmartBchTestnetContractAddress
 	UbiqContractAddress                    = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
 	UbiqFallbackContractAddress            = UbiqContractAddress
 	UbiqTestnetContractAddress             = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
@@ -98,6 +106,9 @@ const (
 )
 
 var GCFGRegistry = make(map[string]*DesktopCFG)
+
+var GasStationMaticDecimals = 9
+var GasStationErc20Decimals = 8
 
 func GetDesktopDB() *string {
 	result := os.Getenv("HOME") + "atomic_qt/mm2/DB"
@@ -218,6 +229,16 @@ func (cfg *DesktopCFG) RetrieveGasStationUrl() string {
 	return ""
 }
 
+func (cfg *DesktopCFG) RetrieveGasStationDecimals() *int {
+	switch cfg.Type {
+	case "ERC-20":
+		return &GasStationErc20Decimals
+	case "Matic":
+		return &GasStationMaticDecimals
+	}
+	return nil
+}
+
 func (cfg *DesktopCFG) RetrieveContracts() (string, string) {
 	switch cfg.Type {
 	case "Arbitrum":
@@ -243,6 +264,18 @@ func (cfg *DesktopCFG) RetrieveContracts() (string, string) {
 			return ErcTestnetSwapContractAddress, ErcTestnetFallbackSwapContractAddress
 		} else {
 			return ErcSwapContractAddress, ErcFallbackSwapContractAddress
+		}
+	case "Ethereum Classic":
+		if cfg.IsTestNet {
+			return EtcTestnetContractAddress, EtcTestnetFallbackContractAddress
+		} else {
+			return EtcContractAddress, EtcFallbackContractAddress
+		}
+	case "SmartBCH":
+		if cfg.IsTestNet {
+			return SmartBchTestnetContractAddress, SmartBchTestnetFallbackContractAddress
+		} else {
+			return SmartBchContractAddress, SmartBchFallbackContractAddress
 		}
 	case "FTM-20":
 		if cfg.IsTestNet {
