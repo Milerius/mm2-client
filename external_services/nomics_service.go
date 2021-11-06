@@ -6,6 +6,7 @@ import (
 	"github.com/kpango/glg"
 	"io/ioutil"
 	"mm2_client/config"
+	"mm2_client/helpers"
 	"net/http"
 	"os"
 	"strings"
@@ -100,4 +101,32 @@ func StartNomicsService() {
 		}
 		time.Sleep(time.Second * 30)
 	}
+}
+
+func NomicsRetrieveUSDValIfSupported(coin string) (string, string, string) {
+	dateStr := helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
+	valStr := "0"
+	if cfg, cfgOk := config.GCFGRegistry[coin]; cfgOk && cfg.NomicsId != nil {
+		val, ok := NomicsPriceRegistry.Load(*cfg.NomicsId)
+		if ok {
+			resp := val.(NomicsAnswer)
+			valStr = fmt.Sprintf("%f", resp.Price)
+			dateStr = helpers.GetDateFromTime(resp.PriceTimestamp)
+		}
+		return valStr, dateStr, "nomics"
+	}
+	return valStr, dateStr, "unknown"
+}
+
+func NomicsRetrieveCEXRatesFromPair(base string, rel string) (string, bool, string, string) {
+	basePrice, baseDate, _ := NomicsRetrieveUSDValIfSupported(base)
+	relPrice, relDate, _ := NomicsRetrieveUSDValIfSupported(rel)
+	price := helpers.BigFloatDivide(basePrice, relPrice, 8)
+	date := helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
+	if helpers.RFC3339ToTimestamp(baseDate) <= helpers.RFC3339ToTimestamp(relDate) {
+		date = baseDate
+	} else {
+		date = relDate
+	}
+	return price, true, date, "nomics"
 }

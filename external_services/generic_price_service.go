@@ -11,6 +11,12 @@ func RetrieveUSDValIfSupported(coin string, expirePriceValidity int) (string, st
 	elapsed := helpers.DateToTimeElapsed(date)
 	expirePriceValidityF := float64(expirePriceValidity)
 
+	//! Nomics
+	if val == "0" || (expirePriceValidity > 0 && elapsed > expirePriceValidityF) {
+		val, date, provider = NomicsRetrieveUSDValIfSupported(coin)
+		elapsed = helpers.DateToTimeElapsed(date)
+	}
+
 	//! Gecko
 	if val == "0" || (expirePriceValidity > 0 && elapsed > expirePriceValidityF) {
 		val, date, provider = CoingeckoRetrieveUSDValIfSupported(coin)
@@ -34,6 +40,11 @@ func RetrieveUSDValIfSupported(coin string, expirePriceValidity int) (string, st
 func RetrieveCEXRatesFromPair(base string, rel string) (string, bool, string, string) {
 	//! Binance
 	val, calculated, date, provider := BinanceRetrieveCEXRatesFromPair(base, rel)
+
+	//! Nomics
+	if val == "0" {
+		val, calculated, date, provider = NomicsRetrieveCEXRatesFromPair(base, rel)
+	}
 
 	//! Gecko
 	if val == "0" {
