@@ -77,7 +77,7 @@ func NewWithdrawRequest(coin string, amount string, address string, fees []strin
 	if len(fees) > 0 {
 		req.WithdrawRequestParams.Fee = &Fee{}
 		switch coinType {
-		case "ERC-20", "BEP-20":
+		case "BEP-20", "ERC-20", "Arbitrum", "Optimism", "Matic", "FTM-20", "HRC-20", "AVX-20", "HecoChain", "Moonriver", "KRC-20", "Ubiq", "Ethereum Classic", "SmartBCH":
 			req.WithdrawRequestParams.Fee.Type = "EthGas"
 			req.WithdrawRequestParams.Fee.GasPrice = fees[1]
 			req.WithdrawRequestParams.Fee.Gas, _ = strconv.Atoi(fees[2])
