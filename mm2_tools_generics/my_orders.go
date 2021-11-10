@@ -44,7 +44,7 @@ func renderTableMakerOrders(withFees bool, makerOrders map[string]mm2_data_struc
 	i := 0
 	var wg sync.WaitGroup
 	for _, cur := range makerOrders {
-		curData := []string{cur.Base, helpers.BigFloatMultiply(cur.MinBaseVol, "1", 8), cur.AvailableAmount, "", helpers.BigFloatMultiply(cur.AvailableAmount, cur.Price, 8), cur.Rel, helpers.BigFloatMultiply(cur.Price, "1", 8), cur.Uuid}
+		curData := []string{cur.Base, helpers.BigFloatMultiply(cur.MinBaseVol, "1", 8), helpers.BigFloatMultiply(cur.AvailableAmount, "1", 8), "", helpers.BigFloatMultiply(cur.AvailableAmount, cur.Price, 8), cur.Rel, helpers.BigFloatMultiply(cur.Price, "1", 8), cur.Uuid}
 		data[i] = curData
 		wg.Add(1)
 		go func(wg *sync.WaitGroup, idx int, curObj mm2_data_structure.MakerOrderContent) {
