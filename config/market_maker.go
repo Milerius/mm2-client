@@ -19,6 +19,7 @@ type SimplePairMarketMakerConf struct {
 	BalancePercent                        string   `json:"balance_percent,omitempty"`
 	MinVolume                             *string  `json:"min_volume,omitempty"`
 	MinVolumeUsd                          *string  `json:"min_volume_usd,omitempty"`
+	MaxVolumeUsd                          *string  `json:"max_volume_usd,omitempty"`
 	BaseMinPrice                          *string  `json:"min_base_price,omitempty"`
 	RelMinPrice                           *string  `json:"min_rel_price,omitempty"`
 	PairMinPrice                          *string  `json:"min_pair_price,omitempty"`
