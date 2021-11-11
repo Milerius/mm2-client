@@ -12,25 +12,28 @@ import (
 	"strconv"
 )
 
+type VolumeSettings struct {
+	Usd        *string `json:"usd,omitempty"`
+	Percentage *string `json:"percentage,omitempty"`
+}
+
 type SimplePairMarketMakerConf struct {
-	Base                                  string   `json:"base"`
-	Rel                                   string   `json:"rel"`
-	Max                                   bool     `json:"max,omitempty"`
-	BalancePercent                        string   `json:"balance_percent,omitempty"`
-	MinVolume                             *string  `json:"min_volume,omitempty"`
-	MinVolumeUsd                          *string  `json:"min_volume_usd,omitempty"`
-	MaxVolumeUsd                          *string  `json:"max_volume_usd,omitempty"`
-	BaseMinPrice                          *string  `json:"min_base_price,omitempty"`
-	RelMinPrice                           *string  `json:"min_rel_price,omitempty"`
-	PairMinPrice                          *string  `json:"min_pair_price,omitempty"`
-	Spread                                string   `json:"spread"`
-	BaseConfs                             int      `json:"base_confs"`
-	BaseNota                              bool     `json:"base_nota"`
-	RelConfs                              int      `json:"rel_confs"`
-	RelNota                               bool     `json:"rel_nota"`
-	Enable                                bool     `json:"enable"`
-	PriceElapsedValidity                  *float64 `json:"price_elapsed_validity,omitempty"`
-	CheckLastBidirectionalTradeThreshHold *bool    `json:"check_last_bidirectional_trade_thresh_hold,omitempty"`
+	Base                                  string          `json:"base"`
+	Rel                                   string          `json:"rel"`
+	Max                                   bool            `json:"max,omitempty"`
+	MinVolume                             *VolumeSettings `json:"min_volume,omitempty"`
+	MaxVolume                             *VolumeSettings `json:"max_volume,omitempty"`
+	BaseMinPrice                          *string         `json:"min_base_price,omitempty"`
+	RelMinPrice                           *string         `json:"min_rel_price,omitempty"`
+	PairMinPrice                          *string         `json:"min_pair_price,omitempty"`
+	Spread                                string          `json:"spread"`
+	BaseConfs                             int             `json:"base_confs"`
+	BaseNota                              bool            `json:"base_nota"`
+	RelConfs                              int             `json:"rel_confs"`
+	RelNota                               bool            `json:"rel_nota"`
+	Enable                                bool            `json:"enable"`
+	PriceElapsedValidity                  *float64        `json:"price_elapsed_validity,omitempty"`
+	CheckLastBidirectionalTradeThreshHold *bool           `json:"check_last_bidirectional_trade_thresh_hold,omitempty"`
 }
 
 type StartSimpleMarketMakerParams struct {
@@ -56,14 +59,11 @@ func (cfg *StartSimpleMarketMakerParams) ToJson() string {
 
 func NewMarketMakerTemplateConfig() StartSimpleMarketMakerParams {
 	cfg := make(map[string]SimplePairMarketMakerConf)
-	minVol := "0.25"
 	priceElapsedValidity := 30.0
 	cfg["KMD/LTC"] = SimplePairMarketMakerConf{
 		Base:                                  "KMD",
 		Rel:                                   "LTC",
 		Max:                                   true,
-		BalancePercent:                        "",
-		MinVolume:                             &minVol,
 		Spread:                                "1.015",
 		BaseConfs:                             1,
 		BaseNota:                              false,
