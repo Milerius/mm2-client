@@ -3,9 +3,7 @@ package cli
 import (
 	"fmt"
 	"mm2_client/config"
-	"mm2_client/constants"
 	"mm2_client/external_services"
-	"mm2_client/market_making"
 	"mm2_client/mm2_tools_generics"
 	"mm2_client/mm2_tools_generics/mm2_data_structure"
 	"os"
@@ -158,17 +156,12 @@ func Executor(fullCommand string) {
 		} else if len(command) == 2 {
 			external_services.GetBinanceSupportedPairs(command[1])
 		}
-	case "start_simple_market_maker_bot_v1":
-		_ = market_making.StartSimpleMarketMakerBot(constants.GSimpleMarketMakerConf, "file")
 	case "start_simple_market_maker_bot":
 		mm2_tools_generics.StartSimpleMarketMakerBotCLI()
-	case "stop_simple_market_maker_bot_v1":
-		_ = market_making.StopSimpleMarketMakerBotService()
 	case "stop_simple_market_maker_bot":
 		mm2_tools_generics.StopSimpleMarketMakerBotCLI()
 	case "exit":
 		fmt.Println("Quitting the application - trying to shutdown MM2")
-		_ = market_making.StopSimpleMarketMakerBotService()
 		StopMM2()
 		os.Exit(0)
 	}

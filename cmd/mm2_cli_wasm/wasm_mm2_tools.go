@@ -297,10 +297,8 @@ func main() {
 	js.Global().Set("start_price_service", startPriceService())  ///< start the price service - cannot be stopped
 
 	//! Trading bot API
-	js.Global().Set("start_simple_market_maker_bot_v1", startSimpleMarketMakerBotV1()) ///< start the simple trading bot
-	js.Global().Set("stop_simple_market_maker_bot_v1", stopSimpleMarketMakerBotV1())   ///< stop the simple trading bot
-	js.Global().Set("start_simple_market_maker_bot", startSimpleMarketMakerBot())      ///< start the simple trading bot
-	js.Global().Set("stop_simple_market_maker_bot", stopSimpleMarketMakerBot())        ///< stop the simple trading bot
+	js.Global().Set("start_simple_market_maker_bot", startSimpleMarketMakerBot()) ///< start the simple trading bot
+	js.Global().Set("stop_simple_market_maker_bot", stopSimpleMarketMakerBot())   ///< stop the simple trading bot
 
 	//! CLI API
 	js.Global().Set("bootstrap", bootstrap())                       ///< Sugar init_wasm + load_cfg() + run_mm2 + mm2conf + enable active coins

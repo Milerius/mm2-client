@@ -20,13 +20,7 @@ func LaunchPriceServices() {
 	constants.GPricesServicesRunning = true
 }
 
-func LaunchMessagesService(kind string, target string) {
-	go StartNotifierMessagesService(kind, target)
-}
-
 func LaunchServices(kind string, target string) {
 	glg.Info("Launching price services")
 	LaunchPriceServices()
-	glg.Info("Launching extra services")
-	LaunchMessagesService(kind, target)
 }
