@@ -13,6 +13,8 @@ func LaunchPriceServices() {
 		glg.Info("Starting nomics price service")
 		go StartNomicsService()
 	}
+	glg.Info("Start forex service")
+	go StartForexService()
 	glg.Info("Starting coingecko price service")
 	go StartCoingeckoService()
 	glg.Info("Starting coinpaprika price service")

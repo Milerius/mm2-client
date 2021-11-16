@@ -11,6 +11,14 @@ func RetrieveUSDValIfSupported(coin string, expirePriceValidity int) (string, st
 	elapsed := helpers.DateToTimeElapsed(date)
 	expirePriceValidityF := float64(expirePriceValidity)
 
+	//! Forex
+	if val == "0" || (expirePriceValidity > 0 && elapsed > expirePriceValidityF) {
+		val, date, provider = ForexRetrieveUSDValIfSupported(coin)
+		if val != "0" {
+			return val, date, provider
+		}
+	}
+
 	//! Nomics
 	if val == "0" || (expirePriceValidity > 0 && elapsed > expirePriceValidityF) {
 		val, date, provider = NomicsRetrieveUSDValIfSupported(coin)

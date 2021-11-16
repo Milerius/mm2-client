@@ -18,6 +18,12 @@ func GetDateFromTimestampStandard(timestamp int64) string {
 	return tm.UTC().Format(time.RFC3339)
 }
 
+func GetDateFromTimestampStandardSeconds(timestamp int64) string {
+	//fmt.Println(timestamp)
+	tm := time.Unix(timestamp, 0)
+	return tm.UTC().Format(time.RFC3339)
+}
+
 func GetDateFromTime(timestamp time.Time) string {
 	return timestamp.UTC().Format(time.RFC3339)
 }
