@@ -36,6 +36,8 @@ var commands = []prompt.Suggest{
 	{Text: "stop_simple_market_maker_bot", Description: "Stop the simple market maker bot"},
 	{Text: "setprice", Description: "The setprice method places an order on the orderbook, and it relies on this node acting as a maker, also called a Bob node."},
 	{Text: "get_binance_supported_pairs", Description: "Show a table of binance supported pairs with average and real calculation"},
+	{Text: "liquidity", Description: "Show liquidity in dollars for a given coin"},
+	{Text: "liquidity_all", Description: "Show all the liquidity available in atomicdex"},
 }
 
 var subCommandsHelp = []prompt.Suggest{
@@ -66,6 +68,8 @@ var subCommandsHelp = []prompt.Suggest{
 	{Text: "stop_simple_market_maker_bot_v1", Description: "[Deprecated] Show the help of the stop_simple_market_maker_bot command"},
 	{Text: "start_simple_market_maker_bot", Description: "Show the help of the start_simple_market_maker_bot command"},
 	{Text: "stop_simple_market_maker_bot", Description: "Show the help of the stop_simple_market_maker_bot command"},
+	{Text: "liquidity", Description: "Show the help of the liquidity command"},
+	{Text: "liquidity_all", Description: "Show the help of the liquidity_all command"},
 }
 
 var subCommandsEnable = []prompt.Suggest{
@@ -557,6 +561,11 @@ func (c *Completer) argumentsCompleter(args []string) []prompt.Suggest {
 				{Text: "max", Description: "Use the max balance of (" + args[1] + ")"},
 			}
 			return prompt.FilterContains(subCommandsSetPriceSecond, cur, true)
+		}
+	case "liquidity":
+		cur := args[len(args)-1]
+		if len(args) == 2 {
+			return prompt.FilterHasPrefix(subCommandsEnable, cur, true)
 		}
 	case "orderbook":
 		cur := args[len(args)-1]

@@ -160,6 +160,18 @@ func Executor(fullCommand string) {
 		mm2_tools_generics.StartSimpleMarketMakerBotCLI()
 	case "stop_simple_market_maker_bot":
 		mm2_tools_generics.StopSimpleMarketMakerBotCLI()
+	case "liquidity":
+		if len(command) == 2 {
+			queryLiquidity(command[1], true)
+		} else {
+			mm2_tools_generics.ShowGlobalHelp()
+		}
+	case "liquidity_all":
+		if len(command) == 1 {
+			queryLiquidityAll()
+		} else {
+			mm2_tools_generics.ShowGlobalHelp()
+		}
 	case "exit":
 		fmt.Println("Quitting the application - trying to shutdown MM2")
 		StopMM2()
