@@ -85,7 +85,13 @@ func StartCoinpaprikaService() {
 			glg.Info("Coinpaprika request successfully processed")
 			for _, cur := range *resp {
 				functorVerification(cur.Symbol, cur)
+				functorVerification(cur.Symbol+"-v2", cur)
 				functorVerification(cur.Symbol+"-ERC20", cur)
+				functorVerification(cur.Symbol+"-PLG20", cur)
+				functorVerification(cur.Symbol+"-AVX20", cur)
+				functorVerification(cur.Symbol+"-FTM20", cur)
+				functorVerification(cur.Symbol+"-KRC20", cur)
+				functorVerification(cur.Symbol+"-HRC20", cur)
 				functorVerification(cur.Symbol+"-BEP20", cur)
 				functorVerification(cur.Symbol+"-QRC20", cur)
 			}
