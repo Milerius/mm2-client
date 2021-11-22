@@ -34,6 +34,9 @@ func RetrieveUSDValIfSupported(coin string, expirePriceValidity int) (string, st
 	//! Paprika
 	if val == "0" || (expirePriceValidity > 0 && elapsed > expirePriceValidityF) {
 		val, date, provider = CoinpaprikaRetrieveUSDValIfSupported(coin)
+		if val == "0" {
+			val, date, provider = CoinpaprikaRetrieveUSDValIfSupported(helpers.RetrieveMainTicker(coin))
+		}
 		elapsed = helpers.DateToTimeElapsed(date)
 	}
 
