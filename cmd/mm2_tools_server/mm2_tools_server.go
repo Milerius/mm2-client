@@ -5,11 +5,10 @@ import (
 	"github.com/kpango/glg"
 	"mm2_client/config"
 	"mm2_client/external_services"
-	"mm2_client/helpers"
-	mm2http "mm2_client/http"
 	"mm2_client/log"
 	"mm2_client/mm2_tools_server"
 	"path/filepath"
+	"strings"
 )
 
 func main() {
@@ -31,12 +30,15 @@ func main() {
 	} else {
 		_ = glg.Infof("Logger initialized for app: %s", appName)
 	}
-	version := mm2http.GetLastDesktopVersion()
-	targetPath := helpers.GetWorkingDir() + "/" + version + "-coins.json"
-	res := config.ParseDesktopRegistryFromFile(targetPath)
-	if res {
-		glg.Info("starting price service from within the server")
-		external_services.LaunchPriceServices()
+	matches, _ := filepath.Glob("*.json")
+	for _, curMatch := range matches {
+		if strings.Contains(curMatch, "coins.json") {
+			res := config.ParseDesktopRegistryFromFile(curMatch)
+			if res {
+				glg.Info("starting price service from within the server")
+				external_services.LaunchPriceServices()
+			}
+		}
 	}
 	mm2_tools_server.LaunchServer(appName, onlyPriceService)
 }
