@@ -130,3 +130,19 @@ func NomicsRetrieveCEXRatesFromPair(base string, rel string) (string, bool, stri
 	}
 	return price, true, date, "nomics"
 }
+
+func NomicsGetChange24h(coin string) (string, string, string) {
+	changePercent24h := "0"
+	dateStr := helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
+	if cfg, cfgOk := config.GCFGRegistry[coin]; cfgOk && cfg.NomicsId != nil {
+		val, ok := NomicsPriceRegistry.Load(*cfg.NomicsId)
+		if ok {
+			resp := val.(NomicsAnswer)
+			changePercent24h = fmt.Sprintf("%s", resp.D.PriceChangePct)
+			changePercent24h = helpers.BigFloatMultiply(changePercent24h, "100", 3)
+			dateStr = helpers.GetDateFromTime(resp.PriceTimestamp)
+		}
+		return changePercent24h, dateStr, "nomics"
+	}
+	return changePercent24h, dateStr, "unknown"
+}

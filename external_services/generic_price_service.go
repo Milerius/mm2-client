@@ -100,9 +100,15 @@ func RetrievePercentChange24h(coin string) (string, string, string) {
 	if change24h == "0" {
 		change24h, date, provider = CoingeckoGetChange24h(coin)
 	}
+
+	if change24h == "0" {
+		change24h, date, provider = NomicsGetChange24h(coin)
+	}
+
 	if change24h == "0" {
 		change24h, date, provider = CoinpaprikaGetChange24h(coin)
 	}
+
 	if change24h != "0" {
 		return change24h, date, provider
 	} else {
