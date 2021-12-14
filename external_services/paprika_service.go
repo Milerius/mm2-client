@@ -146,6 +146,9 @@ func CoinpaprikaGetChange24h(coin string) (string, string, string) {
 	dateStr := helpers.GetDateFromTimestampStandard(time.Now().UnixNano())
 	if _, cfgOk := config.GCFGRegistry[coin]; cfgOk {
 		val, ok := CoinpaprikaRegistry.Load(coin)
+		if !ok {
+			val, ok = CoinpaprikaRegistry.Load(helpers.RetrieveMainTicker(coin))
+		}
 		if ok {
 			resp := val.(CoinpaprikaAnswer)
 			changePercent24h = fmt.Sprintf("%f", resp.Quotes.USD.PercentChange24H)
