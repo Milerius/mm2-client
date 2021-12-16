@@ -98,11 +98,11 @@ func RetrieveSparkline7D(coin string) (*[]float64, string, string) {
 func RetrievePercentChange24h(coin string) (string, string, string) {
 	_, date, change24h, provider := BinanceRetrieveUSDValIfSupported(coin)
 	if change24h == "0" {
-		change24h, date, provider = CoingeckoGetChange24h(coin)
+		change24h, date, provider = NomicsGetChange24h(coin)
 	}
 
 	if change24h == "0" {
-		change24h, date, provider = NomicsGetChange24h(coin)
+		change24h, date, provider = CoingeckoGetChange24h(coin)
 	}
 
 	if change24h == "0" {
