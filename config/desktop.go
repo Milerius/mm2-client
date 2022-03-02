@@ -86,6 +86,10 @@ const (
 	MovrFallbackContractAddress            = MovrContractAddress
 	MovrTestnetContractAddress             = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
 	MovrTestnetFallbackContractAddress     = MovrTestnetContractAddress
+	GlmrContractAddress                    = "0x6d9ce4BD298DE38bAfEFD15f5C6f5c95313B1d94"
+	GlmrFallbackContractAddress            = MovrContractAddress
+	GlmrTestnetContractAddress             = "0x6d9ce4BD298DE38bAfEFD15f5C6f5c95313B1d94"
+	GlmrTestnetFallbackContractAddress     = MovrTestnetContractAddress
 	OneContractAddress                     = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
 	OneFallbackContractAddress             = OneContractAddress
 	OneTestnetContractAddress              = "0x9130b257d37a52e52f21054c4da3450c72f595ce"
@@ -315,6 +319,12 @@ func (cfg *DesktopCFG) RetrieveContracts() (string, string) {
 			return MovrTestnetContractAddress, MovrTestnetFallbackContractAddress
 		} else {
 			return MovrContractAddress, MovrFallbackContractAddress
+		}
+	case "Moonbeam":
+		if cfg.IsTestNet {
+			return GlmrTestnetContractAddress, GlmrTestnetFallbackContractAddress
+		} else {
+			return GlmrContractAddress, GlmrFallbackContractAddress
 		}
 	case "Optimism":
 		if cfg.IsTestNet {
