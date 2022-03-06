@@ -9,6 +9,7 @@ import (
 	"mm2_client/helpers"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -52,9 +53,11 @@ type NomicsAnswer struct {
 var gNomicsEndpoint = "https://api.nomics.com/v1/currencies/ticker?key=" + os.Getenv("NOMICS_API_KEY")
 var gNomicsOptions = "&interval=1d&status=active"
 
+const NB_PAGE_ITEMS = 100
+
 var NomicsPriceRegistry sync.Map
 
-func NewNomicsRequest() string {
+func NewNomicsRequest(page int) string {
 	url := gNomicsEndpoint + "&ids="
 	for _, cur := range config.GCFGRegistry {
 		if !cur.IsTestNet && cur.NomicsId != nil {
@@ -63,11 +66,13 @@ func NewNomicsRequest() string {
 	}
 	url = strings.TrimSuffix(url, ",")
 	url += gNomicsOptions
+	url += "&per-page=100"
+	url += "&page=" + fmt.Sprintf("%d", page)
 	return url
 }
 
-func processNomics() *[]NomicsAnswer {
-	url := NewNomicsRequest()
+func processNomics(currentPage int) *[]NomicsAnswer {
+	url := NewNomicsRequest(currentPage)
 	_ = glg.Infof("Processing nomics request: %s", url)
 	resp, err := http.Get(url)
 	if err != nil {
@@ -81,6 +86,24 @@ func processNomics() *[]NomicsAnswer {
 			fmt.Printf("Err: %v\n", decodeErr)
 			return nil
 		}
+
+		nbItems := resp.Header.Get("X-Pagination-Total-Items")
+		nbItemsInt, convErr := strconv.Atoi(nbItems)
+		if convErr != nil {
+			fmt.Printf("Err: %v\n", convErr)
+			return nil
+		}
+		nbPages := nbItemsInt / NB_PAGE_ITEMS
+		if nbItemsInt%NB_PAGE_ITEMS > 0 {
+			nbPages += 1
+		}
+		for currentPage < nbPages {
+			currentPage += 1
+			time.Sleep(time.Second * 1)
+			if res := processNomics(currentPage); res != nil {
+				*answer = append(*answer, *res...)
+			}
+		}
 		return answer
 	} else {
 		bodyBytes, _ := ioutil.ReadAll(resp.Body)
@@ -91,7 +114,7 @@ func processNomics() *[]NomicsAnswer {
 
 func StartNomicsService() {
 	for {
-		if resp := processNomics(); resp != nil {
+		if resp := processNomics(1); resp != nil {
 			glg.Info("Nomics request successfully processed")
 			for _, cur := range *resp {
 				NomicsPriceRegistry.Store(cur.Id, cur)
