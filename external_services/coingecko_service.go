@@ -25,7 +25,7 @@ type CoingeckoAnswer struct {
 	CurrentPrice                 float64   `json:"current_price"`
 	MarketCap                    float64   `json:"market_cap"`
 	MarketCapRank                *int      `json:"market_cap_rank"`
-	FullyDilutedValuation        *int64    `json:"fully_diluted_valuation"`
+	FullyDilutedValuation        *float64  `json:"fully_diluted_valuation"`
 	TotalVolume                  float64   `json:"total_volume"`
 	High24H                      *float64  `json:"high_24h"`
 	Low24H                       *float64  `json:"low_24h"`
