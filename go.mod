@@ -10,7 +10,7 @@ require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/fasthttp/router v1.4.4
 	github.com/fatih/color v1.12.0 // indirect
-	github.com/kpango/glg v1.6.4
+	github.com/kpango/glg v1.6.11
 	github.com/kyokomi/emoji/v2 v2.2.8
 	github.com/manifoldco/promptui v0.9.0
 	github.com/nikoksr/notify v0.17.3
