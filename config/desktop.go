@@ -23,7 +23,7 @@ type ElectrumData struct {
 }
 type NodesData struct {
 	URL                     string  `json:"url"`
-	GuiAuth                 *string `json:"ws_url,omitempty"`
+	GuiAuth                 *string `json:"gui_auth,omitempty"`
 }
 
 type DesktopCFG struct {
