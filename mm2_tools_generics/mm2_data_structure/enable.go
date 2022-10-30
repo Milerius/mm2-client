@@ -6,18 +6,13 @@ import (
 	"mm2_client/config"
 )
 
-type NodesData struct {
-	URL                     string  `json:"url"`
-	GuiAuth                 *string `json:"gui_auth,omitempty"`
-}
-
 type EnableRequest struct {
 	Coin                 string      `json:"coin"`
 	FallbackSwapContract string      `json:"fallback_swap_contract"`
 	Method               string      `json:"method"`
 	SwapContractAddress  string      `json:"swap_contract_address"`
 	TxHistory            bool        `json:"tx_history"`
-	Urls                 []NodesData `json:"urls"`
+	Urls                 []config.NodesData `json:"urls"`
 	Userpass             string      `json:"userpass"`
 	GasStationUrl        string      `json:"gas_station_url,omitempty"`
 	GasStationDecimals   *int        `json:"gas_station_decimals,omitempty"`
@@ -44,10 +39,11 @@ func (req *EnableRequest) ToJson() string {
 	return string(b)
 }
 
-func getUrls(cfg *config.DesktopCFG) []string {
-	var urls []NodesData
-	for i, s := range cfg.Nodes {
-	    urls = append(urls, s)
+func getUrls(cfg *config.DesktopCFG) []config.NodesData {
+	var urls []config.NodesData
+	for _, value := range cfg.Nodes {
+	    urls = append(urls, value)
 	}
 	return urls
 }
+
