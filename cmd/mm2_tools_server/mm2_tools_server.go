@@ -32,11 +32,13 @@ func main() {
 	}
 	matches, _ := filepath.Glob("*.json")
 	for _, curMatch := range matches {
-		if strings.Contains(curMatch, "coins.json") {
+		if strings.Contains(curMatch, "coins_config.json") {
 			res := config.ParseDesktopRegistryFromFile(curMatch)
 			if res {
-				glg.Info("starting price service from within the server")
+				glg.Info("Starting price service from within the server")
 				external_services.LaunchPriceServices()
+			} else {
+				glg.Error("Failed to start price service!")
 			}
 		}
 	}
