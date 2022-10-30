@@ -21,6 +21,7 @@ type ElectrumData struct {
 	Protocol                *string `json:"protocol,omitempty"`
 	DisableCertVerification *bool   `json:"disable_cert_verification,omitempty"`
 }
+
 type NodesData struct {
 	URL                     string  `json:"url"`
 	GuiAuth                 *string `json:"gui_auth,omitempty"`
@@ -163,7 +164,7 @@ func GetDesktopPath(appName string) string {
 }
 
 func ParseDesktopRegistry(version string) {
-	var desktopCoinsPath = constants.GMM2Dir + "/" + version + "-coins.json"
+	var desktopCoinsPath = constants.GMM2Dir + "/coins_config.json"
 	file, _ := ioutil.ReadFile(desktopCoinsPath)
 	err := json.Unmarshal([]byte(file), &GCFGRegistry)
 	if err != nil {
@@ -395,7 +396,7 @@ func Update(version string) {
 	//fmt.Println("Updating cfg")
 	_ = glg.Infof("Updating cfg")
 	if runtime.GOARCH != "wasm" {
-		var desktopCoinsPath = constants.GMM2Dir + "/" + version + "-coins.json"
+		var desktopCoinsPath = constants.GMM2Dir + "/coins_config.json"
 		e := os.Remove(desktopCoinsPath)
 		if e != nil {
 			fmt.Printf("Err: %v", e)

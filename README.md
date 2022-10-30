@@ -68,7 +68,7 @@ go build -o mm2_tools_server_bin cmd/mm2_tools_server/mm2_tools_server.go
 curl --location --request POST 'localhost:1313/api/v1/start_simple_market_maker_bot' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-  "desktop_cfg_path": "/Users/milerius/Library/Application Support/AtomicDex Desktop/config/0.5.0-coins.Roman.json",
+  "desktop_cfg_path": "/Users/milerius/coins/utils/coins_config.json",
   "mm2_coins_cfg_path": "/Users/milerius/Library/Application Support/AtomicDex Desktop/0.5.0/configs/coins.json",
   "market_maker_cfg_path": "/Users/milerius/GolandProjects/mm2-client/mm2/simple_market_bot.json",
   "mm2_userpass": "foobar"

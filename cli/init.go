@@ -99,8 +99,8 @@ func processMM2Json() {
 func processVersionConfiguration() {
 	version := mm2http.GetLastDesktopVersion()
 	targetDir := helpers.GetWorkingDir() + "/mm2"
-	targetPath := targetDir + "/" + version + "-coins.json"
-	targetUrl := "https://raw.githubusercontent.com/KomodoPlatform/atomicDEX-Desktop/dev/assets/config/" + version + "-coins.json"
+	targetPath := targetDir + "/coins_config.json"
+	targetUrl := "https://raw.githubusercontent.com/KomodoPlatform/coins/master/utils/coins_config.json"
 	if !helpers.FileExists(targetPath) {
 		helpers.PrintCheck("Checking if desktop coins json is present", false)
 		emoji.Printf("Downloading now %s :recycle:\n", targetUrl)
