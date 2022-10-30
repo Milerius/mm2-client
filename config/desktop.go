@@ -21,6 +21,10 @@ type ElectrumData struct {
 	Protocol                *string `json:"protocol,omitempty"`
 	DisableCertVerification *bool   `json:"disable_cert_verification,omitempty"`
 }
+type NodesData struct {
+	URL                     string  `json:"url"`
+	GuiAuth                 *string `json:"ws_url,omitempty"`
+}
 
 type DesktopCFG struct {
 	Coin               string         `json:"coin"`
@@ -31,8 +35,8 @@ type DesktopCFG struct {
 	NomicsId           *string        `json:"nomics_id,omitempty"`
 	ForexId            *string        `json:"forex_id,omitempty"`
 	Electrum           []ElectrumData `json:"electrum,omitempty"`
-	Nodes              []string       `json:"nodes,omitempty"`
-	ExplorerURL        []string       `json:"explorer_url"`
+	Nodes              []NodesData    `json:"nodes,omitempty"`
+	ExplorerURL        string         `json:"explorer_url"`
 	ExplorerTxURL      string         `json:"explorer_tx_url,omitempty"`
 	ExplorerAddressURL string         `json:"explorer_address_url,omitempty"`
 	Type               string         `json:"type"`

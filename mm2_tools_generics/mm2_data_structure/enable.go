@@ -23,7 +23,7 @@ func NewEnableRequest(cfg *config.DesktopCFG) *EnableRequest {
 	req := &EnableRequest{Userpass: genReq.Userpass, Method: genReq.Method}
 	req.Coin = cfg.Coin
 	req.TxHistory = false
-	req.Urls = cfg.Nodes
+	req.Urls = getUrls(cfg)
 	req.SwapContractAddress, req.FallbackSwapContract = cfg.RetrieveContracts()
 	req.GasStationUrl = cfg.RetrieveGasStationUrl()
 	req.GasStationDecimals = cfg.RetrieveGasStationDecimals()
@@ -37,4 +37,12 @@ func (req *EnableRequest) ToJson() string {
 		return ""
 	}
 	return string(b)
+}
+
+func getUrls(cfg *config.DesktopCFG) []string {
+	var urls []string
+	for i, s := range cfg.Nodes {
+	    urls = append(urls, s)
+	}
+	return urls
 }
