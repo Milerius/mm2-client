@@ -64,7 +64,7 @@ func NewCoingeckoRequest() string {
 		}
 	}
 	url = strings.TrimSuffix(url, ",")
-	url += "&order=market_cap_desc&price_change_percentage=24h&sparkline=true"
+	url += "&order=market_cap_desc&price_change_percentage=24h&sparkline=true&per_page=250"
 	return url
 }
 
