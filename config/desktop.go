@@ -24,7 +24,7 @@ type ElectrumData struct {
 
 type NodesData struct {
 	URL                     string  `json:"url"`
-	GuiAuth                 *string `json:"gui_auth,omitempty"`
+	GuiAuth                 *bool   `json:"gui_auth,omitempty"`
 }
 
 type DesktopCFG struct {
