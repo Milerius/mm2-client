@@ -1,3 +1,7 @@
+# Build and config files
+mm2_tools_server_bin
+coins_config.json
+
 # Binaries for programs and plugins
 *.exe
 *.exe~

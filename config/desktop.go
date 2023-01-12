@@ -22,6 +22,11 @@ type ElectrumData struct {
 	DisableCertVerification *bool   `json:"disable_cert_verification,omitempty"`
 }
 
+type NodesData struct {
+	URL                     string  `json:"url"`
+	GuiAuth                 *bool   `json:"gui_auth,omitempty"`
+}
+
 type DesktopCFG struct {
 	Coin               string         `json:"coin"`
 	Name               string         `json:"name"`
@@ -31,8 +36,8 @@ type DesktopCFG struct {
 	NomicsId           *string        `json:"nomics_id,omitempty"`
 	ForexId            *string        `json:"forex_id,omitempty"`
 	Electrum           []ElectrumData `json:"electrum,omitempty"`
-	Nodes              []string       `json:"nodes,omitempty"`
-	ExplorerURL        []string       `json:"explorer_url"`
+	Nodes              []NodesData    `json:"nodes,omitempty"`
+	ExplorerURL        string         `json:"explorer_url"`
 	ExplorerTxURL      string         `json:"explorer_tx_url,omitempty"`
 	ExplorerAddressURL string         `json:"explorer_address_url,omitempty"`
 	Type               string         `json:"type"`
@@ -159,7 +164,7 @@ func GetDesktopPath(appName string) string {
 }
 
 func ParseDesktopRegistry(version string) {
-	var desktopCoinsPath = constants.GMM2Dir + "/" + version + "-coins.json"
+	var desktopCoinsPath = constants.GMM2Dir + "/coins_config.json"
 	file, _ := ioutil.ReadFile(desktopCoinsPath)
 	err := json.Unmarshal([]byte(file), &GCFGRegistry)
 	if err != nil {
@@ -391,7 +396,7 @@ func Update(version string) {
 	//fmt.Println("Updating cfg")
 	_ = glg.Infof("Updating cfg")
 	if runtime.GOARCH != "wasm" {
-		var desktopCoinsPath = constants.GMM2Dir + "/" + version + "-coins.json"
+		var desktopCoinsPath = constants.GMM2Dir + "/coins_config.json"
 		e := os.Remove(desktopCoinsPath)
 		if e != nil {
 			fmt.Printf("Err: %v", e)

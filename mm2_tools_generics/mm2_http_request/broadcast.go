@@ -30,9 +30,9 @@ func Broadcast(coin string, txHex string) (*mm2_data_structure.BroadcastAnswer, 
 			}
 
 			if val.ExplorerTxURL != "" {
-				answer.TxUrl = val.ExplorerURL[0] + val.ExplorerTxURL + answer.TxHash
+				answer.TxUrl = val.ExplorerURL + val.ExplorerTxURL + answer.TxHash
 			} else {
-				answer.TxUrl = val.ExplorerURL[0] + "tx/" + answer.TxHash
+				answer.TxUrl = val.ExplorerURL + "tx/" + answer.TxHash
 			}
 			return answer, nil
 		} else {

@@ -7,15 +7,15 @@ import (
 )
 
 type EnableRequest struct {
-	Coin                 string   `json:"coin"`
-	FallbackSwapContract string   `json:"fallback_swap_contract"`
-	Method               string   `json:"method"`
-	SwapContractAddress  string   `json:"swap_contract_address"`
-	TxHistory            bool     `json:"tx_history"`
-	Urls                 []string `json:"urls"`
-	Userpass             string   `json:"userpass"`
-	GasStationUrl        string   `json:"gas_station_url,omitempty"`
-	GasStationDecimals   *int     `json:"gas_station_decimals,omitempty"`
+	Coin                 string      `json:"coin"`
+	FallbackSwapContract string      `json:"fallback_swap_contract"`
+	Method               string      `json:"method"`
+	SwapContractAddress  string      `json:"swap_contract_address"`
+	TxHistory            bool        `json:"tx_history"`
+	Urls                 []config.NodesData `json:"urls"`
+	Userpass             string      `json:"userpass"`
+	GasStationUrl        string      `json:"gas_station_url,omitempty"`
+	GasStationDecimals   *int        `json:"gas_station_decimals,omitempty"`
 }
 
 func NewEnableRequest(cfg *config.DesktopCFG) *EnableRequest {
@@ -23,7 +23,7 @@ func NewEnableRequest(cfg *config.DesktopCFG) *EnableRequest {
 	req := &EnableRequest{Userpass: genReq.Userpass, Method: genReq.Method}
 	req.Coin = cfg.Coin
 	req.TxHistory = false
-	req.Urls = cfg.Nodes
+	req.Urls = getUrls(cfg)
 	req.SwapContractAddress, req.FallbackSwapContract = cfg.RetrieveContracts()
 	req.GasStationUrl = cfg.RetrieveGasStationUrl()
 	req.GasStationDecimals = cfg.RetrieveGasStationDecimals()
@@ -38,3 +38,12 @@ func (req *EnableRequest) ToJson() string {
 	}
 	return string(b)
 }
+
+func getUrls(cfg *config.DesktopCFG) []config.NodesData {
+	var urls []config.NodesData
+	for _, value := range cfg.Nodes {
+	    urls = append(urls, value)
+	}
+	return urls
+}
+

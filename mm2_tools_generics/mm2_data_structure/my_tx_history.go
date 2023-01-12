@@ -127,9 +127,9 @@ func (answer *MyTxHistoryAnswer) ToTable(coinReq string, page int, tx int, withO
 			txUrl := ""
 			if cfgExist {
 				if cfg.ExplorerTxURL != "" {
-					txUrl = cfg.ExplorerURL[0] + cfg.ExplorerTxURL + curAnswer.TxHash
+					txUrl = cfg.ExplorerURL + cfg.ExplorerTxURL + curAnswer.TxHash
 				} else {
-					txUrl = cfg.ExplorerURL[0] + "tx/" + curAnswer.TxHash
+					txUrl = cfg.ExplorerURL + "tx/" + curAnswer.TxHash
 				}
 			}
 
