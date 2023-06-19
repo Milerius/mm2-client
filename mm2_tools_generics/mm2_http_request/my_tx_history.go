@@ -12,7 +12,7 @@ import (
 	"net/http"
 )
 
-const customTxEndpoint = "https://komodo.live:3334/api/"
+const customTxEndpoint = "https://komodo.earth:3334/api/"
 
 func MyTxHistory(coin string, defaultNbTx int, defaultPage int, withFiatValue bool, isMax bool) (*mm2_data_structure.MyTxHistoryAnswer, error) {
 	if _, ok := config.GCFGRegistry[coin]; ok {
