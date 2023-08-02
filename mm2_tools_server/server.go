@@ -38,5 +38,5 @@ func LaunchServer(appName string, onlyPriceService bool) {
 	middleware := mfasthttp.NewMiddleware(limiter.New(store, rate, limiter.WithTrustForwardHeader(true)))
 	glg.Info("Middleware created")
 
-        glg.Fatal(fasthttp.ListenAndServeTLS(":"+fmt.Sprintf("%d", 1313), "/etc/letsencrypt/live/prices.komodo.earth/fullchain.pem", "/etc/letsencrypt/live/prices.komodo.earth/privkey.pem", middleware.Handle(router.Handler)))
+        glg.Fatal(fasthttp.ListenAndServeTLS(":"+fmt.Sprintf("%d", 13579), "/etc/letsencrypt/live/prices.komodo.earth/fullchain.pem", "/etc/letsencrypt/live/prices.komodo.earth/privkey.pem", middleware.Handle(router.Handler)))
 }

@@ -11,7 +11,7 @@ import (
 	"time"
 )
 
-const targetUrl = "https://api.github.com/repos/KomodoPlatform/atomicDEX-API/releases/latest"
+const targetUrl = "https://api.github.com/repos/KomodoPlatform/komodo-defi-framework/releases/latest"
 
 type GithubLatestRelease struct {
 	URL       string `json:"url"`

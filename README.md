@@ -65,7 +65,7 @@ go build -o mm2_tools_server_bin cmd/mm2_tools_server/mm2_tools_server.go
 
 # Assuming your userpass for the session is foobar
 # Starting the simple market maker bot
-curl --location --request POST 'localhost:1313/api/v1/start_simple_market_maker_bot' \
+curl --location --request POST 'localhost:13579/api/v1/start_simple_market_maker_bot' \
 --header 'Content-Type: application/json' \
 --data-raw '{
   "desktop_cfg_path": "/Users/milerius/coins/utils/coins_config.json",
@@ -75,7 +75,7 @@ curl --location --request POST 'localhost:1313/api/v1/start_simple_market_maker_
 }'
 
 # stopping the bot
-curl --location --request POST 'localhost:1313/api/v1/stop_simple_market_maker_bot'
+curl --location --request POST 'localhost:13579/api/v1/stop_simple_market_maker_bot'
 ```
 
 ### How to use the server on Ios
