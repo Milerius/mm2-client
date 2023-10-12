@@ -3,14 +3,17 @@ package external_services
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/kpango/glg"
 	"io/ioutil"
 	"mm2_client/config"
+	"mm2_client/constants"
 	"mm2_client/helpers"
 	"net/http"
+	"sort"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/kpango/glg"
 )
 
 type CoingeckoSparkLineData struct {
@@ -56,38 +59,46 @@ const gCoingeckoEndpoint = "https://api.coingecko.com/api/v3/coins/markets?vs_cu
 
 var CoingeckoPriceRegistry sync.Map
 
-func NewCoingeckoRequest() string {
+func NewCoingeckoRequest(page int) string {
 	url := gCoingeckoEndpoint
-	for _, cur := range config.GCFGRegistry {
-		if cur.CoingeckoID != "test-coin" {
-			url += cur.CoingeckoID + ","
-		}
-	}
-	url = strings.TrimSuffix(url, ",")
-	url += "&order=market_cap_desc&price_change_percentage=24h&sparkline=true&per_page=250"
+	all_coins := getGeckoCoinsList()
+	url += strings.Join(all_coins, ",")
+	url += "&order=id_asc&price_change_percentage=24h&sparkline=true&per_page=250"
+	url += "&page=" + fmt.Sprintf("%d", page)
 	return url
 }
 
 func processCoingecko() *[]CoingeckoAnswer {
-	url := NewCoingeckoRequest()
-	_ = glg.Infof("Processing coingecko request: %s", url)
-	resp, err := http.Get(url)
-	if err != nil {
-		return nil
-	}
-	if resp.StatusCode == http.StatusOK {
-		defer resp.Body.Close()
-		var answer = &[]CoingeckoAnswer{}
-		decodeErr := json.NewDecoder(resp.Body).Decode(answer)
-		if decodeErr != nil {
-			fmt.Printf("Err: %v\n", decodeErr)
-			return nil
+	var answer = &[]CoingeckoAnswer{}
+	page := 1
+	for {
+		url := NewCoingeckoRequest(page)
+		_ = glg.Infof("Processing coingecko request: %s", url)
+		resp, err := http.Get(url)
+		if err != nil {
+			fmt.Printf("Err != nil: %v\n", err)
 		}
-		return answer
-	} else {
-		bodyBytes, _ := ioutil.ReadAll(resp.Body)
-		glg.Errorf("Http status not OK: %s", bodyBytes)
-		return nil
+		if resp.StatusCode == http.StatusOK {
+			defer resp.Body.Close()
+			var page_answer = &[]CoingeckoAnswer{}
+			decodeErr := json.NewDecoder(resp.Body).Decode(page_answer)
+			if decodeErr != nil {
+				fmt.Printf("decodeErr: %v\n", decodeErr)
+			}
+			fmt.Printf("Got %v coins form Gecko\n", len(*page_answer))
+			*answer = append(*answer, *page_answer...)
+			if len(*page_answer) == 0 || len(*page_answer) < 250 {
+				return answer
+			}
+		} else {
+			bodyBytes, _ := ioutil.ReadAll(resp.Body)
+			glg.Errorf("Http status not OK: %s", bodyBytes)
+			if len(*answer) == 0 {
+				return nil
+			}
+			return answer
+		}
+		page += 1
 	}
 }
 
@@ -101,7 +112,7 @@ func StartCoingeckoService() {
 		} else {
 			glg.Error("Something went wrong when processing coingecko request")
 		}
-		time.Sleep(time.Second * 30)
+		time.Sleep(constants.GPricesLoopTime)
 	}
 }
 
@@ -180,4 +191,16 @@ func CoingeckoGetChange24h(coin string) (string, string, string) {
 		return changePercent24h, dateStr, "coingecko"
 	}
 	return changePercent24h, dateStr, "unknown"
+}
+
+func getGeckoCoinsList() []string {
+	coins := []string{}
+	for _, cur := range config.GCFGRegistry {
+		if cur.CoingeckoID != "test-coin" && cur.CoingeckoID != "" {
+			coins = append(coins, cur.CoingeckoID)
+		}
+	}
+	coins = helpers.UniqueStrings(coins)
+	sort.Strings(coins)
+	return coins
 }

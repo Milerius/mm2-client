@@ -3,16 +3,17 @@ package external_services
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/kpango/glg"
 	"io/ioutil"
 	"mm2_client/config"
+	"mm2_client/constants"
 	"mm2_client/helpers"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/kpango/glg"
 )
 
 type NomicsAnswer struct {
@@ -50,7 +51,7 @@ type NomicsAnswer struct {
 	} `json:"1d"`
 }
 
-var gNomicsEndpoint = "https://api.nomics.com/v1/currencies/ticker?key=" + os.Getenv("NOMICS_API_KEY")
+var gNomicsEndpoint = "https://api.nomics.com/v1/currencies/ticker?key=" + constants.GNomicsApiKey
 var gNomicsOptions = "&interval=1d&status=active"
 
 const NB_PAGE_ITEMS = 100
@@ -122,7 +123,7 @@ func StartNomicsService() {
 		} else {
 			glg.Error("Something went wrong when processing nomics request")
 		}
-		time.Sleep(time.Second * 30)
+		time.Sleep(constants.GPricesLoopTime)
 	}
 }
 

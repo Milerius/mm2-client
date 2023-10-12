@@ -34,7 +34,8 @@ type DesktopCFG struct {
 	CoinpaprikaID      string         `json:"coinpaprika_id"`
 	CoingeckoID        string         `json:"coingecko_id"`
 	NomicsId           *string        `json:"nomics_id,omitempty"`
-	ForexId            *string        `json:"forex_id,omitempty"`
+	LcwId              string         `json:"livecoinwatch_id"`
+	ForexId            *string        `json:"forex_id,omitempty"`	
 	Electrum           []ElectrumData `json:"electrum,omitempty"`
 	Nodes              []NodesData    `json:"nodes,omitempty"`
 	ExplorerURL        string         `json:"explorer_url"`

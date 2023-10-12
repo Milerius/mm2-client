@@ -40,6 +40,11 @@ func RetrieveUSDValIfSupported(coin string, expirePriceValidity int) (string, st
 		elapsed = helpers.DateToTimeElapsed(date)
 	}
 
+	//! LCW
+	if val == "0" || (expirePriceValidity > 0 && elapsed > expirePriceValidityF) {
+		val, date, provider = LcwRetrieveUSDValIfSupported(coin)
+	}
+
 	//! Verification
 	if val != "0" {
 		return val, date, provider
@@ -55,6 +60,11 @@ func RetrieveCEXRatesFromPair(base string, rel string) (string, bool, string, st
 	//! Nomics
 	if val == "0" {
 		val, calculated, date, provider = NomicsRetrieveCEXRatesFromPair(base, rel)
+	}
+
+	//! LWC
+	if val == "0" {
+		val, calculated, date, provider = LcwRetrieveCEXRatesFromPair(base, rel)
 	}
 
 	//! Gecko
@@ -79,6 +89,9 @@ func RetrieveVolume24h(coin string) (string, string, string) {
 	volume, date, provider := CoingeckoGetTotalVolume(coin)
 	if volume == "0" {
 		volume, date, provider = CoinpaprikaTotalVolume(coin)
+	}
+	if volume == "0" {
+		volume, date, provider = LcwGetTotalVolume(coin)
 	}
 	if volume != "0" {
 		return volume, date, provider
@@ -107,6 +120,10 @@ func RetrievePercentChange24h(coin string) (string, string, string) {
 
 	if change24h == "0" {
 		change24h, date, provider = CoinpaprikaGetChange24h(coin)
+	}
+
+	if change24h == "0" {
+		change24h, date, provider = LcwGetChange24h(coin)
 	}
 
 	if change24h != "0" {

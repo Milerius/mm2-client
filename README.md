@@ -167,3 +167,72 @@ class MainActivity : AppCompatActivity() {
 # for android simulator devices please start the emulator and run then start your app
 adb forward tcp:1313 tcp:1313
 ```
+
+
+#### Adding your API keys
+
+API keys are populated in `constants/constants.go` and are used to fetch prices from external services from your local environment. 
+Make sure to add these to your environment variables before running the server (either via .bashrc or systemd service files).
+```
+NOMICS_API_KEY=
+LCW_API_KEY=
+GECKO_API_KEY=
+PAPRIKA_API_KEY=
+```
+
+Note: Nomics is defunct. Only LCW api keys are functional yet (Gecko and Paprika run without a key for now)
+
+
+#### Building price service only
+
+
+```
+go build -o prices_komodo_earth cmd/mm2_tools_server/mm2_tools_server.go
+./prices_komodo_earth
+```
+
+#### Using systemd service
+```
+[Unit]
+Description=prices-komodo-earth
+After=multi-user.target
+Conflicts=getty@tty1.service
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+[Service]
+# API Keys
+Environment="LCW_API_KEY=<YOUR_LCW_API_KEY>"
+
+# Path to service binary.
+WorkingDirectory=/home/admin/mm2-client
+ExecStart=/home/admin/mm2-client/prices_komodo_earth -only_price_service=true
+
+# Logs path
+StandardOutput=append:/home/admin/logs/prices-komodo-earth.log
+StandardError=append:/home/admin/logs/prices-komodo-earth.log
+
+User=admin
+Group=admin
+Type=simple
+TimeoutStopSec=30min
+Restart=on-failure
+RestartSec=10s
+
+StandardInput=tty-force
+
+[Install]
+WantedBy=multi-user.target
+
+```
+
+#### Updating coins file via sudo cronjob
+
+Set script to run daily via root's cronjob to update coins file and restart service
+```
+#!/bin/bash
+curl https://raw.githubusercontent.com/KomodoPlatform/coins/master/utils/coins_config.json -o /home/admin/mm2-client/coins_config.json
+go build -o /home/admin/mm2-client/prices_komodo_earth /home/admin/mm2-client/cmd/mm2_tools_server/mm2_tools_server.go
+systemctl restart prices-komodo-earth
+```
+

@@ -31,3 +31,31 @@ func SortDoubleSliceByDate(data [][]string, idx int, ascending bool) {
 		}
 	})
 }
+
+// Returns only unique values from a list of strings
+func UniqueStrings(input []string) []string {
+	u := make([]string, 0, len(input))
+	m := make(map[string]bool)
+	for _, val := range input {
+		if _, ok := m[val]; !ok {
+			m[val] = true
+			u = append(u, val)
+		}
+	}
+	return u
+}
+
+func ChunkStringList(slice []string, chunkSize int) [][]string {
+	var chunks [][]string
+	for {
+		if len(slice) == 0 {
+			break
+		}
+		if len(slice) < chunkSize {
+			chunkSize = len(slice)
+		}
+		chunks = append(chunks, slice[0:chunkSize])
+		slice = slice[chunkSize:]
+	}
+	return chunks
+}

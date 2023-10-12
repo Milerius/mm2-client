@@ -3,13 +3,15 @@ package external_services
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/kpango/glg"
 	"io/ioutil"
 	"mm2_client/config"
+	"mm2_client/constants"
 	"mm2_client/helpers"
 	"net/http"
 	"sync"
 	"time"
+
+	"github.com/kpango/glg"
 )
 
 type CoinpaprikaAnswer struct {
@@ -98,7 +100,7 @@ func StartCoinpaprikaService() {
 		} else {
 			glg.Error("Something went wrong when processing coinpaprika request")
 		}
-		time.Sleep(time.Second * 30)
+		time.Sleep(constants.GPricesLoopTime)
 	}
 }
 
