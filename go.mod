@@ -7,7 +7,7 @@ require (
 	github.com/adshao/go-binance/v2 v2.3.2
 	github.com/andybalholm/brotli v1.0.3 // indirect
 	github.com/c-bata/go-prompt v0.2.6
-	github.com/dustin/go-humanize v1.0.0
+	github.com/dustin/go-humanize v1.0.1
 	github.com/fasthttp/router v1.4.4
 	github.com/fatih/color v1.12.0 // indirect
 	github.com/kpango/glg v1.6.4
