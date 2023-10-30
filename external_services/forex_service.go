@@ -20,7 +20,7 @@ type ForexAnswer struct {
 	Rates     map[string]float64 `json:"rates"`
 }
 
-var gForexEndpoint = "https://rates.komodo.earth/api/v1/usd_rates"
+var gForexEndpoint = "https://defi-stats.komodo.earth/api/v3/rates/fixer_io"
 
 var ForexPriceRegistry sync.Map
 
