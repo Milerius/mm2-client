@@ -17,7 +17,7 @@ require (
 	github.com/olekukonko/tablewriter v0.0.5
 	github.com/schollz/progressbar/v3 v3.8.3
 	github.com/soniah/evaler v2.2.0+incompatible
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.9.0
 	github.com/tyler-smith/go-bip39 v1.1.0
 	github.com/ulule/limiter/v3 v3.8.0
 	github.com/valyala/fasthttp v1.31.0
